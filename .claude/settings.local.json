@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(winget install -e --id Docker.DockerDesktop --accept-package-agreements --accept-source-agreements)",
+      "PowerShell($env:PATH += \";C:\\\\Program Files\\\\Docker\\\\Docker\\\\resources\\\\bin\"; docker --version 2>&1 | Out-String)",
+      "PowerShell(cd \"c:\\\\Users\\\\Tech Support Manager\\\\Documents\\\\INFONEY SOLUTIONS DOCUMENTS\\\\KLICKIT ERP\"; pnpm --filter @klickit/web exec tsc --noEmit; echo \"EXIT:$LASTEXITCODE\")",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:3000/health\" -Method Get)",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:3000/api/v1/branding/theme/current\" -Method Get)",
+      "PowerShell(docker exec klickiterp-postgres-1 psql -U kfe_migrate -d klickit_dev -c \"SELECT username, status, must_change_password, twofa_enabled FROM app.usr_user WHERE username='bootstrap.admin';\")",
+      "PowerShell(Get-CimInstance Win32_Process -Filter \"name='node.exe'\" -ErrorAction SilentlyContinue | Select-Object ProcessId,ParentProcessId,CommandLine | Format-List; Write-Host \"---listening ports---\"; Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object { $_.LocalPort -in @\\(3000,3001,3002,3003\\) } | Select-Object LocalPort,OwningProcess)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3000,3001,3002,3003 -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-Process node -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3000,3001,3002 -State Listen -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3002 -State Listen -ErrorAction SilentlyContinue)"
+    ]
+  }
+}

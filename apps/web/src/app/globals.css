@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import "../styles/tokens.css";
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-family);
+  }
+}
+
+/**
+ * Chart-only color tokens (dataviz skill's reference palette —
+ * `references/palette.md`), deliberately SEPARATE from the brand
+ * `--color-*`/semantic `--primary` etc. tokens above: chart color science
+ * (CVD-safe categorical order, fixed chart chrome) is validated
+ * independently of whatever brand hue a tenant's theme happens to publish,
+ * per the skill's own "color comes last, and is computed, not brand-matched"
+ * principle. Categorical slots 1 (blue) + 2 (orange) are used here — the
+ * skill's own reference palette documents this exact adjacent pair as
+ * already passing every CVD/contrast gate in both light and dark, so no
+ * additional validator run was needed for this 2-series/1-series use.
+ */
+:root {
+  --viz-surface: #fcfcfb;
+  --viz-text-primary: #0b0b0b;
+  --viz-text-secondary: #52514e;
+  --viz-muted: #898781;
+  --viz-grid: #e1e0d9;
+  --viz-baseline: #c3c2b7;
+  --viz-series-1: #2a78d6;
+  --viz-series-2: #eb6834;
+  --viz-success: #006300;
+}
+:root[data-theme="dark"] {
+  --viz-surface: #1a1a19;
+  --viz-text-primary: #ffffff;
+  --viz-text-secondary: #c3c2b7;
+  --viz-muted: #898781;
+  --viz-grid: #2c2c2a;
+  --viz-baseline: #383835;
+  --viz-series-1: #3987e5;
+  --viz-series-2: #d95926;
+  --viz-success: #0ca30c;
+}
+
+/* Reduced-motion respect for the whole app (a11y baseline, no CI gate this
+   slice — see docs/phase-6/PROGRESS.md's explicit out-of-scope note on full
+   a11y/visual-regression CI). */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

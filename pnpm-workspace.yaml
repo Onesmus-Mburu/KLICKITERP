@@ -1,0 +1,26 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "tools"
+allowBuilds:
+  '@firebase/util': true
+  '@scarf/scarf': false
+  msgpackr-extract: true
+  protobufjs: true
+  sharp: true
+  unrs-resolver: true
+onlyBuiltDependencies:
+  - "@scarf/scarf"
+  - "@firebase/util"
+  - "protobufjs"
+  - "msgpackr-extract"
+  - "sharp"
+  - "unrs-resolver"
+overrides:
+  "@nestjs/core": "11.1.28"
+  "@nestjs/common": "11.1.28"
+  "@nestjs/platform-express": "11.1.28"
+  "@nestjs/swagger": "11.4.5"
+  "@nestjs/typeorm": "11.0.3"
+  "reflect-metadata": "0.2.2"
+  "rxjs": "7.8.1"

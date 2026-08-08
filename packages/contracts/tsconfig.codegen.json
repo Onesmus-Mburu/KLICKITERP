@@ -1,0 +1,11 @@
+{
+  "extends": "../config/tsconfig/nestjs.json",
+  "compilerOptions": {
+    "outDir": "dist-codegen",
+    "rootDir": ".",
+    "noEmit": true,
+    "baseUrl": "."
+  },
+  "include": ["codegen/**/*.ts", "scripts/**/*.ts", "src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "dist-codegen"]
+}

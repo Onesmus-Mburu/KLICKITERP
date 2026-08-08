@@ -1,0 +1,22 @@
+{
+  "name": "@klickit/config",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared ESLint, TypeScript and Jest configuration for the Klickit Finance ERP monorepo",
+  "main": "index.js",
+  "files": [
+    "eslint",
+    "tsconfig",
+    "jest"
+  ],
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.19.0",
+    "@typescript-eslint/parser": "^8.19.0",
+    "eslint-plugin-import": "^2.31.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0",
+    "jest": "^29.0.0",
+    "typescript": "^5.7.0"
+  }
+}

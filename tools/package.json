@@ -1,0 +1,23 @@
+{
+  "name": "@klickit/tools",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Klickit Finance ERP — operational tooling (installers, backup scripts, seeders, fixtures). See README.md.",
+  "scripts": {
+    "bootstrap-admin": "ts-node --project tsconfig.json bootstrap-admin.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@klickit/server": "workspace:*",
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "dotenv": "^16.4.7",
+    "otplib": "12.0.1",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}

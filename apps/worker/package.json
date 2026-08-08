@@ -1,0 +1,38 @@
+{
+  "name": "@klickit/worker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Klickit Finance ERP — background worker runtime (NestJS composition root over @klickit/server; BullMQ processors + cron, ADR-003's other half of the API/Worker split)",
+  "main": "dist/apps/worker/src/main.worker.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/apps/worker/src/main.worker.js",
+    "start:dev": "ts-node -P tsconfig.json src/main.worker.ts",
+    "lint": "eslint \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@klickit/server": "workspace:*",
+    "@nestjs/bullmq": "^11.0.4",
+    "@nestjs/common": "^11.0.1",
+    "@nestjs/core": "^11.0.1",
+    "@nestjs/platform-express": "^11.1.28",
+    "@nestjs/swagger": "^11.4.5",
+    "@nestjs/typeorm": "^11.0.0",
+    "bullmq": "^5.81.2",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "ioredis": "^5.4.2",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.1",
+    "typeorm": "^0.3.20"
+  },
+  "devDependencies": {
+    "@klickit/config": "workspace:*",
+    "@types/node": "^22.10.5",
+    "dotenv": "^16.4.7",
+    "eslint": "^9.17.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}

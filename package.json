@@ -1,0 +1,22 @@
+{
+  "name": "klickit-finance-erp",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Klickit Finance ERP monorepo",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "packageManager": "pnpm@11.13.0",
+  "scripts": {
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "migration:run": "pnpm --filter @klickit/server migration:run",
+    "migration:revert": "pnpm --filter @klickit/server migration:revert"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3"
+  }
+}

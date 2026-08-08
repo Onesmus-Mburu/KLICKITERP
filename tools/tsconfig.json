@@ -1,0 +1,11 @@
+{
+  "extends": "../packages/config/tsconfig/nestjs.json",
+  "compilerOptions": {
+    "outDir": "../dist/tools",
+    "rootDir": "..",
+    "baseUrl": ".",
+    "noEmit": true
+  },
+  "include": ["*.ts"],
+  "exclude": ["node_modules", "../**/node_modules/**", "../**/dist/**"]
+}

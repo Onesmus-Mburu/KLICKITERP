@@ -1,0 +1,35 @@
+{
+  "name": "@klickit/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Klickit Finance ERP — OpenAPI-derived TS types + typed API client + zod DTO mirrors, shared by apps/web and external SDK consumers",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "jest --config jest.config.js",
+    "lint": "eslint \"src/**/*.ts\"",
+    "generate:types": "ts-node --project tsconfig.codegen.json scripts/generate-types.ts",
+    "generate:zod": "ts-node --project tsconfig.codegen.json codegen/generate-zod-schemas.ts",
+    "generate": "pnpm run generate:types && pnpm run generate:zod"
+  },
+  "dependencies": {
+    "openapi-fetch": "^0.17.0",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@klickit/config": "workspace:*",
+    "@klickit/server": "workspace:*",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.10.5",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "jest": "^29.7.0",
+    "openapi-typescript": "^7.13.0",
+    "reflect-metadata": "^0.2.2",
+    "ts-jest": "^29.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3"
+  }
+}

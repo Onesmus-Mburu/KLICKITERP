@@ -1,0 +1,10 @@
+{
+  "extends": "../../packages/config/tsconfig/nestjs.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "../..",
+    "baseUrl": "."
+  },
+  "include": ["src/**/*.ts", "../api/src/health.controller.ts"],
+  "exclude": ["node_modules", "dist", "**/__tests__/**", "**/node_modules/**"]
+}
