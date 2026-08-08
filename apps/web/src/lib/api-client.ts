@@ -27,7 +27,7 @@ import { refreshSession } from "./session-api";
 // the API genuinely living on a different host.
 const API_ORIGIN =
   process.env.NEXT_PUBLIC_API_ORIGIN ??
-  (typeof window !== "undefined" ? `${window.location.protocol}//${window.location.hostname}:3000` : "http://localhost:3000");
+  (typeof window !== "undefined" ? `${window.location.protocol}//${window.location.hostname}` : "http://localhost:3000");
 
 /**
  * Attaches `Authorization: Bearer <accessToken>` to every request from the
