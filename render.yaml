@@ -1,0 +1,93 @@
+# Render Blueprint — deploys apps/api (the NestJS backend) + a managed Redis
+# instance. Apply once from the Render dashboard: "New +" → "Blueprint" →
+# point at this GitHub repo. Database is Neon (external, not managed by
+# Render) — its connection details are entered manually below (sync: false).
+#
+# Build/start commands are anchored at the repo root deliberately (no
+# `rootDir`) — apps/api depends on the sibling workspace packages
+# @klickit/server/@klickit/contracts via pnpm workspace symlinks, and every
+# command in this monorepo that has worked reliably runs from the root with
+# `pnpm --filter <pkg> run <script>`, never from inside a package's own
+# directory. Matches the exact sequence used throughout local development:
+# contracts build (plain tsc — packages/contracts/openapi.json and
+# src/generated/openapi-types.ts are committed to git, so this does NOT need
+# a live API to regenerate types) → server build → api build.
+services:
+  - name: klickit-api
+    type: web
+    runtime: node
+    plan: free
+    buildCommand: pnpm install && pnpm --filter @klickit/contracts run build && pnpm --filter @klickit/server run build && pnpm --filter @klickit/api run build
+    startCommand: node apps/api/dist/main.api.js
+    healthCheckPath: /health
+    envVars:
+      # --- Core ---
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: TZ
+        value: Africa/Nairobi
+      - key: SCHOOL_ID
+        value: test-deployment
+
+      # --- Database (Neon) — paste your Neon connection details here.
+      # Simplification for a TESTING deployment (see the plan's own Context
+      # section for the full reasoning): DB_USER/DB_MIGRATION_USER both point
+      # at the SAME Neon owner role, skipping the kfe_app/kfe_migrate
+      # least-privilege split migration 0002 would otherwise set up — that
+      # split is a production-hardening concern, not needed to log in and
+      # test. DB_SSL is pre-filled true — Neon requires SSL on every
+      # connection, this isn't deployment-specific. ---
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: "5432"
+      - key: DB_NAME
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_SSL
+        value: "true"
+      - key: DB_MIGRATION_USER
+        sync: false
+      - key: DB_MIGRATION_PASSWORD
+        sync: false
+
+      # --- Redis — auto-wired from the keyvalue service below, no manual entry needed ---
+      - key: REDIS_URL
+        fromService:
+          name: klickit-redis
+          type: keyvalue
+          property: connectionString
+
+      # --- Security — generated real values, not the checked-in dev
+      # placeholders (see the accompanying generated-secrets output) ---
+      - key: JWT_KEY_CURRENT
+        sync: false
+      - key: APP_ENCRYPTION_KEY
+        sync: false
+
+      # --- Storage (Cloudflare R2 — S3-API-compatible, drop-in for local
+      # MinIO with zero code changes per AppConfigService's own generic
+      # minioEndpoint/minioAccessKey/minioSecretKey getters). MINIO_USE_SSL
+      # is pre-filled true — R2 is HTTPS-only, not deployment-specific. ---
+      - key: MINIO_ENDPOINT
+        sync: false
+      - key: MINIO_ACCESS_KEY
+        sync: false
+      - key: MINIO_SECRET_KEY
+        sync: false
+      - key: MINIO_BUCKET_DEFAULT
+        value: klickit-files
+      - key: MINIO_USE_SSL
+        value: "true"
+      - key: FILE_MAX_UPLOAD_BYTES
+        value: "26214400"
+
+  - name: klickit-redis
+    type: keyvalue
+    plan: free
+    ipAllowList: []

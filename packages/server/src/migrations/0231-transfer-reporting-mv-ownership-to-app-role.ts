@@ -44,14 +44,30 @@ const MIGRATION_ROLE = "kfe_migrate";
  * Idempotent: `ALTER MATERIALIZED VIEW ... OWNER TO` is a no-op when the
  * role already owns the view (safe to re-run). `down()` reverts ownership
  * to `kfe_migrate`, restoring the original (broken) state exactly.
+ *
+ * Postgres requires the NEW owner to hold CREATE privilege on the object's
+ * schema at the moment of transfer (`ALTER TABLE`'s own docs: "you must be
+ * able to SET ROLE to the new owning role, and that role must have CREATE
+ * privilege on the table's schema" — same rule applies to materialized
+ * views). `kfe_app` deliberately only has USAGE on schema `app` (DML-only,
+ * migration 0002) — this worked locally by accident only because local
+ * dev's `kfe_migrate` role happens to carry the Postgres SUPERUSER
+ * attribute, which bypasses the check entirely ("a superuser can alter
+ * ownership of any table anyway"). On a host where the migrating role is
+ * genuinely non-superuser (e.g. Neon), the check is enforced for real, so
+ * `kfe_app` needs CREATE on schema `app` transiently — granted immediately
+ * before the transfer and revoked immediately after, leaving `kfe_app`'s
+ * permanent privilege set exactly as documented (no persistent widening).
  */
 export class TransferReportingMvOwnershipToAppRole0231 implements MigrationInterface {
   name = "TransferReportingMvOwnershipToAppRole1700000000231";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(`GRANT CREATE ON SCHEMA app TO ${APP_ROLE}`);
     for (const viewName of REPORTING_MATERIALIZED_VIEW_NAMES) {
       await queryRunner.query(`ALTER MATERIALIZED VIEW app.${viewName} OWNER TO ${APP_ROLE}`);
     }
+    await queryRunner.query(`REVOKE CREATE ON SCHEMA app FROM ${APP_ROLE}`);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
