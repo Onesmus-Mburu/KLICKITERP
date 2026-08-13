@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { CheckSquare, ChevronDown, GraduationCap, LayoutDashboard, Layers, Megaphone, Palette, Receipt, Settings, UserCog, Wallet, WalletCards } from "lucide-react";
+import { CheckSquare, ChevronDown, GraduationCap, Landmark, LayoutDashboard, Layers, Megaphone, Palette, Receipt, Settings, Truck, UserCog, Wallet, WalletCards } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { hasAnyRole } from "@/lib/permissions";
@@ -135,6 +135,176 @@ const NAV_ITEMS: NavItem[] = [
       { href: "/wallet", labelKey: "walletWallets" },
       { href: "/wallet/service-points", labelKey: "walletServicePoints" },
       { href: "/wallet/reconciliation", labelKey: "walletReconciliation" },
+    ],
+  },
+  // Phase 6 Slice 17 Part 1 (Accounting Core foundations, Module 7) —
+  // Accounting's first nav entries (`accounting/*` — Chart of Accounts,
+  // Fiscal Years/Periods, Cost Centers — had NO home in the flat nav at all
+  // before this pass, despite the backend itself being complete since Phase
+  // 5, 2026-07-17). Positioned after Wallet and before Communications,
+  // matching this file's own established ordering of backend-complete-
+  // module dropdowns by the order each module's frontend actually shipped
+  // (Wallet: Slice 11; this: Slice 17; Communications: Slice 15 — Comms
+  // shipped its OWN nav entry earlier chronologically, but the plan for
+  // this slice explicitly calls out "after Wallet, before Communications"
+  // as this entry's position, so that's followed exactly rather than
+  // appending at the end). Styled as a `children`-bearing dropdown FROM THE
+  // START (the same mechanism Billing/Wallet/Comms/Users/Settings already
+  // established), all 3 children shipping together in this one part (unlike
+  // those other dropdowns' own incremental multi-part history) since this
+  // part's own scope covers all three sub-domains at once — Journals/
+  // Budgets/Integrity Sweep (the rest of Module 7's backend surface) are
+  // explicitly NOT part of this dropdown yet, a future part's own scope.
+  // `Landmark` (confirmed not already used elsewhere in this file, via
+  // `lucide-react` — this package does export it; a bank/institution glyph,
+  // a clear semantic fit for "Accounting" distinct from `Wallet`/
+  // `WalletCards`/`Receipt`, all already claimed by other entries above).
+  // Same `allowedRoles: []`/`<QueryBoundary>`-is-the-real-gate reasoning as
+  // every other entry above: `accounting:account:view`/
+  // `accounting:fiscal-year:view`/`accounting:cost-center:view` are the real
+  // permissions gating each of the 3 children, no permission-list endpoint
+  // exists to target them precisely from a coarse role-name check.
+  //
+  // Phase 6 Slice 17 Part 2 (Journals) — 4th child appended without touching
+  // the mechanism itself: Journals (`/accounting/journals`,
+  // `accounting:journal:view` gating list/detail, `accounting:journal:post`
+  // gating the create-entry page and Reverse action). Same
+  // `allowedRoles: []`/`<QueryBoundary>`-is-the-real-gate reasoning as every
+  // other entry above. Not necessarily this dropdown's final shape —
+  // Budgets/Integrity Sweep (the rest of Module 7's backend surface) may
+  // still append further children in a future part.
+  //
+  // Phase 6 Slice 17 Part 3 (Budgets) — 5th child appended without touching
+  // the mechanism itself: Budgets (`/accounting/budgets`,
+  // `accounting:budget:manage` gating list/detail/create/lines,
+  // `accounting:budget:submit` gating the submit-for-approval action). Same
+  // `allowedRoles: []`/`<QueryBoundary>`-is-the-real-gate reasoning as every
+  // other entry above. Still not necessarily this dropdown's final shape —
+  // the Integrity Sweep (the last of Module 7's backend surface) may still
+  // append one more child in a future part.
+  //
+  // Phase 6 Slice 17 Part 4 (FINAL shape of this dropdown) — 6th and last
+  // child appended without touching the mechanism itself: Integrity Sweep
+  // (`/accounting/integrity-sweep`, `accounting:integrity-sweep:run` — the
+  // ONLY permission `IntegritySweepController` has, gating both its list and
+  // run routes, confirmed by reading it directly). Same `allowedRoles: []`/
+  // `<QueryBoundary>`-is-the-real-gate reasoning as every other entry above.
+  // This completes Module 7's whole backend surface (Chart of Accounts,
+  // Fiscal Years/Periods, Cost Centers, Journals, Budgets, Integrity Sweep)
+  // — matching the same "FINAL shape, no more children planned" declaration
+  // Billing's/Wallet's/Settings' own dropdowns already make once their own
+  // last part ships.
+  {
+    href: "/accounting/accounts",
+    labelKey: "accounting",
+    icon: Landmark,
+    allowedRoles: [],
+    children: [
+      { href: "/accounting/accounts", labelKey: "accountingAccounts" },
+      { href: "/accounting/fiscal-years", labelKey: "accountingFiscalYears" },
+      { href: "/accounting/cost-centers", labelKey: "accountingCostCenters" },
+      { href: "/accounting/journals", labelKey: "accountingJournals" },
+      { href: "/accounting/budgets", labelKey: "accountingBudgets" },
+      { href: "/accounting/integrity-sweep", labelKey: "accountingIntegritySweep" },
+    ],
+  },
+  // Phase 6 Slice 18 Part 1 (Procurement, Module 12) — Procurement's first
+  // nav entry (`procurement/suppliers` — Module 12 had NO home in the flat
+  // nav at all before this pass). Positioned after Accounting and before
+  // Communications, per this part's own plan — matching this file's own
+  // established ordering of backend-complete-module dropdowns by the order
+  // each module's frontend actually shipped (Accounting: Slice 17; this:
+  // Slice 18). Styled as a `children`-bearing dropdown FROM THE START (the
+  // same mechanism Billing/Wallet/Accounting/Comms/Users/Settings already
+  // established), even though it has only ONE child today — Suppliers —
+  // since Module 12's real backend surface (Requisitions, Purchase Orders,
+  // GRNs, Supplier Invoices, Payment Vouchers) is far larger than this one
+  // part's own scope, and every other multi-part dropdown in this file
+  // (Billing/Wallet/Accounting/Comms) already established "ship the
+  // mechanism with 1 child now, append more as later parts land" as the
+  // correct pattern rather than a flat leaf link that would need converting
+  // later. `Truck` (confirmed not already used elsewhere in this file, via
+  // `lucide-react` — this package does export it; a delivery/logistics
+  // glyph, a clear semantic fit for "Procurement" distinct from
+  // `Wallet`/`WalletCards`/`Receipt`/`Landmark`, all already claimed by
+  // other entries above). Same `allowedRoles: []`/`<QueryBoundary>`-is-the-
+  // real-gate reasoning as every other entry above:
+  // `procurement:supplier:view` is the real permission gating this part's
+  // one child, no permission-list endpoint exists to target it precisely
+  // from a coarse role-name check.
+  //
+  // Phase 6 Slice 18 Part 2 — 2nd child appended without touching the
+  // mechanism itself: Requisitions (`/procurement/requisitions`,
+  // `procurement:requisition:view` gating list/detail,
+  // `procurement:requisition:create` gating create/lines/cancel,
+  // `procurement:requisition:submit` gating submit,
+  // `procurement:requisition:decide` gating approve/reject). Same
+  // `allowedRoles: []`/`<QueryBoundary>`-is-the-real-gate reasoning as every
+  // other entry above. Still not necessarily this dropdown's final shape —
+  // Purchase Orders/GRNs/Supplier Invoices/Payment Vouchers (the rest of
+  // Module 12's backend surface) may still append further children in a
+  // future part.
+  //
+  // Phase 6 Slice 18 Part 3 — 3rd child appended without touching the
+  // mechanism itself: Purchase Orders (`/procurement/purchase-orders`,
+  // `procurement:po:create` gating every route including the GETs — no
+  // separate view permission exists, confirmed by reading
+  // `PurchaseOrdersController` directly). Same `allowedRoles: []`/
+  // `<QueryBoundary>`-is-the-real-gate reasoning as every other entry above.
+  // **Quotations deliberately does NOT get its own nav child** —
+  // `QuotationsController_list` requires a real `requisitionId` query param
+  // (no "list every quotation" route exists at all), so a top-level nav
+  // entry would have nowhere meaningful to land; the real entry point is
+  // `requisitions/[id]/page.tsx`'s own new "View quotations" action, and
+  // `procurement/quotations/page.tsx` itself offers a requisition picker for
+  // anyone who lands there without a query param (see that route's own doc
+  // comment). Still not necessarily this dropdown's final shape — GRNs/
+  // Supplier Invoices/Payment Vouchers (the rest of Module 12's backend
+  // surface) may still append further children in a future part.
+  //
+  // Phase 6 Slice 18 Part 4 — 4th child appended without touching the
+  // mechanism itself: Supplier Invoices (`/procurement/supplier-invoices`,
+  // `procurement:supplier-invoice:manage` gating list/detail/capture/post,
+  // `procurement:supplier-invoice:match` gating match/resolve-exception).
+  // **GRN deliberately does NOT get its own nav child either** — same class
+  // of reasoning as Quotations above: `GrnController_list`'s `poId` query
+  // param is genuinely required (no "list every GRN" route exists at all),
+  // so a top-level nav entry would have nowhere meaningful to land; the real
+  // entry point is `purchase-orders/[id]/page.tsx`'s own new
+  // `<ReceiveGrnDialog>`/GRN-history card (see `grn.api.ts`'s own doc
+  // comment for the full reasoning — unlike Quotations, GRN doesn't even get
+  // a standalone route with a picker fallback, since a GRN is meaningless
+  // without the PO context it was received against). Still not necessarily
+  // this dropdown's final shape — Payment Vouchers (the last of Module 12's
+  // backend surface) may still append one more child in a future part.
+  //
+  // Phase 6 Slice 18 Part 5 (FINAL shape of this dropdown) — 5th and 6th
+  // children appended without touching the mechanism itself: Payment
+  // Vouchers (`/procurement/payment-vouchers`,
+  // `procurement:payment-voucher:manage` gating list/detail/create/submit/
+  // approve/reject, `procurement:payment-voucher:execute` gating the
+  // SEPARATE execute action — never client-side hidden here either, same
+  // reasoning as `procurement:po:create-direct` above) and Contracts
+  // (`/procurement/contracts`, `procurement:contract:manage` — ONE bundled
+  // permission gating every route including the GETs, the same
+  // no-separate-view-permission shape Purchase Orders/Supplier Invoices
+  // already established). This completes Module 12's whole backend surface
+  // (Suppliers, Requisitions, Quotations, Purchase Orders, GRN, Supplier
+  // Invoices, Payment Vouchers, Contracts) — matching the same "FINAL shape,
+  // no more children planned" declaration Billing's/Wallet's/Settings'/
+  // Accounting's own dropdowns already make once their own last part ships.
+  {
+    href: "/procurement/suppliers",
+    labelKey: "procurement",
+    icon: Truck,
+    allowedRoles: [],
+    children: [
+      { href: "/procurement/suppliers", labelKey: "procurementSuppliers" },
+      { href: "/procurement/requisitions", labelKey: "procurementRequisitions" },
+      { href: "/procurement/purchase-orders", labelKey: "procurementPurchaseOrders" },
+      { href: "/procurement/supplier-invoices", labelKey: "procurementSupplierInvoices" },
+      { href: "/procurement/payment-vouchers", labelKey: "procurementPaymentVouchers" },
+      { href: "/procurement/contracts", labelKey: "procurementContracts" },
     ],
   },
   // Phase 6 Slice 15 Part 1 (Communications Foundation + Templates, Module

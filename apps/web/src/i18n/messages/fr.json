@@ -96,6 +96,16 @@
       "walletWallets": "Wallets",
       "walletServicePoints": "Service Points",
       "walletReconciliation": "Reconciliation",
+      "accounting": "Comptabilité",
+      "accountingAccounts": "Comptes",
+      "accountingFiscalYears": "Exercices comptables",
+      "accountingCostCenters": "Centres de coûts",
+      "accountingJournals": "Journaux",
+      "accountingBudgets": "Budgets",
+      "accountingIntegritySweep": "Contrôle d'intégrité",
+      "procurement": "Achats",
+      "procurementSuppliers": "Fournisseurs",
+      "procurementRequisitions": "Demandes d'achat",
       "communications": "Communications",
       "commsTemplates": "Modèles",
       "commsBroadcasts": "Diffusions",
@@ -106,7 +116,11 @@
       "usersAllUsers": "Tous les utilisateurs",
       "usersRoles": "Rôles",
       "usersDepartments": "Départements",
-      "branding": "Image de marque"
+      "branding": "Image de marque",
+      "procurementPurchaseOrders": "Bons de commande",
+      "procurementSupplierInvoices": "Factures fournisseurs",
+      "procurementPaymentVouchers": "Bons de Paiement",
+      "procurementContracts": "Contrats"
     },
     "topbar": {
       "searchPlaceholder": "Search…",
@@ -2771,6 +2785,1178 @@
       "notVerifiedTitle": "Non vérifié",
       "notVerifiedDescription": "Ce lien n'a pas pu être confirmé dans nos registres.",
       "notVerifiedHint": "Ce document n'a pas pu être vérifié. Il peut s'agir d'un faux, d'un document altéré, ou le lien de vérification peut être incorrect. Contactez directement l'établissement pour confirmer l'authenticité de ce document."
+    }
+  },
+  "accounting": {
+    "classes": {
+      "ASSET": "Actif",
+      "LIABILITY": "Passif",
+      "EQUITY": "Capitaux propres",
+      "INCOME": "Produits",
+      "EXPENSE": "Charges"
+    },
+    "controlDomains": {
+      "AR_STUDENT": "Créances — Élèves",
+      "AR_SPONSOR": "Créances — Parrains",
+      "AP_SUPPLIER": "Dettes — Fournisseurs",
+      "WALLET": "Portefeuille",
+      "INVENTORY": "Stocks",
+      "PAYROLL": "Paie",
+      "PREPAYMENT": "Paiement anticipé",
+      "MPESA_CLEARING": "Compensation M-Pesa",
+      "TRANSFER_CLEARING": "Compensation des virements"
+    },
+    "fiscalYearStatuses": {
+      "OPEN": "Ouvert",
+      "CLOSING": "En clôture",
+      "LOCKED": "Verrouillé"
+    },
+    "periodStatuses": {
+      "OPEN": "Ouverte",
+      "SOFT_CLOSED": "Clôture provisoire",
+      "HARD_CLOSED": "Clôture définitive"
+    },
+    "journalTypes": {
+      "SYSTEM": "Système",
+      "MANUAL": "Manuelle",
+      "REVERSING": "Extourne",
+      "CLOSING": "Clôture",
+      "OPENING": "Ouverture"
+    },
+    "budgetStatuses": {
+      "DRAFT": "Brouillon",
+      "PENDING_APPROVAL": "En attente d'approbation",
+      "ACTIVE": "Actif",
+      "SUPERSEDED": "Remplacé"
+    },
+    "accounts": {
+      "list": {
+        "pageTitle": "Plan comptable",
+        "pageSubtitle": "La hiérarchie des comptes du grand livre — actif, passif, capitaux propres, produits et charges.",
+        "listTitle": "Comptes",
+        "listDescription": "Développez une ligne pour voir ses comptes enfants. Les comptes imputables peuvent recevoir des écritures ; les comptes d'en-tête organisent uniquement la hiérarchie."
+      },
+      "tree": {
+        "expand": "Développer",
+        "collapse": "Réduire",
+        "postable": "Imputable",
+        "control": "Contrôle",
+        "deactivate": "Désactiver",
+        "activate": "Activer"
+      },
+      "createDialog": {
+        "trigger": "Nouveau compte",
+        "title": "Créer un compte",
+        "description": "Ajoutez un nouveau compte au plan comptable. Le code, la classe, le parent et l'imputabilité sont verrouillés une fois créés.",
+        "codeLabel": "Code",
+        "codePlaceholder": "ex. 1000",
+        "nameLabel": "Nom",
+        "namePlaceholder": "ex. Caisse à la banque",
+        "classLabel": "Classe",
+        "parentLabel": "Compte parent",
+        "loadingAccounts": "Chargement des comptes…",
+        "parentPlaceholder": "Aucun parent (compte racine)",
+        "parentSearchPlaceholder": "Rechercher des comptes…",
+        "parentEmptyText": "Aucun compte trouvé.",
+        "isPostableLabel": "Imputable",
+        "isPostableHint": "Ce compte peut recevoir des écritures directement.",
+        "isPostableHintNeedsParent": "Sélectionnez d'abord un compte parent — un compte racine ne peut pas être imputable.",
+        "isControlLabel": "Compte de contrôle",
+        "controlDomainLabel": "Domaine de contrôle",
+        "selectControlDomain": "Sélectionner un domaine de contrôle",
+        "noneOption": "Aucun",
+        "taxTreatmentLabel": "Traitement fiscal",
+        "taxTreatmentPlaceholder": "Facultatif",
+        "creating": "Création…",
+        "createButton": "Créer le compte",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "editDialog": {
+        "title": "Modifier {name}",
+        "description": "Le code, la classe, le parent et l'imputabilité sont verrouillés une fois créés — pour reclasser, désactivez ce compte et créez-en un nouveau.",
+        "nameLabel": "Nom",
+        "isControlLabel": "Compte de contrôle",
+        "controlDomainLabel": "Domaine de contrôle",
+        "selectControlDomain": "Sélectionner un domaine de contrôle",
+        "noneOption": "Aucun",
+        "taxTreatmentLabel": "Traitement fiscal",
+        "taxTreatmentPlaceholder": "Facultatif",
+        "saving": "Enregistrement…",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "deleteDialog": {
+        "title": "Supprimer le compte",
+        "description": "Supprimer {code} — {name} ? Cette action est irréversible.",
+        "hasPostingsError": "Ce compte comporte des écritures et ne peut pas être supprimé — désactivez-le à la place.",
+        "deleting": "Suppression…",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      }
+    },
+    "fiscalYears": {
+      "list": {
+        "pageTitle": "Exercices comptables",
+        "pageSubtitle": "Périodes comptables pour la saisie et la clôture du grand livre.",
+        "listTitle": "Tous les exercices comptables",
+        "listDescription": "Sélectionnez un exercice comptable pour voir et gérer ses périodes.",
+        "columns": {
+          "name": "Nom",
+          "startsOn": "Début",
+          "endsOn": "Fin",
+          "status": "Statut"
+        }
+      },
+      "createDialog": {
+        "trigger": "Nouvel exercice comptable",
+        "title": "Créer un exercice comptable",
+        "description": "Définissez un nouvel exercice comptable. Ses périodes sont générées automatiquement.",
+        "nameLabel": "Nom",
+        "namePlaceholder": "ex. FY2027",
+        "startsOnLabel": "Début",
+        "endsOnLabel": "Fin",
+        "periodCountLabel": "Nombre de périodes",
+        "periodCountHint": "Divise l'exercice en ce nombre de périodes de longueur égale en nombre de jours, pas en mois calendaires.",
+        "creating": "Création…",
+        "createButton": "Créer l'exercice comptable",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "detail": {
+        "backToList": "Retour aux exercices comptables",
+        "periodsTitle": "Périodes",
+        "periodsDescription": "Ouvrez, clôturez provisoirement ou clôturez définitivement chaque période. Une période ne peut être clôturée définitivement qu'après une clôture provisoire.",
+        "columns": {
+          "seq": "N°",
+          "startsOn": "Début",
+          "endsOn": "Fin",
+          "status": "Statut",
+          "actions": "Actions"
+        }
+      }
+    },
+    "periods": {
+      "actions": {
+        "open": "Ouvrir",
+        "softClose": "Clôture provisoire",
+        "hardClose": "Clôture définitive",
+        "hardCloseHint": "Clôturez d'abord provisoirement cette période.",
+        "hardCloseConfirmTitle": "Clôture définitive de la période {seq}",
+        "hardCloseConfirmDescription": "La clôture définitive de la période {seq} est définitive et irréversible.",
+        "hardClosePermanentWarning": "Cette action est permanente. La période ne pourra plus être rouverte après une clôture définitive.",
+        "hardCloseConfirmButton": "Clôturer définitivement",
+        "processing": "Traitement…",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      }
+    },
+    "costCenters": {
+      "list": {
+        "pageTitle": "Centres de coûts",
+        "pageSubtitle": "Suivez les produits et charges par département, projet ou activité.",
+        "listTitle": "Tous les centres de coûts",
+        "listDescription": "Centres de coûts utilisés pour étiqueter les écritures comptables à des fins de reporting.",
+        "searchPlaceholder": "Rechercher par code ou nom…",
+        "noCostCentersMatchSearch": "Aucun centre de coûts ne correspond à votre recherche.",
+        "columns": {
+          "code": "Code",
+          "name": "Nom",
+          "status": "Statut"
+        },
+        "deactivate": "Désactiver",
+        "activate": "Activer"
+      },
+      "createDialog": {
+        "trigger": "Nouveau centre de coûts",
+        "title": "Créer un centre de coûts",
+        "description": "Définissez un nouveau centre de coûts pour étiqueter les écritures comptables.",
+        "codeLabel": "Code",
+        "codePlaceholder": "ex. CC-001",
+        "nameLabel": "Nom",
+        "namePlaceholder": "ex. Département Transport",
+        "creating": "Création…",
+        "createButton": "Créer le centre de coûts",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "editDialog": {
+        "title": "Modifier {name}",
+        "description": "Modifiez le nom du centre de coûts.",
+        "nameLabel": "Nom",
+        "saving": "Enregistrement…",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      }
+    },
+    "journals": {
+      "list": {
+        "pageTitle": "Journaux",
+        "pageSubtitle": "Toutes les écritures comptabilisées au grand livre, système et manuelles.",
+        "listTitle": "Tous les journaux",
+        "listDescription": "Filtrez par module source, période de dates, ou période. Sélectionnez un journal pour voir ses lignes.",
+        "newJournalTrigger": "Nouvelle écriture",
+        "columns": {
+          "number": "Numéro",
+          "journalDate": "Date",
+          "sourceModule": "Source",
+          "narration": "Libellé",
+          "journalType": "Type"
+        }
+      },
+      "filters": {
+        "sourceModuleLabel": "Module source",
+        "sourceModulePlaceholder": "ex. GL_MANUAL",
+        "fromDateLabel": "Du",
+        "toDateLabel": "Au",
+        "fiscalYearLabel": "Exercice comptable",
+        "allFiscalYears": "Tous les exercices",
+        "periodLabel": "Période",
+        "allPeriods": "Toutes les périodes",
+        "periodOption": "N°{seq} ({startsOn} – {endsOn})",
+        "clearFilters": "Effacer les filtres"
+      },
+      "lineEditor": {
+        "account": "Compte",
+        "costCenter": "Centre de coûts",
+        "debit": "Débit",
+        "credit": "Crédit",
+        "memo": "Mémo",
+        "selectAccount": "Sélectionner un compte",
+        "loadingAccounts": "Chargement des comptes…",
+        "searchAccounts": "Rechercher des comptes…",
+        "noAccountsFound": "Aucun compte imputable trouvé.",
+        "noCostCenter": "Aucun centre de coûts",
+        "searchCostCenters": "Rechercher des centres de coûts…",
+        "noCostCentersFound": "Aucun centre de coûts trouvé.",
+        "memoPlaceholder": "Facultatif",
+        "addLine": "Ajouter une ligne",
+        "removeLine": "Supprimer la ligne",
+        "totalDebits": "Total débit",
+        "totalCredits": "Total crédit",
+        "difference": "Écart",
+        "balanced": "Équilibré",
+        "unbalanced": "Le débit et le crédit doivent s'équilibrer"
+      },
+      "create": {
+        "pageTitle": "Nouvelle écriture",
+        "pageSubtitle": "Comptabilisez une écriture manuelle directement dans le grand livre.",
+        "backToList": "Retour aux journaux",
+        "headerTitle": "Détails de l'écriture",
+        "journalDateLabel": "Date de l'écriture",
+        "sourceModuleLabel": "Module source",
+        "sourceModulePlaceholder": "ex. GL_MANUAL",
+        "narrationLabel": "Libellé",
+        "narrationPlaceholder": "Décrivez la raison de cette écriture",
+        "linesTitle": "Lignes",
+        "cancel": "Annuler",
+        "submitting": "Comptabilisation…",
+        "submitButton": "Comptabiliser",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "detail": {
+        "backToList": "Retour aux journaux",
+        "journalDateLabel": "Date de l'écriture",
+        "sourceModuleLabel": "Module source",
+        "sourceDocTypeLabel": "Type de document source",
+        "postedByLabel": "Comptabilisé par",
+        "postedAtLabel": "Comptabilisé le",
+        "reversalOfLabel": "Extourne",
+        "viewOriginal": "Voir l'écriture d'origine",
+        "viewReversal": "Voir l'extourne",
+        "linesTitle": "Lignes",
+        "columns": {
+          "lineNo": "#",
+          "account": "Compte",
+          "costCenter": "Centre de coûts",
+          "debit": "Débit",
+          "credit": "Crédit",
+          "memo": "Mémo"
+        }
+      },
+      "reverseDialog": {
+        "trigger": "Extourner",
+        "title": "Extourner l'écriture",
+        "description": "Comptabiliser une écriture d'extourne pour {number}, avec le débit et le crédit de chaque ligne inversés.",
+        "narrationLabel": "Libellé de l'extourne",
+        "narrationPlaceholder": "Décrivez la raison de cette extourne",
+        "reversing": "Extourne en cours…",
+        "confirmButton": "Extourner l'écriture",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      }
+    },
+    "budgets": {
+      "list": {
+        "pageTitle": "Budgets",
+        "pageSubtitle": "Rédigez, soumettez et activez les budgets annuels par exercice comptable.",
+        "listTitle": "Budgets",
+        "listDescription": "Sélectionnez un exercice comptable pour voir ses budgets. Sélectionnez un budget pour voir et modifier ses lignes.",
+        "fiscalYearLabel": "Exercice comptable",
+        "selectFiscalYearPlaceholder": "Sélectionner un exercice comptable",
+        "selectFiscalYearPrompt": "Sélectionnez un exercice comptable pour voir ses budgets.",
+        "columns": {
+          "name": "Nom",
+          "versionLabel": "Version",
+          "status": "Statut"
+        }
+      },
+      "createDialog": {
+        "trigger": "Nouveau budget",
+        "title": "Créer un budget",
+        "description": "Rédigez un nouveau budget pour cet exercice comptable avec ses lignes initiales.",
+        "nameLabel": "Nom",
+        "namePlaceholder": "ex. Budget de fonctionnement FY2027",
+        "versionLabelLabel": "Étiquette de version",
+        "versionLabelPlaceholder": "ex. v1",
+        "linesTitle": "Lignes",
+        "account": "Compte",
+        "costCenter": "Centre de coûts",
+        "annualAmount": "Montant annuel",
+        "selectAccount": "Sélectionner un compte",
+        "loadingAccounts": "Chargement des comptes…",
+        "searchAccounts": "Rechercher des comptes…",
+        "noAccountsFound": "Aucun compte imputable trouvé.",
+        "noCostCenter": "Aucun centre de coûts",
+        "searchCostCenters": "Rechercher des centres de coûts…",
+        "noCostCentersFound": "Aucun centre de coûts trouvé.",
+        "addLine": "Ajouter une ligne",
+        "removeLine": "Supprimer la ligne",
+        "totalLabel": "Montant annuel total",
+        "creating": "Création…",
+        "createButton": "Créer le budget",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "detail": {
+        "backToList": "Retour aux budgets",
+        "fiscalYearLabel": "Exercice comptable",
+        "versionLabelLabel": "Version",
+        "linesTitle": "Lignes",
+        "totalLabel": "Montant annuel total",
+        "columns": {
+          "actions": "Actions"
+        }
+      },
+      "lineEditor": {
+        "account": "Compte",
+        "costCenter": "Centre de coûts",
+        "annualAmountLabel": "Montant annuel",
+        "periodPhasingLabel": "Répartition par période",
+        "periodPhasingHint": "Facultatif, JSON libre — une répartition mois par mois ou trimestre par trimestre. Pas encore interprétée par le système.",
+        "periodPhasingInvalid": "Doit être un JSON valide représentant un objet, ex. {}",
+        "selectAccount": "Sélectionner un compte",
+        "loadingAccounts": "Chargement des comptes…",
+        "searchAccounts": "Rechercher des comptes…",
+        "noAccountsFound": "Aucun compte imputable trouvé.",
+        "noCostCenter": "Aucun centre de coûts",
+        "searchCostCenters": "Rechercher des centres de coûts…",
+        "noCostCentersFound": "Aucun centre de coûts trouvé.",
+        "addLineTrigger": "Ajouter une ligne",
+        "addDialogTitle": "Ajouter une ligne de budget",
+        "addDialogDescription": "Ajoutez une ligne à ce budget en brouillon.",
+        "editDialogTitle": "Modifier la ligne de budget",
+        "editDialogDescription": "Modifiez le montant annuel ou la répartition par période de cette ligne. Le compte et le centre de coûts ne peuvent pas être modifiés — supprimez et rajoutez la ligne à la place.",
+        "adding": "Ajout…",
+        "addButton": "Ajouter une ligne",
+        "saving": "Enregistrement…",
+        "deleteDialogTitle": "Supprimer la ligne de budget",
+        "deleteDialogDescription": "Supprimer cette ligne ? Cette action est irréversible.",
+        "deleting": "Suppression…",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "statusActions": {
+        "submitTrigger": "Soumettre pour approbation",
+        "submitting": "Soumission…",
+        "noWorkflowError": "Aucun circuit d'approbation n'est encore configuré pour les budgets — contactez un administrateur pour en configurer un dans Approbations.",
+        "activateTrigger": "Activer",
+        "activateConfirmTitle": "Activer le budget",
+        "activateConfirmDescription": "Activer « {name} » ({versionLabel}) ? Ceci en fera le budget actif de l'exercice comptable.",
+        "activateSupersedeWarning": "« {name} » ({versionLabel}) est déjà le budget actif de cet exercice comptable. Activer celui-ci le remplacera.",
+        "activateConfirmButton": "Activer",
+        "activating": "Activation…",
+        "rejectTrigger": "Rejeter",
+        "rejectConfirmTitle": "Rejeter le budget",
+        "rejectConfirmDescription": "Rejeter ce budget et le remettre en brouillon ? Il pourra être modifié et resoumis.",
+        "rejectConfirmButton": "Rejeter",
+        "rejecting": "Rejet…",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      }
+    },
+    "integritySweep": {
+      "page": {
+        "pageTitle": "Contrôle d'intégrité",
+        "pageSubtitle": "Recalculez les totaux de chaque compte à partir des lignes d'écriture comptabilisées et comparez-les aux soldes maintenus par le système."
+      },
+      "runButton": {
+        "trigger": "Lancer le contrôle d'intégrité",
+        "running": "Exécution…",
+        "noMismatchesFound": "Aucun écart trouvé — chaque total de compte correspond à ses lignes d'écriture comptabilisées.",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "list": {
+        "title": "Historique des contrôles",
+        "description": "Contrôles les plus récents en premier. Sélectionnez un contrôle pour voir ses résultats.",
+        "columns": {
+          "ranAt": "Exécuté le",
+          "kind": "Type",
+          "status": "Statut",
+          "mismatchCount": "Écarts"
+        },
+        "ok": "OK",
+        "mismatchesFound": "Écarts détectés"
+      },
+      "findings": {
+        "noMismatches": "Aucun écart dans ce contrôle.",
+        "unstructuredFindings": "Les résultats de ce contrôle ne sont pas au format d'écarts standard de ce module (il peut appartenir à un autre contrôle partageant cet historique) — le résultat brut est affiché à la place.",
+        "columns": {
+          "period": "Période",
+          "account": "Compte",
+          "costCenter": "Centre de coûts",
+          "storedDebit": "Débit enregistré",
+          "derivedDebit": "Débit recalculé",
+          "storedCredit": "Crédit enregistré",
+          "derivedCredit": "Crédit recalculé"
+        },
+        "noCostCenter": "—",
+        "missing": "Absent"
+      }
+    }
+  },
+  "procurement": {
+    "suppliers": {
+      "statuses": {
+        "ACTIVE": "Actif",
+        "BLACKLISTED": "Sur liste noire",
+        "INACTIVE": "Inactif"
+      },
+      "categoryTags": {
+        "addButton": "Ajouter"
+      },
+      "list": {
+        "pageTitle": "Fournisseurs",
+        "pageSubtitle": "Fournisseurs et prestataires auprès desquels l'établissement achète des biens et services.",
+        "listTitle": "Tous les fournisseurs",
+        "listDescription": "Recherchez par nom, filtrez par statut, ou ouvrez un fournisseur pour gérer ses évaluations et son statut de liste noire.",
+        "searchLabel": "Rechercher",
+        "searchPlaceholder": "Rechercher des fournisseurs par nom…",
+        "statusFilterLabel": "Statut",
+        "allStatuses": "Tous les statuts",
+        "noSuppliersMatchSearch": "Aucun fournisseur ne correspond à votre recherche.",
+        "moreCategories": "+{count} de plus",
+        "columns": {
+          "name": "Nom",
+          "tradingName": "Nom commercial",
+          "kraPin": "PIN KRA",
+          "categories": "Catégories",
+          "status": "Statut"
+        }
+      },
+      "createDialog": {
+        "trigger": "Nouveau fournisseur",
+        "title": "Créer un fournisseur",
+        "description": "Ajouter un nouveau fournisseur pour les commandes d'achat.",
+        "nameLabel": "Nom",
+        "namePlaceholder": "ex. Acme Office Supplies Ltd",
+        "tradingNameLabel": "Nom commercial",
+        "tradingNamePlaceholder": "Facultatif",
+        "kraPinLabel": "PIN KRA",
+        "kraPinPlaceholder": "Facultatif",
+        "emailLabel": "E-mail de remise",
+        "emailPlaceholder": "ex. accounts@supplier.com",
+        "emailHint": "Utilisé pour envoyer l'avis de remise lors des paiements à ce fournisseur.",
+        "categoriesLabel": "Catégories",
+        "categoriesPlaceholder": "ex. Fournitures de bureau — appuyez sur Entrée pour ajouter",
+        "paymentTermsDaysLabel": "Délai de paiement (jours)",
+        "paymentTermsDaysHint": "Nombre de jours après facturation pendant lesquels ce fournisseur attend le paiement.",
+        "creating": "Création…",
+        "createButton": "Créer le fournisseur",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "editDialog": {
+        "title": "Modifier {name}",
+        "description": "Mettre à jour les informations de ce fournisseur.",
+        "nameLabel": "Nom",
+        "tradingNameLabel": "Nom commercial",
+        "kraPinLabel": "PIN KRA",
+        "emailLabel": "E-mail de remise",
+        "emailPlaceholder": "ex. accounts@supplier.com",
+        "emailHint": "Utilisé pour envoyer l'avis de remise lors des paiements à ce fournisseur.",
+        "categoriesLabel": "Catégories",
+        "categoriesPlaceholder": "ex. Fournitures de bureau — appuyez sur Entrée pour ajouter",
+        "paymentTermsDaysLabel": "Délai de paiement (jours)",
+        "saving": "Enregistrement…",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "blacklistDialog": {
+        "trigger": "Mettre sur liste noire",
+        "title": "Mettre le fournisseur sur liste noire",
+        "description": "Mettre {name} sur liste noire bloque toute nouvelle commande d'achat auprès de lui. Cette action peut être annulée plus tard.",
+        "reasonLabel": "Motif",
+        "reasonPlaceholder": "Pourquoi ce fournisseur est-il mis sur liste noire ?",
+        "blacklisting": "Mise sur liste noire…",
+        "confirmButton": "Mettre sur liste noire",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "ratings": {
+        "title": "Évaluations",
+        "description": "Performance de livraison et de qualité, ainsi qu'une note manuelle que vous pouvez définir vous-même.",
+        "deliveryLabel": "Livraison à temps",
+        "deliveryUnavailable": "Non disponible",
+        "deliveryUnavailableHint": "Aucune donnée de date de livraison prévue n'existe encore pour calculer ceci — une lacune réelle et permanente, pas un état de chargement.",
+        "qualityLabel": "Qualité (taux de rejet GRN)",
+        "noRatingYet": "Pas encore noté",
+        "recomputeButton": "Recalculer",
+        "computing": "Calcul en cours…",
+        "manualLabel": "Note manuelle",
+        "setButton": "Définir",
+        "saving": "Enregistrement…",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "detail": {
+        "backToList": "Retour aux fournisseurs",
+        "tradingNamePrefix": "Exerce sous le nom {tradingName}",
+        "reactivateButton": "Réactiver",
+        "reactivating": "Réactivation…",
+        "blacklistReasonPrefix": "Sur liste noire : {reason}",
+        "kraPinLabel": "PIN KRA",
+        "paymentTermsDaysLabel": "Délai de paiement",
+        "paymentTermsDaysValue": "{days} jours",
+        "emailLabel": "E-mail de remise",
+        "categoriesLabel": "Catégories",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      }
+    },
+    "requisitions": {
+      "statuses": {
+        "DRAFT": "Brouillon",
+        "SUBMITTED": "Soumise",
+        "PENDING_APPROVAL": "En attente d'approbation",
+        "APPROVED": "Approuvée",
+        "REJECTED": "Rejetée",
+        "CONVERTED": "Convertie",
+        "CANCELLED": "Annulée"
+      },
+      "filters": {
+        "statusLabel": "Statut",
+        "allStatuses": "Tous les statuts",
+        "departmentLabel": "Département",
+        "allDepartments": "Tous les départements",
+        "clearFilters": "Effacer les filtres"
+      },
+      "list": {
+        "pageTitle": "Demandes d'achat",
+        "pageSubtitle": "Demandes d'achat du personnel, du brouillon à l'approbation.",
+        "listTitle": "Toutes les demandes d'achat",
+        "listDescription": "Filtrez par statut ou département, ou ouvrez une demande pour gérer ses lignes et son approbation.",
+        "columns": {
+          "number": "Numéro",
+          "department": "Département",
+          "totalEstimate": "Estimation totale",
+          "status": "Statut"
+        }
+      },
+      "createDialog": {
+        "trigger": "Nouvelle demande",
+        "title": "Créer une demande d'achat",
+        "description": "Démarrer un brouillon de demande pour un département. Ajoutez les lignes une fois créée.",
+        "departmentLabel": "Département",
+        "selectDepartmentPlaceholder": "Sélectionner un département",
+        "loadingDepartments": "Chargement des départements…",
+        "justificationLabel": "Justification",
+        "justificationPlaceholder": "Pourquoi cet achat est-il nécessaire ?",
+        "creating": "Création…",
+        "createButton": "Créer la demande",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "lineEditor": {
+        "description": "Description",
+        "descriptionPlaceholder": "ex. 10 rames de papier A4",
+        "qtyLabel": "Quantité",
+        "estPriceLabel": "Prix unitaire estimé",
+        "budgetLineLabel": "Ligne budgétaire (facultatif)",
+        "budgetLineIdPlaceholder": "ID de la ligne budgétaire, si connu",
+        "budgetLineIdInvalid": "Ne ressemble pas à un ID valide.",
+        "addLineTrigger": "Ajouter une ligne",
+        "addDialogTitle": "Ajouter une ligne",
+        "addDialogDescription": "Ajouter un article à cette demande.",
+        "adding": "Ajout…",
+        "addButton": "Ajouter la ligne",
+        "editDialogTitle": "Modifier la ligne",
+        "editDialogDescription": "Mettre à jour les détails de cette ligne.",
+        "saving": "Enregistrement…",
+        "deleteDialogTitle": "Supprimer la ligne",
+        "deleteDialogDescription": "Ceci supprime la ligne de la demande. Cette action est irréversible.",
+        "deleting": "Suppression…",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "statusActions": {
+        "submitTrigger": "Soumettre pour approbation",
+        "submitting": "Soumission…",
+        "submitNeedsLinesHint": "Ajoutez au moins une ligne avant de soumettre.",
+        "noWorkflowError": "Aucun circuit d'approbation n'est encore configuré pour les demandes d'achat — contactez un administrateur pour en configurer un dans Approbations.",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer.",
+        "approveTrigger": "Approuver",
+        "approveConfirmTitle": "Approuver la demande",
+        "approveConfirmDescription": "Approuver la demande {number} ? Elle passera ensuite à la conversion en commande d'achat.",
+        "approving": "Approbation…",
+        "approveConfirmButton": "Approuver la demande",
+        "rejectTrigger": "Rejeter",
+        "rejectConfirmTitle": "Rejeter la demande",
+        "rejectConfirmDescription": "Rejeter la demande {number} ? Le demandeur devra en soumettre une nouvelle.",
+        "rejecting": "Rejet…",
+        "rejectConfirmButton": "Rejeter la demande",
+        "cancelTrigger": "Annuler",
+        "cancelConfirmTitle": "Annuler la demande",
+        "cancelConfirmDescription": "Annuler la demande {number} ? Cette action est irréversible.",
+        "cancelling": "Annulation…",
+        "cancelConfirmButton": "Annuler la demande"
+      },
+      "detail": {
+        "backToList": "Retour aux demandes d'achat",
+        "justificationLabel": "Justification",
+        "totalEstimateLabel": "Estimation totale",
+        "budgetSnapshotTitle": "Instantané budgétaire (à la soumission)",
+        "budgetSnapshotCheckedAt": "Vérifié à {checkedAt}",
+        "budgetSnapshotBudgeted": "Ligne budgétée",
+        "budgetSnapshotNotBudgeted": "Aucune ligne budgétaire liée",
+        "budgetSnapshotLineEstimate": "Est. {amount}",
+        "budgetSnapshotWithinAvailable": "Dans le budget disponible",
+        "budgetSnapshotOverAvailable": "Dépasse le budget disponible",
+        "linesTitle": "Lignes",
+        "columns": {
+          "actions": "Actions"
+        },
+        "viewQuotationsAction": "Voir les devis"
+      }
+    },
+    "lineEditor": {
+      "description": "Description",
+      "descriptionPlaceholder": "ex. 10 rames de papier A4",
+      "qty": "Qté",
+      "unitPrice": "Prix unitaire",
+      "lineTotal": "Total de la ligne",
+      "removeLine": "Supprimer la ligne",
+      "addLine": "Ajouter une ligne",
+      "estimatedSubtotal": "Sous-total estimé",
+      "subtotalHint": "Estimé à partir de ces lignes — le serveur calcule le sous-total, la taxe et le total réels une fois enregistré."
+    },
+    "quotations": {
+      "createDialog": {
+        "trigger": "Nouveau devis",
+        "title": "Saisir un devis",
+        "description": "Enregistrez le devis d'un fournisseur pour cette réquisition. Les lignes sont saisies une seule fois et ne peuvent plus être modifiées ensuite.",
+        "supplierLabel": "Fournisseur",
+        "loadingSuppliers": "Chargement des fournisseurs…",
+        "selectSupplierPlaceholder": "Sélectionner un fournisseur",
+        "searchSuppliers": "Rechercher des fournisseurs…",
+        "noSuppliersFound": "Aucun fournisseur trouvé.",
+        "quoteDateLabel": "Date du devis",
+        "validUntilLabel": "Valable jusqu'au",
+        "termsLabel": "Conditions",
+        "termsPlaceholder": "Conditions de paiement, garantie, conditions de livraison…",
+        "linesLabel": "Lignes",
+        "creating": "Saisie en cours…",
+        "createButton": "Saisir le devis",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "comparison": {
+        "pageTitle": "Devis",
+        "pageSubtitle": "Ouvrez une réquisition pour comparer ses devis, ou choisissez-en une ci-dessous.",
+        "pageSubtitleForRequisition": "Comparaison des devis pour la réquisition {number}.",
+        "pickRequisitionTitle": "Choisir une réquisition",
+        "pickRequisitionDescription": "Choisissez une réquisition APPROUVÉE pour consulter ou saisir des devis.",
+        "selectRequisitionPlaceholder": "Sélectionner une réquisition",
+        "backToRequisition": "Retour à la réquisition",
+        "awardedBadge": "Retenu",
+        "totalLabel": "Total",
+        "quoteDateLabel": "Date du devis",
+        "validUntilLabel": "Valable jusqu'au",
+        "termsLabel": "Conditions",
+        "awardReasonLabel": "Motif de sélection",
+        "awardTrigger": "Retenir ce devis",
+        "awardDialogTitle": "Retenir le devis",
+        "awardDialogDescription": "Retenir ce devis le désigne comme le fournisseur choisi pour cette réquisition. Un seul devis peut être retenu par réquisition.",
+        "awardReasonPlaceholder": "Pourquoi ce fournisseur a-t-il été choisi ?",
+        "awarding": "Sélection en cours…",
+        "awardConfirmButton": "Retenir le devis",
+        "alreadyAwardedError": "Un autre devis pour cette réquisition a déjà été retenu.",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      }
+    },
+    "purchaseOrders": {
+      "statuses": {
+        "DRAFT": "Brouillon",
+        "PENDING_APPROVAL": "En attente d'approbation",
+        "APPROVED": "Approuvé",
+        "ISSUED": "Émis",
+        "PARTIALLY_RECEIVED": "Partiellement reçu",
+        "RECEIVED": "Reçu",
+        "CLOSED": "Clôturé",
+        "CANCELLED": "Annulé"
+      },
+      "filters": {
+        "statusLabel": "Statut",
+        "allStatuses": "Tous les statuts",
+        "supplierLabel": "Fournisseur",
+        "allSuppliers": "Tous les fournisseurs",
+        "clearFilters": "Effacer les filtres"
+      },
+      "list": {
+        "pageTitle": "Bons de commande",
+        "pageSubtitle": "Commandes passées auprès des fournisseurs, du brouillon à l'émission et à la révision.",
+        "listTitle": "Tous les bons de commande",
+        "listDescription": "Filtrez par statut ou fournisseur, ou ouvrez une commande pour gérer son approbation et ses lignes.",
+        "notYetIssued": "Pas encore émis",
+        "columns": {
+          "number": "Numéro",
+          "supplier": "Fournisseur",
+          "revision": "Révision",
+          "total": "Total",
+          "status": "Statut"
+        }
+      },
+      "createDialog": {
+        "trigger": "Nouveau bon de commande",
+        "title": "Créer un bon de commande",
+        "description": "Créez un bon de commande BROUILLON, à partir d'une réquisition ou directement avec un fournisseur.",
+        "sourceLabel": "Source",
+        "sourceFromRequisition": "À partir d'une réquisition",
+        "sourceDirect": "Direct",
+        "directHint": "Contourne entièrement le circuit de réquisition — nécessite une permission distincte, qui peut ne pas être accordée à tous les rôles.",
+        "requisitionLabel": "Réquisition",
+        "loadingRequisitions": "Chargement des réquisitions…",
+        "selectRequisitionPlaceholder": "Sélectionner une réquisition approuvée",
+        "quotationLabel": "Devis retenu (facultatif)",
+        "selectQuotationPlaceholder": "Pré-remplir depuis un devis retenu",
+        "quotationOptionLabel": "Devis retenu — {total}",
+        "quotationHint": "Pré-remplit le fournisseur et les lignes ci-dessous à partir de ce devis — vous pouvez toujours les modifier avant d'enregistrer.",
+        "supplierLabel": "Fournisseur",
+        "loadingSuppliers": "Chargement des fournisseurs…",
+        "selectSupplierPlaceholder": "Sélectionner un fournisseur",
+        "searchSuppliers": "Rechercher des fournisseurs…",
+        "noSuppliersFound": "Aucun fournisseur trouvé.",
+        "orderDateLabel": "Date de commande",
+        "deliveryTermsLabel": "Conditions de livraison",
+        "deliveryTermsPlaceholder": "ex. Livré sous 14 jours",
+        "linesLabel": "Lignes",
+        "creating": "Création en cours…",
+        "createButton": "Créer le bon de commande",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "statusActions": {
+        "submitTrigger": "Soumettre pour approbation",
+        "submitting": "Soumission en cours…",
+        "approveTrigger": "Approuver",
+        "approveConfirmTitle": "Approuver le bon de commande",
+        "approveConfirmDescription": "Approuver le bon de commande {number} ? Il avance ensuite vers l'émission.",
+        "approving": "Approbation en cours…",
+        "approveConfirmButton": "Approuver le bon de commande",
+        "rejectTrigger": "Rejeter",
+        "rejectConfirmTitle": "Rejeter le bon de commande",
+        "rejectConfirmDescription": "Rejeter le bon de commande {number} ? Il repasse en brouillon pour modification.",
+        "rejecting": "Rejet en cours…",
+        "rejectConfirmButton": "Rejeter le bon de commande",
+        "issueTrigger": "Émettre",
+        "issueConfirmTitle": "Émettre le bon de commande",
+        "issueConfirmDescription": "L'émission attribue le numéro réel du bon de commande et fige le fournisseur, les lignes et les totaux de cette commande contre toute nouvelle modification.",
+        "issueSupersedeWarning": "Émettre ce bon annulera le PO {number}, qu'il remplace.",
+        "issueSupersedeWarningGeneric": "Émettre ce bon annulera également le bon de commande original qu'il remplace.",
+        "issuing": "Émission en cours…",
+        "issueConfirmButton": "Émettre le bon de commande",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "reviseDialog": {
+        "trigger": "Réviser",
+        "title": "Réviser le bon de commande",
+        "description": "Crée un nouveau bon de commande brouillon remplaçant {number}. Le nouveau bon repasse par la soumission, l'approbation et l'émission.",
+        "supplierLabel": "Fournisseur",
+        "loadingSuppliers": "Chargement des fournisseurs…",
+        "selectSupplierPlaceholder": "Sélectionner un fournisseur",
+        "searchSuppliers": "Rechercher des fournisseurs…",
+        "noSuppliersFound": "Aucun fournisseur trouvé.",
+        "deliveryTermsLabel": "Conditions de livraison",
+        "deliveryTermsPlaceholder": "ex. Livré sous 14 jours",
+        "linesModeLabel": "Lignes",
+        "linesModeKeep": "Conserver les lignes existantes",
+        "linesModeSpecify": "Spécifier de nouvelles lignes",
+        "linesModeKeepHint": "Le nouveau bon reprend les lignes de l'original sans modification.",
+        "linesModeSpecifyHint": "En partant des lignes actuelles du bon original — modifiez, ajoutez ou supprimez selon les besoins.",
+        "revising": "Révision en cours…",
+        "reviseButton": "Créer la révision",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "detail": {
+        "backToList": "Retour aux bons de commande",
+        "notYetIssued": "Pas encore émis",
+        "revisionBadge": "Révision {revision}",
+        "requisitionLabel": "Réquisition",
+        "directPo": "Direct (sans réquisition)",
+        "quotationLabel": "Devis",
+        "viewQuotation": "Voir le devis",
+        "orderDateLabel": "Date de commande",
+        "deliveryTermsLabel": "Conditions de livraison",
+        "paymentTermsDaysLabel": "Conditions de paiement",
+        "paymentTermsDaysValue": "{days} jours",
+        "issuedAtLabel": "Émis le",
+        "subtotalLabel": "Sous-total",
+        "taxAmountLabel": "Taxe",
+        "totalLabel": "Total",
+        "revisionHistoryTitle": "Historique des révisions",
+        "supersedesLink": "Remplace le PO {number} — voir l'original",
+        "supersededByLink": "Remplacé par le PO {number} — voir la révision",
+        "linesTitle": "Lignes",
+        "linesReceivedHint": "Les quantités reçues sont mises à jour une fois la réception des marchandises (GRN) disponible.",
+        "columns": {
+          "line": "#",
+          "description": "Description",
+          "qty": "Qté",
+          "unitPrice": "Prix unitaire",
+          "receivedQty": "Reçu"
+        },
+        "grnHistoryTitle": "Historique des réceptions de marchandises",
+        "grnHistoryDescription": "Chaque réception de marchandises (GRN) enregistrée pour ce bon de commande."
+      }
+    },
+    "grn": {
+      "receiveDialog": {
+        "trigger": "Réceptionner les marchandises",
+        "title": "Réceptionner les marchandises",
+        "description": "Enregistrer les marchandises reçues pour le bon de commande {number}.",
+        "columns": {
+          "description": "Description",
+          "ordered": "Commandé",
+          "alreadyReceived": "Déjà reçu",
+          "remaining": "Restant",
+          "receiveNow": "Réceptionner maintenant",
+          "rejected": "Rejeté",
+          "rejectionReason": "Motif de rejet",
+          "unitCost": "Coût unitaire"
+        },
+        "fullyReceivedHint": "Entièrement reçu",
+        "rejectionReasonPlaceholder": "Facultatif",
+        "notesLabel": "Notes",
+        "notesPlaceholder": "Notes facultatives sur cette réception",
+        "receiving": "Réception en cours…",
+        "receiveButton": "Réceptionner les marchandises",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "list": {
+        "columns": {
+          "number": "Numéro",
+          "receivedAt": "Reçu le",
+          "status": "Statut",
+          "journal": "Journal",
+          "notes": "Notes"
+        },
+        "notYetPosted": "Pas encore comptabilisé",
+        "viewJournal": "Voir le journal",
+        "statuses": {
+          "DRAFT": "Brouillon",
+          "POSTED": "Comptabilisé"
+        },
+        "postTrigger": "Comptabiliser",
+        "postConfirmTitle": "Comptabiliser la réception de marchandises",
+        "postConfirmDescription": "La comptabilisation réalise l'écriture comptable de cette réception et ne peut pas être annulée.",
+        "posting": "Comptabilisation en cours…",
+        "postConfirmButton": "Comptabiliser la réception",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      }
+    },
+    "supplierInvoices": {
+      "statuses": {
+        "UNMATCHED": "Non rapprochée",
+        "MATCH_EXCEPTION": "Écart de rapprochement",
+        "MATCHED": "Rapprochée",
+        "POSTED": "Comptabilisée",
+        "PAID": "Payée",
+        "PARTIALLY_PAID": "Partiellement payée"
+      },
+      "list": {
+        "pageTitle": "Factures fournisseurs",
+        "pageSubtitle": "Factures saisies auprès des fournisseurs, de la saisie au rapprochement puis à la comptabilisation.",
+        "listTitle": "Toutes les factures fournisseurs",
+        "listDescription": "Filtrez par statut ou fournisseur, ou ouvrez une facture pour la rapprocher de son bon de commande et la comptabiliser.",
+        "filters": {
+          "statusLabel": "Statut",
+          "allStatuses": "Tous les statuts",
+          "supplierLabel": "Fournisseur",
+          "allSuppliers": "Tous les fournisseurs",
+          "clearFilters": "Effacer les filtres"
+        },
+        "columns": {
+          "number": "Numéro",
+          "supplierRef": "Référence fournisseur",
+          "supplier": "Fournisseur",
+          "total": "Total",
+          "dueDate": "Date d'échéance",
+          "status": "Statut"
+        }
+      },
+      "captureDialog": {
+        "trigger": "Saisir une facture",
+        "title": "Saisir une facture fournisseur",
+        "description": "Enregistrer une facture d'un fournisseur, éventuellement liée à un bon de commande pour le rapprochement.",
+        "supplierLabel": "Fournisseur",
+        "loadingSuppliers": "Chargement des fournisseurs…",
+        "selectSupplierPlaceholder": "Sélectionner un fournisseur",
+        "searchSuppliers": "Rechercher des fournisseurs…",
+        "noSuppliersFound": "Aucun fournisseur trouvé.",
+        "poLabel": "Bon de commande (facultatif)",
+        "pickSupplierFirstPlaceholder": "Sélectionnez d'abord un fournisseur",
+        "selectPoPlaceholder": "Sélectionner un bon de commande",
+        "adHocOption": "Aucun bon de commande (facture ponctuelle)",
+        "poHint": "Liez un bon de commande pour activer le rapprochement à trois voies. Laissez vide pour une facture sans bon de commande (services/ponctuelle).",
+        "supplierRefLabel": "Référence fournisseur",
+        "supplierRefPlaceholder": "ex. Numéro de facture propre au fournisseur",
+        "invoiceDateLabel": "Date de facture",
+        "dueDateLabel": "Date d'échéance",
+        "totalLabel": "Total",
+        "linesLabel": "Lignes (vérification facultative)",
+        "addLine": "Ajouter une ligne",
+        "linesHint": "Facultatif — une vérification de saisie par rapport aux lignes du bon de commande lui-même, non enregistrée comme un détail ligne par ligne.",
+        "columns": {
+          "poLine": "Ligne du bon de commande",
+          "qty": "Qté",
+          "unitPrice": "Prix unitaire"
+        },
+        "removeLine": "Supprimer la ligne",
+        "selectPoLinePlaceholder": "Sélectionner une ligne",
+        "linesSumHint": "Les lignes totalisent {sum} — le total est {total}.",
+        "capturing": "Saisie en cours…",
+        "captureButton": "Saisir la facture",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "matchPanel": {
+        "title": "Rapprochement à trois voies",
+        "description": "Compare cette facture aux lignes du bon de commande lui-même et à leurs réceptions de marchandises comptabilisées.",
+        "adHocHint": "Cette facture n'a aucun bon de commande lié, le rapprochement n'est donc pas disponible. Comptabilisez-la via le circuit habituel des comptes fournisseurs.",
+        "runMatchButton": "Lancer le rapprochement",
+        "matching": "Rapprochement en cours…",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer.",
+        "varianceUnavailable": "Le résultat du rapprochement n'a pas pu être lu — sa structure ne correspondait pas à ce qui était attendu.",
+        "notMatchedYetHint": "Cette facture n'a pas encore été rapprochée.",
+        "invoiceTotalLabel": "Total de la facture",
+        "poOrderedQtyLabel": "Qté commandée (PO)",
+        "grnAcceptedQtyLabel": "Qté acceptée (GRN)",
+        "grnAcceptedValueLabel": "Valeur acceptée (GRN)",
+        "qtyToleranceLabel": "Quantité dans une tolérance de {percent}%",
+        "priceToleranceLabel": "Prix dans {percent}% ou KES {absolute}",
+        "withinToleranceLabel": "Dans la tolérance",
+        "outsideToleranceLabel": "Hors tolérance",
+        "priceVarianceAmountLabel": "Écart de prix : {amount}",
+        "columns": {
+          "poLine": "Ligne du bon de commande",
+          "poQty": "Qté du bon de commande",
+          "grnAcceptedQty": "Qté acceptée (GRN)",
+          "grnValue": "Valeur GRN"
+        },
+        "linesScopeHint": "Ceci compare les lignes du bon de commande lui-même aux réceptions de marchandises comptabilisées — le détail ligne par ligne de la facture elle-même n'est pas stocké, le rapprochement se fait donc au niveau du total global.",
+        "resolutionLabel": "Résolu : {action}",
+        "resolutionActions": {
+          "ACCEPT_VARIANCE": "Écart accepté",
+          "REJECT": "Rejeté pour correction"
+        }
+      },
+      "resolveDialog": {
+        "trigger": "Résoudre l'écart",
+        "title": "Résoudre l'écart de rapprochement",
+        "description": "Décidez comment traiter l'écart de rapprochement de la facture {number}.",
+        "resolutionLabel": "Résolution",
+        "acceptVarianceOption": "Accepter l'écart",
+        "rejectOption": "Rejeter",
+        "acceptVarianceHint": "Passe outre l'écart calculé — la facture passe à Rapprochée et peut être comptabilisée.",
+        "rejectHint": "Renvoie la facture à Non rapprochée pour correction — elle pourra être rapprochée à nouveau une fois corrigée.",
+        "noteLabel": "Note",
+        "notePlaceholder": "Pourquoi cet écart est-il accepté ou rejeté ?",
+        "resolving": "Résolution en cours…",
+        "confirmButton": "Confirmer la résolution",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "detail": {
+        "backToList": "Retour aux factures fournisseurs",
+        "supplierRefLabel": "Référence fournisseur",
+        "poLabel": "Bon de commande",
+        "viewPurchaseOrder": "Voir le bon de commande",
+        "adHocInvoice": "Aucun (facture ponctuelle)",
+        "invoiceDateLabel": "Date de facture",
+        "dueDateLabel": "Date d'échéance",
+        "totalLabel": "Total",
+        "paidAmountLabel": "Montant payé",
+        "viewJournal": "Voir le journal",
+        "postTrigger": "Comptabiliser",
+        "postConfirmTitle": "Comptabiliser la facture fournisseur",
+        "postConfirmDescription": "Comptabiliser la facture {number} solde la charge à payer de réception de marchandises et enregistre le compte fournisseur — cette action est irréversible.",
+        "posting": "Comptabilisation en cours…",
+        "postConfirmButton": "Comptabiliser la facture",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      }
+    },
+    "paymentVouchers": {
+      "list": {
+        "pageTitle": "Bons de Paiement",
+        "pageSubtitle": "Payez les fournisseurs en affectant un bon à leurs factures ouvertes.",
+        "listTitle": "Bons de Paiement",
+        "listDescription": "Tous les bons de paiement émis pour un fournisseur, tous statuts confondus.",
+        "columns": {
+          "number": "Numéro",
+          "supplier": "Fournisseur",
+          "method": "Méthode",
+          "total": "Total",
+          "status": "Statut"
+        },
+        "filters": {
+          "statusLabel": "Statut",
+          "supplierLabel": "Fournisseur",
+          "allStatuses": "Tous les statuts",
+          "allSuppliers": "Tous les fournisseurs",
+          "clearFilters": "Effacer les filtres"
+        },
+        "notYetExecuted": "Pas encore exécuté"
+      },
+      "detail": {
+        "backToList": "Retour aux bons de paiement",
+        "methodLabel": "Méthode",
+        "totalLabel": "Total",
+        "remittanceLabel": "Avis de virement",
+        "remittanceSent": "Envoyé",
+        "remittanceNotSent": "Non envoyé",
+        "notYetExecuted": "Pas encore exécuté",
+        "allocationsTitle": "Affectations",
+        "allocationsDescription": "Les factures que ce bon règle, et le montant affecté à chacune.",
+        "columns": {
+          "invoice": "Facture",
+          "amount": "Montant"
+        },
+        "viewJournal": "Voir l'écriture comptable"
+      },
+      "methods": {
+        "BANK": "Virement bancaire",
+        "CHEQUE": "Chèque",
+        "MPESA": "M-Pesa",
+        "CASH": "Espèces"
+      },
+      "statuses": {
+        "DRAFT": "Brouillon",
+        "PENDING_APPROVAL": "En attente d'approbation",
+        "APPROVED": "Approuvé",
+        "PAID": "Payé",
+        "CANCELLED": "Annulé"
+      },
+      "createDialog": {
+        "trigger": "Nouveau Bon de Paiement",
+        "title": "Nouveau bon de paiement",
+        "description": "Choisissez un fournisseur, puis affectez ce bon à une ou plusieurs de ses factures ouvertes.",
+        "supplierLabel": "Fournisseur",
+        "searchSuppliers": "Rechercher des fournisseurs…",
+        "selectSupplierPlaceholder": "Sélectionner un fournisseur",
+        "loadingSuppliers": "Chargement des fournisseurs…",
+        "noSuppliersFound": "Aucun fournisseur trouvé.",
+        "pickSupplierHint": "Choisissez un fournisseur pour voir ses factures ouvertes.",
+        "methodLabel": "Méthode de paiement",
+        "allocationsLabel": "Affectations",
+        "noOpenInvoicesHint": "Ce fournisseur n'a aucune facture ouverte (émise, non payée).",
+        "columns": {
+          "invoice": "Facture",
+          "openBalance": "Solde ouvert",
+          "allocationAmount": "Affecter"
+        },
+        "createButton": "Créer le bon",
+        "creating": "Création…",
+        "genericError": "Impossible de créer le bon. Veuillez vérifier les affectations et réessayer."
+      },
+      "statusActions": {
+        "submitTrigger": "Soumettre pour approbation",
+        "submitting": "Soumission…",
+        "approveTrigger": "Approuver",
+        "approving": "Approbation…",
+        "approveConfirmTitle": "Approuver ce bon de paiement ?",
+        "approveConfirmButton": "Approuver",
+        "rejectTrigger": "Rejeter",
+        "rejecting": "Rejet…",
+        "rejectConfirmTitle": "Rejeter ce bon de paiement ?",
+        "rejectConfirmButton": "Rejeter",
+        "executeTrigger": "Exécuter le paiement",
+        "executing": "Exécution…",
+        "executeConfirmTitle": "Exécuter ce paiement ?",
+        "executeConfirmButton": "Exécuter",
+        "executeInvoiceEffectNote": "L'exécution publie une véritable écriture comptable et marque les factures affectées comme payées.",
+        "genericError": "Cette action n'a pas pu être effectuée. Veuillez réessayer."
+      }
+    },
+    "contracts": {
+      "list": {
+        "pageTitle": "Contrats",
+        "pageSubtitle": "Contrats fournisseurs, alertes de renouvellement et leur statut actuel.",
+        "listTitle": "Contrats",
+        "listDescription": "Tous les contrats fournisseurs, tous statuts confondus.",
+        "columns": {
+          "title": "Titre",
+          "supplier": "Fournisseur",
+          "startsOn": "Début",
+          "endsOn": "Fin",
+          "value": "Valeur",
+          "status": "Statut"
+        },
+        "filters": {
+          "statusLabel": "Statut",
+          "supplierLabel": "Fournisseur",
+          "allStatuses": "Tous les statuts",
+          "allSuppliers": "Tous les fournisseurs",
+          "clearFilters": "Effacer les filtres"
+        }
+      },
+      "detail": {
+        "backToList": "Retour aux contrats",
+        "startsOnLabel": "Date de début",
+        "endsOnLabel": "Date de fin",
+        "valueLabel": "Valeur",
+        "renewalAlertDaysLabel": "Alerte de renouvellement (jours avant la fin)"
+      },
+      "statuses": {
+        "ACTIVE": "Actif",
+        "EXPIRED": "Expiré",
+        "TERMINATED": "Résilié"
+      },
+      "createDialog": {
+        "trigger": "Nouveau Contrat",
+        "title": "Nouveau contrat",
+        "titleLabel": "Titre",
+        "titlePlaceholder": "ex. Accord annuel de fourniture de papeterie",
+        "supplierLabel": "Fournisseur",
+        "searchSuppliers": "Rechercher des fournisseurs…",
+        "selectSupplierPlaceholder": "Sélectionner un fournisseur",
+        "loadingSuppliers": "Chargement des fournisseurs…",
+        "noSuppliersFound": "Aucun fournisseur trouvé.",
+        "startsOnLabel": "Date de début",
+        "endsOnLabel": "Date de fin",
+        "datesInvalidHint": "La date de fin doit être postérieure ou égale à la date de début.",
+        "valueLabel": "Valeur (facultatif)",
+        "renewalAlertDaysLabel": "Alerte de renouvellement (jours avant la fin)",
+        "renewalAlertDaysHint": "Combien de jours avant la fin du contrat le signaler comme arrivant bientôt à expiration.",
+        "description": "Enregistrer un nouveau contrat fournisseur.",
+        "createButton": "Créer le contrat",
+        "creating": "Création…",
+        "genericError": "Impossible de créer le contrat. Veuillez vérifier les dates et réessayer."
+      },
+      "editDialog": {
+        "titleLabel": "Titre",
+        "startsOnLabel": "Date de début",
+        "endsOnLabel": "Date de fin",
+        "datesInvalidHint": "La date de fin doit être postérieure ou égale à la date de début.",
+        "valueLabel": "Valeur (facultatif)",
+        "renewalAlertDaysLabel": "Alerte de renouvellement (jours avant la fin)",
+        "description": "Mettre à jour les détails de ce contrat.",
+        "saving": "Enregistrement…",
+        "genericError": "Impossible d'enregistrer le contrat. Veuillez réessayer."
+      },
+      "statusActions": {
+        "terminateTrigger": "Résilier",
+        "terminating": "Résiliation…",
+        "terminateConfirmTitle": "Résilier ce contrat ?",
+        "terminateConfirmButton": "Résilier",
+        "markExpiredTrigger": "Marquer comme expiré",
+        "markingExpired": "Marquage comme expiré…",
+        "markExpiredConfirmTitle": "Marquer ce contrat comme expiré ?",
+        "markExpiredConfirmButton": "Marquer expiré",
+        "genericError": "Cette action n'a pas pu être effectuée. Veuillez réessayer."
+      },
+      "expiringSoonWidget": {
+        "title": "Expirant bientôt",
+        "description": "Contrats actifs approchant de leur propre fenêtre d'alerte de renouvellement.",
+        "noneHint": "Aucun contrat n'approche actuellement de son expiration."
+      }
     }
   }
 }

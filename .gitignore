@@ -10,6 +10,9 @@ coverage/
 .env.local
 .env.*.local
 
+# Personal working notes — contains real DB/deployment credentials, never commit.
+Phase 6 progress.txt
+
 *.log
 npm-debug.log*
 pnpm-debug.log*

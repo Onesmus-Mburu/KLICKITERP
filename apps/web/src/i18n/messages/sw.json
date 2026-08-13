@@ -96,6 +96,16 @@
       "walletWallets": "Wallets",
       "walletServicePoints": "Service Points",
       "walletReconciliation": "Reconciliation",
+      "accounting": "Uhasibu",
+      "accountingAccounts": "Akaunti",
+      "accountingFiscalYears": "Miaka ya Kifedha",
+      "accountingCostCenters": "Vituo vya Gharama",
+      "accountingJournals": "Majarida",
+      "accountingBudgets": "Bajeti",
+      "accountingIntegritySweep": "Ukaguzi wa Uadilifu",
+      "procurement": "Ununuzi",
+      "procurementSuppliers": "Wasambazaji",
+      "procurementRequisitions": "Maombi ya Ununuzi",
       "communications": "Mawasiliano",
       "commsTemplates": "Vielelezo",
       "commsBroadcasts": "Matangazo",
@@ -106,7 +116,11 @@
       "usersAllUsers": "Watumiaji Wote",
       "usersRoles": "Majukumu",
       "usersDepartments": "Idara",
-      "branding": "Chapa"
+      "branding": "Chapa",
+      "procurementPurchaseOrders": "Maagizo ya Ununuzi",
+      "procurementSupplierInvoices": "Ankara za Wasambazaji",
+      "procurementPaymentVouchers": "Hati za Malipo",
+      "procurementContracts": "Mikataba"
     },
     "topbar": {
       "searchPlaceholder": "Search…",
@@ -2771,6 +2785,1178 @@
       "notVerifiedTitle": "Haijathibitishwa",
       "notVerifiedDescription": "Kiungo hiki hakikuweza kuthibitishwa dhidi ya kumbukumbu zetu.",
       "notVerifiedHint": "Hati hii haikuweza kuthibitishwa. Huenda ni ya kughushi, imebadilishwa, au kiungo cha uthibitisho si sahihi. Wasiliana na shule moja kwa moja kuthibitisha uhalisia wa hati hii."
+    }
+  },
+  "accounting": {
+    "classes": {
+      "ASSET": "Mali",
+      "LIABILITY": "Dhima",
+      "EQUITY": "Hisa",
+      "INCOME": "Mapato",
+      "EXPENSE": "Matumizi"
+    },
+    "controlDomains": {
+      "AR_STUDENT": "Madeni ya Wanafunzi (AR)",
+      "AR_SPONSOR": "Madeni ya Wadhamini (AR)",
+      "AP_SUPPLIER": "Malipo ya Wasambazaji (AP)",
+      "WALLET": "Pochi",
+      "INVENTORY": "Hesabu za Bidhaa",
+      "PAYROLL": "Malipo ya Mishahara",
+      "PREPAYMENT": "Malipo ya Awali",
+      "MPESA_CLEARING": "Usuluhishi wa M-Pesa",
+      "TRANSFER_CLEARING": "Usuluhishi wa Uhamisho"
+    },
+    "fiscalYearStatuses": {
+      "OPEN": "Wazi",
+      "CLOSING": "Inafungwa",
+      "LOCKED": "Imefungwa"
+    },
+    "periodStatuses": {
+      "OPEN": "Wazi",
+      "SOFT_CLOSED": "Imefungwa Kiasi",
+      "HARD_CLOSED": "Imefungwa Kabisa"
+    },
+    "journalTypes": {
+      "SYSTEM": "Mfumo",
+      "MANUAL": "Wa Mkono",
+      "REVERSING": "Wa Kubadilisha",
+      "CLOSING": "Wa Kufunga",
+      "OPENING": "Wa Kufungua"
+    },
+    "budgetStatuses": {
+      "DRAFT": "Rasimu",
+      "PENDING_APPROVAL": "Inasubiri Idhini",
+      "ACTIVE": "Inatumika",
+      "SUPERSEDED": "Imebadilishwa"
+    },
+    "accounts": {
+      "list": {
+        "pageTitle": "Muundo wa Akaunti",
+        "pageSubtitle": "Muundo wa akaunti za kitabu kikuu — mali, dhima, hisa, mapato, na matumizi.",
+        "listTitle": "Akaunti",
+        "listDescription": "Panua safu mlalo kuona akaunti zake ndogo. Akaunti zinazoweza kuandikiwa zinaweza kupokea uwekaji wa kumbukumbu; akaunti za kichwa hupanga muundo tu."
+      },
+      "tree": {
+        "expand": "Panua",
+        "collapse": "Kunja",
+        "postable": "Inaweza Kuandikiwa",
+        "control": "Udhibiti",
+        "deactivate": "Zima",
+        "activate": "Washa"
+      },
+      "createDialog": {
+        "trigger": "Akaunti mpya",
+        "title": "Unda akaunti",
+        "description": "Ongeza akaunti mpya kwenye muundo wa akaunti. Nambari, aina, mzazi, na uwezo wa kuandikiwa hufungwa mara tu inapoundwa.",
+        "codeLabel": "Nambari",
+        "codePlaceholder": "mfano: 1000",
+        "nameLabel": "Jina",
+        "namePlaceholder": "mfano: Fedha Benki",
+        "classLabel": "Aina",
+        "parentLabel": "Akaunti mzazi",
+        "loadingAccounts": "Inapakia akaunti…",
+        "parentPlaceholder": "Hakuna mzazi (akaunti kuu)",
+        "parentSearchPlaceholder": "Tafuta akaunti…",
+        "parentEmptyText": "Hakuna akaunti zilizopatikana.",
+        "isPostableLabel": "Inaweza kuandikiwa",
+        "isPostableHint": "Akaunti hii inaweza kupokea uwekaji wa kumbukumbu moja kwa moja.",
+        "isPostableHintNeedsParent": "Chagua akaunti mzazi kwanza — akaunti kuu haiwezi kuandikiwa.",
+        "isControlLabel": "Akaunti ya udhibiti",
+        "controlDomainLabel": "Kikoa cha udhibiti",
+        "selectControlDomain": "Chagua kikoa cha udhibiti",
+        "noneOption": "Hakuna",
+        "taxTreatmentLabel": "Matibabu ya kodi",
+        "taxTreatmentPlaceholder": "Si lazima",
+        "creating": "Inaunda…",
+        "createButton": "Unda akaunti",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "editDialog": {
+        "title": "Hariri {name}",
+        "description": "Nambari, aina, mzazi, na uwezo wa kuandikiwa vimefungwa mara tu vinapoundwa — kubadilisha aina, izime akaunti hii kisha uunde mpya.",
+        "nameLabel": "Jina",
+        "isControlLabel": "Akaunti ya udhibiti",
+        "controlDomainLabel": "Kikoa cha udhibiti",
+        "selectControlDomain": "Chagua kikoa cha udhibiti",
+        "noneOption": "Hakuna",
+        "taxTreatmentLabel": "Matibabu ya kodi",
+        "taxTreatmentPlaceholder": "Si lazima",
+        "saving": "Inahifadhi…",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "deleteDialog": {
+        "title": "Futa akaunti",
+        "description": "Futa {code} — {name}? Hili haliwezi kutenduliwa.",
+        "hasPostingsError": "Akaunti hii ina kumbukumbu zilizowekwa na haiwezi kufutwa — izime badala yake.",
+        "deleting": "Inafuta…",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      }
+    },
+    "fiscalYears": {
+      "list": {
+        "pageTitle": "Miaka ya Kifedha",
+        "pageSubtitle": "Vipindi vya uhasibu kwa uwekaji na ufungaji wa kitabu kikuu.",
+        "listTitle": "Miaka yote ya kifedha",
+        "listDescription": "Chagua mwaka wa kifedha kuona na kudhibiti vipindi vyake.",
+        "columns": {
+          "name": "Jina",
+          "startsOn": "Huanza",
+          "endsOn": "Huisha",
+          "status": "Hali"
+        }
+      },
+      "createDialog": {
+        "trigger": "Mwaka mpya wa kifedha",
+        "title": "Unda mwaka wa kifedha",
+        "description": "Bainisha mwaka mpya wa kifedha. Vipindi vyake huundwa kiotomatiki.",
+        "nameLabel": "Jina",
+        "namePlaceholder": "mfano: FY2027",
+        "startsOnLabel": "Huanza",
+        "endsOnLabel": "Huisha",
+        "periodCountLabel": "Idadi ya vipindi",
+        "periodCountHint": "Hugawa mwaka katika idadi hii ya vipindi vyenye urefu sawa kwa idadi ya siku, si miezi ya kalenda.",
+        "creating": "Inaunda…",
+        "createButton": "Unda mwaka wa kifedha",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "detail": {
+        "backToList": "Rudi kwenye miaka ya kifedha",
+        "periodsTitle": "Vipindi",
+        "periodsDescription": "Fungua, funga kiasi, au funga kabisa kila kipindi. Kipindi kinaweza kufungwa kabisa tu baada ya kufungwa kiasi.",
+        "columns": {
+          "seq": "#",
+          "startsOn": "Huanza",
+          "endsOn": "Huisha",
+          "status": "Hali",
+          "actions": "Vitendo"
+        }
+      }
+    },
+    "periods": {
+      "actions": {
+        "open": "Fungua",
+        "softClose": "Funga kiasi",
+        "hardClose": "Funga kabisa",
+        "hardCloseHint": "Funga kipindi hiki kiasi kwanza.",
+        "hardCloseConfirmTitle": "Funga kabisa kipindi {seq}",
+        "hardCloseConfirmDescription": "Kufunga kabisa kipindi {seq} ni hatua ya mwisho na haiwezi kutenduliwa.",
+        "hardClosePermanentWarning": "Kitendo hiki ni cha kudumu. Kipindi hakiwezi kufunguliwa tena baada ya kufungwa kabisa.",
+        "hardCloseConfirmButton": "Funga kabisa",
+        "processing": "Inachakata…",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      }
+    },
+    "costCenters": {
+      "list": {
+        "pageTitle": "Vituo vya Gharama",
+        "pageSubtitle": "Fuatilia mapato na matumizi kwa idara, mradi, au shughuli.",
+        "listTitle": "Vituo vyote vya gharama",
+        "listDescription": "Vituo vya gharama vinavyotumika kuweka lebo kwenye uwekaji wa kumbukumbu kwa ajili ya taarifa.",
+        "searchPlaceholder": "Tafuta kwa nambari au jina…",
+        "noCostCentersMatchSearch": "Hakuna kituo cha gharama kinacholingana na utafutaji wako.",
+        "columns": {
+          "code": "Nambari",
+          "name": "Jina",
+          "status": "Hali"
+        },
+        "deactivate": "Zima",
+        "activate": "Washa"
+      },
+      "createDialog": {
+        "trigger": "Kituo kipya cha gharama",
+        "title": "Unda kituo cha gharama",
+        "description": "Bainisha kituo kipya cha gharama kwa ajili ya kuweka lebo kwenye uwekaji wa kumbukumbu.",
+        "codeLabel": "Nambari",
+        "codePlaceholder": "mfano: CC-001",
+        "nameLabel": "Jina",
+        "namePlaceholder": "mfano: Idara ya Usafiri",
+        "creating": "Inaunda…",
+        "createButton": "Unda kituo cha gharama",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "editDialog": {
+        "title": "Hariri {name}",
+        "description": "Badilisha jina la kituo cha gharama.",
+        "nameLabel": "Jina",
+        "saving": "Inahifadhi…",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      }
+    },
+    "journals": {
+      "list": {
+        "pageTitle": "Majarida",
+        "pageSubtitle": "Kumbukumbu zote zilizowekwa kwenye kitabu kikuu, za mfumo na za mkono.",
+        "listTitle": "Majarida yote",
+        "listDescription": "Chuja kwa moduli chanzo, kipindi cha tarehe, au kipindi. Chagua jarida kuona mistari yake.",
+        "newJournalTrigger": "Jarida Jipya",
+        "columns": {
+          "number": "Nambari",
+          "journalDate": "Tarehe",
+          "sourceModule": "Chanzo",
+          "narration": "Maelezo",
+          "journalType": "Aina"
+        }
+      },
+      "filters": {
+        "sourceModuleLabel": "Moduli chanzo",
+        "sourceModulePlaceholder": "mfano: GL_MANUAL",
+        "fromDateLabel": "Kuanzia tarehe",
+        "toDateLabel": "Hadi tarehe",
+        "fiscalYearLabel": "Mwaka wa kifedha",
+        "allFiscalYears": "Miaka yote ya kifedha",
+        "periodLabel": "Kipindi",
+        "allPeriods": "Vipindi vyote",
+        "periodOption": "#{seq} ({startsOn} – {endsOn})",
+        "clearFilters": "Futa vichujio"
+      },
+      "lineEditor": {
+        "account": "Akaunti",
+        "costCenter": "Kituo cha gharama",
+        "debit": "Deni",
+        "credit": "Mkopo",
+        "memo": "Ujumbe",
+        "selectAccount": "Chagua akaunti",
+        "loadingAccounts": "Inapakia akaunti…",
+        "searchAccounts": "Tafuta akaunti…",
+        "noAccountsFound": "Hakuna akaunti zinazoweza kuandikiwa zilizopatikana.",
+        "noCostCenter": "Hakuna kituo cha gharama",
+        "searchCostCenters": "Tafuta vituo vya gharama…",
+        "noCostCentersFound": "Hakuna vituo vya gharama vilivyopatikana.",
+        "memoPlaceholder": "Si lazima",
+        "addLine": "Ongeza mstari",
+        "removeLine": "Ondoa mstari",
+        "totalDebits": "Jumla ya deni",
+        "totalCredits": "Jumla ya mkopo",
+        "difference": "Tofauti",
+        "balanced": "Zimelingana",
+        "unbalanced": "Deni na mkopo lazima vilingane"
+      },
+      "create": {
+        "pageTitle": "Jarida Jipya",
+        "pageSubtitle": "Weka kumbukumbu ya jarida la mkono moja kwa moja kwenye kitabu kikuu.",
+        "backToList": "Rudi kwenye majarida",
+        "headerTitle": "Maelezo ya jarida",
+        "journalDateLabel": "Tarehe ya jarida",
+        "sourceModuleLabel": "Moduli chanzo",
+        "sourceModulePlaceholder": "mfano: GL_MANUAL",
+        "narrationLabel": "Maelezo",
+        "narrationPlaceholder": "Eleza sababu ya kumbukumbu hii",
+        "linesTitle": "Mistari",
+        "cancel": "Ghairi",
+        "submitting": "Inaweka…",
+        "submitButton": "Weka Jarida",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "detail": {
+        "backToList": "Rudi kwenye majarida",
+        "journalDateLabel": "Tarehe ya jarida",
+        "sourceModuleLabel": "Moduli chanzo",
+        "sourceDocTypeLabel": "Aina ya hati chanzo",
+        "postedByLabel": "Iliyowekwa na",
+        "postedAtLabel": "Iliyowekwa saa",
+        "reversalOfLabel": "Inabadilisha",
+        "viewOriginal": "Ona jarida asili",
+        "viewReversal": "Ona jarida la kubadilisha",
+        "linesTitle": "Mistari",
+        "columns": {
+          "lineNo": "#",
+          "account": "Akaunti",
+          "costCenter": "Kituo cha gharama",
+          "debit": "Deni",
+          "credit": "Mkopo",
+          "memo": "Ujumbe"
+        }
+      },
+      "reverseDialog": {
+        "trigger": "Badilisha",
+        "title": "Badilisha Jarida",
+        "description": "Weka jarida la kubadilisha kwa {number}, likiwa na deni na mkopo wa kila mstari vimebadilishwa.",
+        "narrationLabel": "Maelezo ya ubadilishaji",
+        "narrationPlaceholder": "Eleza sababu ya ubadilishaji huu",
+        "reversing": "Inabadilisha…",
+        "confirmButton": "Badilisha Jarida",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      }
+    },
+    "budgets": {
+      "list": {
+        "pageTitle": "Bajeti",
+        "pageSubtitle": "Andaa rasimu, wasilisha, na washa bajeti za mwaka kwa kila mwaka wa kifedha.",
+        "listTitle": "Bajeti",
+        "listDescription": "Chagua mwaka wa kifedha kuona bajeti zake. Chagua bajeti kuona na kuhariri mistari yake.",
+        "fiscalYearLabel": "Mwaka wa kifedha",
+        "selectFiscalYearPlaceholder": "Chagua mwaka wa kifedha",
+        "selectFiscalYearPrompt": "Chagua mwaka wa kifedha kuona bajeti zake.",
+        "columns": {
+          "name": "Jina",
+          "versionLabel": "Toleo",
+          "status": "Hali"
+        }
+      },
+      "createDialog": {
+        "trigger": "Bajeti mpya",
+        "title": "Unda bajeti",
+        "description": "Andaa bajeti mpya ya mwaka huu wa kifedha pamoja na mistari yake ya awali.",
+        "nameLabel": "Jina",
+        "namePlaceholder": "mfano: Bajeti ya Uendeshaji FY2027",
+        "versionLabelLabel": "Lebo ya toleo",
+        "versionLabelPlaceholder": "mfano: v1",
+        "linesTitle": "Mistari",
+        "account": "Akaunti",
+        "costCenter": "Kituo cha gharama",
+        "annualAmount": "Kiasi cha mwaka",
+        "selectAccount": "Chagua akaunti",
+        "loadingAccounts": "Inapakia akaunti…",
+        "searchAccounts": "Tafuta akaunti…",
+        "noAccountsFound": "Hakuna akaunti zinazoweza kuandikiwa zilizopatikana.",
+        "noCostCenter": "Hakuna kituo cha gharama",
+        "searchCostCenters": "Tafuta vituo vya gharama…",
+        "noCostCentersFound": "Hakuna vituo vya gharama vilivyopatikana.",
+        "addLine": "Ongeza mstari",
+        "removeLine": "Ondoa mstari",
+        "totalLabel": "Jumla ya kiasi cha mwaka",
+        "creating": "Inaunda…",
+        "createButton": "Unda bajeti",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "detail": {
+        "backToList": "Rudi kwenye bajeti",
+        "fiscalYearLabel": "Mwaka wa kifedha",
+        "versionLabelLabel": "Toleo",
+        "linesTitle": "Mistari",
+        "totalLabel": "Jumla ya kiasi cha mwaka",
+        "columns": {
+          "actions": "Vitendo"
+        }
+      },
+      "lineEditor": {
+        "account": "Akaunti",
+        "costCenter": "Kituo cha gharama",
+        "annualAmountLabel": "Kiasi cha mwaka",
+        "periodPhasingLabel": "Mgawanyo wa kipindi",
+        "periodPhasingHint": "Si lazima, JSON huru — mgawanyo wa mwezi kwa mwezi au muhula kwa muhula. Haujachakatwa na mfumo bado.",
+        "periodPhasingInvalid": "Lazima iwe JSON sahihi inayowakilisha kitu, mfano: {}",
+        "selectAccount": "Chagua akaunti",
+        "loadingAccounts": "Inapakia akaunti…",
+        "searchAccounts": "Tafuta akaunti…",
+        "noAccountsFound": "Hakuna akaunti zinazoweza kuandikiwa zilizopatikana.",
+        "noCostCenter": "Hakuna kituo cha gharama",
+        "searchCostCenters": "Tafuta vituo vya gharama…",
+        "noCostCentersFound": "Hakuna vituo vya gharama vilivyopatikana.",
+        "addLineTrigger": "Ongeza mstari",
+        "addDialogTitle": "Ongeza mstari wa bajeti",
+        "addDialogDescription": "Ongeza mstari kwenye bajeti hii ya rasimu.",
+        "editDialogTitle": "Hariri mstari wa bajeti",
+        "editDialogDescription": "Badilisha kiasi cha mwaka au mgawanyo wa kipindi wa mstari huu. Akaunti na kituo cha gharama haviwezi kubadilishwa — futa na uongeze mstari mpya badala yake.",
+        "adding": "Inaongeza…",
+        "addButton": "Ongeza mstari",
+        "saving": "Inahifadhi…",
+        "deleteDialogTitle": "Futa mstari wa bajeti",
+        "deleteDialogDescription": "Futa mstari huu? Hili haliwezi kutenduliwa.",
+        "deleting": "Inafuta…",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "statusActions": {
+        "submitTrigger": "Wasilisha kwa idhini",
+        "submitting": "Inawasilisha…",
+        "noWorkflowError": "Hakuna mtiririko wa idhini uliowekwa kwa bajeti bado — wasiliana na msimamizi kuuweka katika Idhini.",
+        "activateTrigger": "Washa",
+        "activateConfirmTitle": "Washa bajeti",
+        "activateConfirmDescription": "Washa \"{name}\" ({versionLabel})? Hii itaifanya kuwa bajeti inayotumika ya mwaka huu wa kifedha.",
+        "activateSupersedeWarning": "\"{name}\" ({versionLabel}) tayari ni bajeti inayotumika kwa mwaka huu wa kifedha. Kuwasha hii itaibadilisha.",
+        "activateConfirmButton": "Washa",
+        "activating": "Inawasha…",
+        "rejectTrigger": "Kataa",
+        "rejectConfirmTitle": "Kataa bajeti",
+        "rejectConfirmDescription": "Kataa bajeti hii irudi kwenye Rasimu? Inaweza kuhaririwa na kuwasilishwa tena.",
+        "rejectConfirmButton": "Kataa",
+        "rejecting": "Inakataa…",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      }
+    },
+    "integritySweep": {
+      "page": {
+        "pageTitle": "Ukaguzi wa Uadilifu",
+        "pageSubtitle": "Kokotoa upya jumla za kila akaunti kutoka kwa mistari ya jarida iliyowekwa na ulinganishe na salio ambazo mfumo umekuwa ukidumisha."
+      },
+      "runButton": {
+        "trigger": "Endesha ukaguzi wa uadilifu",
+        "running": "Inaendesha…",
+        "noMismatchesFound": "Hakuna tofauti zilizopatikana — kila jumla ya akaunti inalingana na mistari yake ya jarida iliyowekwa.",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "list": {
+        "title": "Historia ya uendeshaji",
+        "description": "Uendeshaji wa hivi karibuni kwanza. Chagua uendeshaji kuona matokeo yake.",
+        "columns": {
+          "ranAt": "Uliendeshwa",
+          "kind": "Aina",
+          "status": "Hali",
+          "mismatchCount": "Tofauti"
+        },
+        "ok": "Sawa",
+        "mismatchesFound": "Tofauti zimepatikana"
+      },
+      "findings": {
+        "noMismatches": "Hakuna tofauti katika uendeshaji huu.",
+        "unstructuredFindings": "Matokeo ya uendeshaji huu hayako katika muundo wa kawaida wa tofauti wa moduli hii (huenda ni wa ukaguzi mwingine unaoshiriki historia hii) — matokeo ghafi yanaonyeshwa badala yake.",
+        "columns": {
+          "period": "Kipindi",
+          "account": "Akaunti",
+          "costCenter": "Kituo cha gharama",
+          "storedDebit": "Deni lililohifadhiwa",
+          "derivedDebit": "Deni lililokokotolewa",
+          "storedCredit": "Mkopo uliohifadhiwa",
+          "derivedCredit": "Mkopo uliokokotolewa"
+        },
+        "noCostCenter": "—",
+        "missing": "Haipo"
+      }
+    }
+  },
+  "procurement": {
+    "suppliers": {
+      "statuses": {
+        "ACTIVE": "Anafanya Kazi",
+        "BLACKLISTED": "Amezuiliwa",
+        "INACTIVE": "Hafanyi Kazi"
+      },
+      "categoryTags": {
+        "addButton": "Ongeza"
+      },
+      "list": {
+        "pageTitle": "Wasambazaji",
+        "pageSubtitle": "Wachuuzi na wakandarasi shule inanunua bidhaa na huduma kutoka kwao.",
+        "listTitle": "Wasambazaji wote",
+        "listDescription": "Tafuta kwa jina, chuja kwa hali, au fungua msambazaji kudhibiti ukadiriaji na hali ya kuzuiliwa.",
+        "searchLabel": "Tafuta",
+        "searchPlaceholder": "Tafuta wasambazaji kwa jina…",
+        "statusFilterLabel": "Hali",
+        "allStatuses": "Hali zote",
+        "noSuppliersMatchSearch": "Hakuna msambazaji anayelingana na utafutaji wako.",
+        "moreCategories": "+{count} zaidi",
+        "columns": {
+          "name": "Jina",
+          "tradingName": "Jina la Biashara",
+          "kraPin": "PIN ya KRA",
+          "categories": "Aina",
+          "status": "Hali"
+        }
+      },
+      "createDialog": {
+        "trigger": "Msambazaji Mpya",
+        "title": "Unda Msambazaji",
+        "description": "Ongeza msambazaji mpya kwa maagizo ya ununuzi.",
+        "nameLabel": "Jina",
+        "namePlaceholder": "mfano: Acme Office Supplies Ltd",
+        "tradingNameLabel": "Jina la Biashara",
+        "tradingNamePlaceholder": "Hiari",
+        "kraPinLabel": "PIN ya KRA",
+        "kraPinPlaceholder": "Hiari",
+        "emailLabel": "Barua Pepe ya Malipo",
+        "emailPlaceholder": "mfano: accounts@supplier.com",
+        "emailHint": "Inatumika kutuma taarifa ya malipo pindi malipo yanapofanywa kwa msambazaji huyu.",
+        "categoriesLabel": "Aina",
+        "categoriesPlaceholder": "mfano: Vifaa vya Ofisi — bonyeza Enter kuongeza",
+        "paymentTermsDaysLabel": "Masharti ya Malipo (siku)",
+        "paymentTermsDaysHint": "Ni siku ngapi baada ya kutoa ankara msambazaji huyu anatarajia malipo.",
+        "creating": "Inaunda…",
+        "createButton": "Unda Msambazaji",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "editDialog": {
+        "title": "Hariri {name}",
+        "description": "Sasisha maelezo ya msambazaji huyu.",
+        "nameLabel": "Jina",
+        "tradingNameLabel": "Jina la Biashara",
+        "kraPinLabel": "PIN ya KRA",
+        "emailLabel": "Barua Pepe ya Malipo",
+        "emailPlaceholder": "mfano: accounts@supplier.com",
+        "emailHint": "Inatumika kutuma taarifa ya malipo pindi malipo yanapofanywa kwa msambazaji huyu.",
+        "categoriesLabel": "Aina",
+        "categoriesPlaceholder": "mfano: Vifaa vya Ofisi — bonyeza Enter kuongeza",
+        "paymentTermsDaysLabel": "Masharti ya Malipo (siku)",
+        "saving": "Inahifadhi…",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "blacklistDialog": {
+        "trigger": "Zuia",
+        "title": "Zuia Msambazaji",
+        "description": "Kuzuia {name} kunazuia maagizo yoyote mapya ya ununuzi kwake. Hii inaweza kubadilishwa baadaye.",
+        "reasonLabel": "Sababu",
+        "reasonPlaceholder": "Kwa nini msambazaji huyu anazuiliwa?",
+        "blacklisting": "Inazuia…",
+        "confirmButton": "Zuia Msambazaji",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "ratings": {
+        "title": "Ukadiriaji",
+        "description": "Utendaji wa uwasilishaji na ubora, pamoja na alama unayoweza kuweka mwenyewe.",
+        "deliveryLabel": "Uwasilishaji kwa Wakati",
+        "deliveryUnavailable": "Haipatikani",
+        "deliveryUnavailableHint": "Hakuna data ya tarehe-inayotarajiwa-ya-uwasilishaji bado kuhesabu hii — pengo halisi na la kudumu, si hali ya kupakia.",
+        "qualityLabel": "Ubora (Kiwango cha Kukataliwa kwa GRN)",
+        "noRatingYet": "Bado hajakadiriwa",
+        "recomputeButton": "Hesabu Upya",
+        "computing": "Inahesabu…",
+        "manualLabel": "Alama ya Mkono",
+        "setButton": "Weka",
+        "saving": "Inahifadhi…",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "detail": {
+        "backToList": "Rudi kwa Wasambazaji",
+        "tradingNamePrefix": "Anafanya biashara kama {tradingName}",
+        "reactivateButton": "Rejesha",
+        "reactivating": "Inarejesha…",
+        "blacklistReasonPrefix": "Amezuiliwa: {reason}",
+        "kraPinLabel": "PIN ya KRA",
+        "paymentTermsDaysLabel": "Masharti ya Malipo",
+        "paymentTermsDaysValue": "Siku {days}",
+        "emailLabel": "Barua Pepe ya Malipo",
+        "categoriesLabel": "Aina",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      }
+    },
+    "requisitions": {
+      "statuses": {
+        "DRAFT": "Rasimu",
+        "SUBMITTED": "Imewasilishwa",
+        "PENDING_APPROVAL": "Inasubiri Idhini",
+        "APPROVED": "Imeidhinishwa",
+        "REJECTED": "Imekataliwa",
+        "CONVERTED": "Imebadilishwa",
+        "CANCELLED": "Imeghairiwa"
+      },
+      "filters": {
+        "statusLabel": "Hali",
+        "allStatuses": "Hali zote",
+        "departmentLabel": "Idara",
+        "allDepartments": "Idara zote",
+        "clearFilters": "Futa vichujio"
+      },
+      "list": {
+        "pageTitle": "Maombi ya Ununuzi",
+        "pageSubtitle": "Maombi ya ununuzi ya wafanyakazi, kutoka rasimu hadi idhini.",
+        "listTitle": "Maombi yote",
+        "listDescription": "Chuja kwa hali au idara, au fungua ombi kudhibiti mistari yake na idhini.",
+        "columns": {
+          "number": "Nambari",
+          "department": "Idara",
+          "totalEstimate": "Makadirio ya Jumla",
+          "status": "Hali"
+        }
+      },
+      "createDialog": {
+        "trigger": "Ombi Jipya",
+        "title": "Unda Ombi",
+        "description": "Anzisha rasimu ya ombi kwa idara. Ongeza mistari mara litakapoundwa.",
+        "departmentLabel": "Idara",
+        "selectDepartmentPlaceholder": "Chagua idara",
+        "loadingDepartments": "Inapakia idara…",
+        "justificationLabel": "Sababu",
+        "justificationPlaceholder": "Kwa nini ununuzi huu unahitajika?",
+        "creating": "Inaunda…",
+        "createButton": "Unda Ombi",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "lineEditor": {
+        "description": "Maelezo",
+        "descriptionPlaceholder": "mfano: rimu 10 za karatasi za A4",
+        "qtyLabel": "Idadi",
+        "estPriceLabel": "Bei ya Makadirio kwa Kipimo",
+        "budgetLineLabel": "Mstari wa Bajeti (hiari)",
+        "budgetLineIdPlaceholder": "Kitambulisho cha mstari wa bajeti, kama unajulikana",
+        "budgetLineIdInvalid": "Hakionekani kama kitambulisho sahihi.",
+        "addLineTrigger": "Ongeza Mstari",
+        "addDialogTitle": "Ongeza Mstari",
+        "addDialogDescription": "Ongeza kipengele kwenye ombi hili.",
+        "adding": "Inaongeza…",
+        "addButton": "Ongeza Mstari",
+        "editDialogTitle": "Hariri Mstari",
+        "editDialogDescription": "Sasisha maelezo ya mstari huu.",
+        "saving": "Inahifadhi…",
+        "deleteDialogTitle": "Ondoa Mstari",
+        "deleteDialogDescription": "Hii inaondoa mstari kutoka kwenye ombi. Haiwezi kutenduliwa.",
+        "deleting": "Inaondoa…",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "statusActions": {
+        "submitTrigger": "Wasilisha kwa Idhini",
+        "submitting": "Inawasilisha…",
+        "submitNeedsLinesHint": "Ongeza angalau mstari mmoja kabla ya kuwasilisha.",
+        "noWorkflowError": "Hakuna mtiririko wa idhini uliowekwa kwa maombi ya ununuzi bado. Wasiliana na Msimamizi wa Mfumo kuuweka katika Idhini.",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena.",
+        "approveTrigger": "Idhinisha",
+        "approveConfirmTitle": "Idhinisha Ombi",
+        "approveConfirmDescription": "Idhinisha ombi {number}? Hii litaendelea mbele kubadilishwa kuwa agizo la ununuzi.",
+        "approving": "Inaidhinisha…",
+        "approveConfirmButton": "Idhinisha Ombi",
+        "rejectTrigger": "Kataa",
+        "rejectConfirmTitle": "Kataa Ombi",
+        "rejectConfirmDescription": "Kataa ombi {number}? Mwombaji atahitaji kuwasilisha ombi jipya.",
+        "rejecting": "Inakataa…",
+        "rejectConfirmButton": "Kataa Ombi",
+        "cancelTrigger": "Ghairi",
+        "cancelConfirmTitle": "Ghairi Ombi",
+        "cancelConfirmDescription": "Ghairi ombi {number}? Hii haiwezi kutenduliwa.",
+        "cancelling": "Inaghairi…",
+        "cancelConfirmButton": "Ghairi Ombi"
+      },
+      "detail": {
+        "backToList": "Rudi kwa Maombi",
+        "justificationLabel": "Sababu",
+        "totalEstimateLabel": "Makadirio ya Jumla",
+        "budgetSnapshotTitle": "Muhtasari wa Bajeti (wakati wa kuwasilisha)",
+        "budgetSnapshotCheckedAt": "Ilikaguliwa {checkedAt}",
+        "budgetSnapshotBudgeted": "Mstari wenye Bajeti",
+        "budgetSnapshotNotBudgeted": "Hakuna Mstari wa Bajeti Uliounganishwa",
+        "budgetSnapshotLineEstimate": "Makadirio {amount}",
+        "budgetSnapshotWithinAvailable": "Ndani ya Bajeti Inayopatikana",
+        "budgetSnapshotOverAvailable": "Zaidi ya Bajeti Inayopatikana",
+        "linesTitle": "Mistari",
+        "columns": {
+          "actions": "Vitendo"
+        },
+        "viewQuotationsAction": "Ona bei za wauzaji"
+      }
+    },
+    "lineEditor": {
+      "description": "Maelezo",
+      "descriptionPlaceholder": "mfano wa riimu 10 za karatasi A4",
+      "qty": "Idadi",
+      "unitPrice": "Bei ya kitengo",
+      "lineTotal": "Jumla ya mstari",
+      "removeLine": "Ondoa mstari",
+      "addLine": "Ongeza mstari",
+      "estimatedSubtotal": "Jumla ndogo inayokadiriwa",
+      "subtotalHint": "Imekadiriwa kutoka mistari hii — seva hukokotoa jumla ndogo, kodi, na jumla halisi baada ya kuhifadhi."
+    },
+    "quotations": {
+      "createDialog": {
+        "trigger": "Bei mpya",
+        "title": "Rekodi bei",
+        "description": "Rekodi bei ya muuzaji dhidi ya ombi hili. Mistari inarekodiwa mara moja na haiwezi kuhaririwa baadaye.",
+        "supplierLabel": "Muuzaji",
+        "loadingSuppliers": "Inapakia wauzaji…",
+        "selectSupplierPlaceholder": "Chagua muuzaji",
+        "searchSuppliers": "Tafuta wauzaji…",
+        "noSuppliersFound": "Hakuna wauzaji waliopatikana.",
+        "quoteDateLabel": "Tarehe ya bei",
+        "validUntilLabel": "Inatumika hadi",
+        "termsLabel": "Masharti",
+        "termsPlaceholder": "Masharti ya malipo, dhamana, hali za uwasilishaji…",
+        "linesLabel": "Mistari",
+        "creating": "Inarekodi…",
+        "createButton": "Rekodi bei",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "comparison": {
+        "pageTitle": "Bei za Wauzaji",
+        "pageSubtitle": "Fungua ombi ili kulinganisha bei zake, au chagua moja hapa chini.",
+        "pageSubtitleForRequisition": "Kulinganisha bei za ombi {number}.",
+        "pickRequisitionTitle": "Chagua ombi",
+        "pickRequisitionDescription": "Chagua ombi lililoIDHINISHWA ili kuona au kurekodi bei dhidi yake.",
+        "selectRequisitionPlaceholder": "Chagua ombi",
+        "backToRequisition": "Rudi kwenye ombi",
+        "awardedBadge": "Imeshinda",
+        "totalLabel": "Jumla",
+        "quoteDateLabel": "Tarehe ya bei",
+        "validUntilLabel": "Inatumika hadi",
+        "termsLabel": "Masharti",
+        "awardReasonLabel": "Sababu ya kushinda",
+        "awardTrigger": "Chagua bei hii kushinda",
+        "awardDialogTitle": "Chagua bei kushinda",
+        "awardDialogDescription": "Kuchagua bei hii kushinda huiweka kama muuzaji aliyechaguliwa kwa ombi hili. Bei moja tu inaweza kushinda kwa kila ombi.",
+        "awardReasonPlaceholder": "Kwa nini muuzaji huyu alichaguliwa?",
+        "awarding": "Inachagua…",
+        "awardConfirmButton": "Chagua bei kushinda",
+        "alreadyAwardedError": "Bei nyingine ya ombi hili tayari imeshinda.",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      }
+    },
+    "purchaseOrders": {
+      "statuses": {
+        "DRAFT": "Rasimu",
+        "PENDING_APPROVAL": "Inasubiri Idhini",
+        "APPROVED": "Imeidhinishwa",
+        "ISSUED": "Imetolewa",
+        "PARTIALLY_RECEIVED": "Imepokelewa Kiasi",
+        "RECEIVED": "Imepokelewa",
+        "CLOSED": "Imefungwa",
+        "CANCELLED": "Imeghairiwa"
+      },
+      "filters": {
+        "statusLabel": "Hali",
+        "allStatuses": "Hali zote",
+        "supplierLabel": "Muuzaji",
+        "allSuppliers": "Wauzaji wote",
+        "clearFilters": "Futa vichujio"
+      },
+      "list": {
+        "pageTitle": "Maagizo ya Ununuzi",
+        "pageSubtitle": "Maagizo yaliyowekwa kwa wauzaji, kuanzia rasimu hadi kutolewa na marekebisho.",
+        "listTitle": "Maagizo yote ya ununuzi",
+        "listDescription": "Chuja kwa hali au muuzaji, au fungua agizo kudhibiti idhini na mistari yake.",
+        "notYetIssued": "Bado halijatolewa",
+        "columns": {
+          "number": "Nambari",
+          "supplier": "Muuzaji",
+          "revision": "Marekebisho",
+          "total": "Jumla",
+          "status": "Hali"
+        }
+      },
+      "createDialog": {
+        "trigger": "Agizo jipya la ununuzi",
+        "title": "Unda agizo la ununuzi",
+        "description": "Unda agizo la ununuzi la RASIMU, kutoka kwa ombi au moja kwa moja na muuzaji.",
+        "sourceLabel": "Chanzo",
+        "sourceFromRequisition": "Kutoka kwa ombi",
+        "sourceDirect": "Moja kwa moja",
+        "directHint": "Hupitisha mtiririko wa ombi kabisa — inahitaji ruhusa tofauti, na huenda isipatikane kwa kila nafasi.",
+        "requisitionLabel": "Ombi",
+        "loadingRequisitions": "Inapakia maombi…",
+        "selectRequisitionPlaceholder": "Chagua ombi lililoidhinishwa",
+        "quotationLabel": "Bei iliyoshinda (hiari)",
+        "selectQuotationPlaceholder": "Jaza awali kutoka bei iliyoshinda",
+        "quotationOptionLabel": "Bei iliyoshinda — {total}",
+        "quotationHint": "Hujaza awali muuzaji na mistari hapa chini kutoka bei hii — bado unaweza kuvihariri kabla ya kuhifadhi.",
+        "supplierLabel": "Muuzaji",
+        "loadingSuppliers": "Inapakia wauzaji…",
+        "selectSupplierPlaceholder": "Chagua muuzaji",
+        "searchSuppliers": "Tafuta wauzaji…",
+        "noSuppliersFound": "Hakuna wauzaji waliopatikana.",
+        "orderDateLabel": "Tarehe ya agizo",
+        "deliveryTermsLabel": "Masharti ya uwasilishaji",
+        "deliveryTermsPlaceholder": "mfano Kuwasilishwa ndani ya siku 14",
+        "linesLabel": "Mistari",
+        "creating": "Inaunda…",
+        "createButton": "Unda agizo la ununuzi",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "statusActions": {
+        "submitTrigger": "Wasilisha kwa idhini",
+        "submitting": "Inawasilisha…",
+        "approveTrigger": "Idhinisha",
+        "approveConfirmTitle": "Idhinisha agizo la ununuzi",
+        "approveConfirmDescription": "Idhinisha agizo la ununuzi {number}? Hii huliendeleza mbele ili litolewe.",
+        "approving": "Inaidhinisha…",
+        "approveConfirmButton": "Idhinisha agizo la ununuzi",
+        "rejectTrigger": "Kataa",
+        "rejectConfirmTitle": "Kataa agizo la ununuzi",
+        "rejectConfirmDescription": "Kataa agizo la ununuzi {number}? Hurudi kuwa rasimu kwa mabadiliko.",
+        "rejecting": "Inakataa…",
+        "rejectConfirmButton": "Kataa agizo la ununuzi",
+        "issueTrigger": "Toa",
+        "issueConfirmTitle": "Toa agizo la ununuzi",
+        "issueConfirmDescription": "Kutoa huweka nambari halisi ya agizo la ununuzi na kuganda muuzaji, mistari, na jumla za agizo hili dhidi ya mabadiliko zaidi.",
+        "issueSupersedeWarning": "Kutoa hii kutaghairi PO {number}, ambayo agizo hili linabadilisha.",
+        "issueSupersedeWarningGeneric": "Kutoa hii pia kutaghairi agizo la awali la ununuzi linalobadilishwa.",
+        "issuing": "Inatoa…",
+        "issueConfirmButton": "Toa agizo la ununuzi",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "reviseDialog": {
+        "trigger": "Rekebisha",
+        "title": "Rekebisha agizo la ununuzi",
+        "description": "Huunda agizo jipya la ununuzi la rasimu linalobadilisha {number}. Agizo jipya hupitia tena kuwasilisha, kuidhinishwa, na kutolewa.",
+        "supplierLabel": "Muuzaji",
+        "loadingSuppliers": "Inapakia wauzaji…",
+        "selectSupplierPlaceholder": "Chagua muuzaji",
+        "searchSuppliers": "Tafuta wauzaji…",
+        "noSuppliersFound": "Hakuna wauzaji waliopatikana.",
+        "deliveryTermsLabel": "Masharti ya uwasilishaji",
+        "deliveryTermsPlaceholder": "mfano Kuwasilishwa ndani ya siku 14",
+        "linesModeLabel": "Mistari",
+        "linesModeKeep": "Weka mistari iliyopo",
+        "linesModeSpecify": "Bainisha mistari mipya",
+        "linesModeKeepHint": "Agizo jipya huendeleza mistari ya awali bila mabadiliko.",
+        "linesModeSpecifyHint": "Kuanzia mistari ya agizo la awali lenyewe — hariri, ongeza, au ondoa kama inavyohitajika.",
+        "revising": "Inarekebisha…",
+        "reviseButton": "Unda marekebisho",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "detail": {
+        "backToList": "Rudi kwenye maagizo ya ununuzi",
+        "notYetIssued": "Bado halijatolewa",
+        "revisionBadge": "Marekebisho {revision}",
+        "requisitionLabel": "Ombi",
+        "directPo": "Moja kwa moja (hakuna ombi)",
+        "quotationLabel": "Bei",
+        "viewQuotation": "Ona bei",
+        "orderDateLabel": "Tarehe ya agizo",
+        "deliveryTermsLabel": "Masharti ya uwasilishaji",
+        "paymentTermsDaysLabel": "Masharti ya malipo",
+        "paymentTermsDaysValue": "siku {days}",
+        "issuedAtLabel": "Ilitolewa",
+        "subtotalLabel": "Jumla ndogo",
+        "taxAmountLabel": "Kodi",
+        "totalLabel": "Jumla",
+        "revisionHistoryTitle": "Historia ya marekebisho",
+        "supersedesLink": "Inabadilisha PO {number} — ona ya awali",
+        "supersededByLink": "Imebadilishwa na PO {number} — ona marekebisho",
+        "linesTitle": "Mistari",
+        "linesReceivedHint": "Idadi zilizopokelewa husasishwa mara upokeaji wa bidhaa (GRN) unapopatikana.",
+        "columns": {
+          "line": "#",
+          "description": "Maelezo",
+          "qty": "Idadi",
+          "unitPrice": "Bei ya kitengo",
+          "receivedQty": "Imepokelewa"
+        },
+        "grnHistoryTitle": "Historia ya Upokeaji wa Bidhaa",
+        "grnHistoryDescription": "Kila upokeaji wa bidhaa (GRN) uliorekodiwa dhidi ya agizo hili la ununuzi."
+      }
+    },
+    "grn": {
+      "receiveDialog": {
+        "trigger": "Pokea Bidhaa",
+        "title": "Pokea Bidhaa",
+        "description": "Rekodi bidhaa zilizopokelewa dhidi ya agizo la ununuzi {number}.",
+        "columns": {
+          "description": "Maelezo",
+          "ordered": "Iliyoagizwa",
+          "alreadyReceived": "Tayari Imepokelewa",
+          "remaining": "Iliyobaki",
+          "receiveNow": "Pokea Sasa",
+          "rejected": "Imekataliwa",
+          "rejectionReason": "Sababu ya Kukataa",
+          "unitCost": "Gharama ya Kitengo"
+        },
+        "fullyReceivedHint": "Imepokelewa Kikamilifu",
+        "rejectionReasonPlaceholder": "Hiari",
+        "notesLabel": "Maelezo",
+        "notesPlaceholder": "Maelezo ya hiari kuhusu upokeaji huu",
+        "receiving": "Inapokea…",
+        "receiveButton": "Pokea Bidhaa",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "list": {
+        "columns": {
+          "number": "Nambari",
+          "receivedAt": "Ilipokelewa",
+          "status": "Hali",
+          "journal": "Jarida",
+          "notes": "Maelezo"
+        },
+        "notYetPosted": "Bado haijachapishwa",
+        "viewJournal": "Ona Jarida",
+        "statuses": {
+          "DRAFT": "Rasimu",
+          "POSTED": "Imechapishwa"
+        },
+        "postTrigger": "Chapisha",
+        "postConfirmTitle": "Chapisha Upokeaji wa Bidhaa",
+        "postConfirmDescription": "Kuchapisha kunatekeleza kiingilio cha uhasibu cha upokeaji huu na hakiwezi kutenduliwa.",
+        "posting": "Inachapisha…",
+        "postConfirmButton": "Chapisha Upokeaji wa Bidhaa",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      }
+    },
+    "supplierInvoices": {
+      "statuses": {
+        "UNMATCHED": "Haijalinganishwa",
+        "MATCH_EXCEPTION": "Tofauti ya Kulinganisha",
+        "MATCHED": "Imelinganishwa",
+        "POSTED": "Imechapishwa",
+        "PAID": "Imelipwa",
+        "PARTIALLY_PAID": "Imelipwa Kiasi"
+      },
+      "list": {
+        "pageTitle": "Ankara za Wasambazaji",
+        "pageSubtitle": "Ankara zilizorekodiwa kutoka kwa wasambazaji, kuanzia kurekodi hadi kulinganisha na kuchapisha.",
+        "listTitle": "Ankara zote za wasambazaji",
+        "listDescription": "Chuja kwa hali au msambazaji, au fungua ankara kuilinganisha na agizo lake la ununuzi na kuichapisha.",
+        "filters": {
+          "statusLabel": "Hali",
+          "allStatuses": "Hali zote",
+          "supplierLabel": "Msambazaji",
+          "allSuppliers": "Wasambazaji wote",
+          "clearFilters": "Futa vichujio"
+        },
+        "columns": {
+          "number": "Nambari",
+          "supplierRef": "Kumbukumbu ya Msambazaji",
+          "supplier": "Msambazaji",
+          "total": "Jumla",
+          "dueDate": "Tarehe ya Mwisho",
+          "status": "Hali"
+        }
+      },
+      "captureDialog": {
+        "trigger": "Rekodi Ankara",
+        "title": "Rekodi Ankara ya Msambazaji",
+        "description": "Rekodi ankara kutoka kwa msambazaji, ikiwa hiari imeunganishwa na agizo la ununuzi kwa ajili ya kulinganisha.",
+        "supplierLabel": "Msambazaji",
+        "loadingSuppliers": "Inapakia wasambazaji…",
+        "selectSupplierPlaceholder": "Chagua msambazaji",
+        "searchSuppliers": "Tafuta wasambazaji…",
+        "noSuppliersFound": "Hakuna msambazaji aliyepatikana.",
+        "poLabel": "Agizo la Ununuzi (hiari)",
+        "pickSupplierFirstPlaceholder": "Chagua msambazaji kwanza",
+        "selectPoPlaceholder": "Chagua agizo la ununuzi",
+        "adHocOption": "Hakuna agizo la ununuzi (ankara huru)",
+        "poHint": "Unganisha agizo la ununuzi kuwezesha kulinganisha kwa njia tatu. Acha bila kuweka kwa ankara isiyo na PO (huduma/huru).",
+        "supplierRefLabel": "Kumbukumbu ya Msambazaji",
+        "supplierRefPlaceholder": "mfano: Nambari ya ankara ya msambazaji mwenyewe",
+        "invoiceDateLabel": "Tarehe ya Ankara",
+        "dueDateLabel": "Tarehe ya Mwisho",
+        "totalLabel": "Jumla",
+        "linesLabel": "Mistari (ukaguzi wa hiari)",
+        "addLine": "Ongeza Mstari",
+        "linesHint": "Hiari — ukaguzi wa data dhidi ya mistari ya agizo la ununuzi lenyewe, hairekodiwi kama rekodi ya kiwango cha mstari.",
+        "columns": {
+          "poLine": "Mstari wa PO",
+          "qty": "Idadi",
+          "unitPrice": "Bei ya Kitengo"
+        },
+        "removeLine": "Ondoa Mstari",
+        "selectPoLinePlaceholder": "Chagua mstari",
+        "linesSumHint": "Jumla ya mistari ni {sum} — jumla ni {total}.",
+        "capturing": "Inarekodi…",
+        "captureButton": "Rekodi Ankara",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "matchPanel": {
+        "title": "Kulinganisha kwa Njia Tatu",
+        "description": "Inalinganisha ankara hii na mistari ya agizo la ununuzi lenyewe na upokeaji wake wa bidhaa uliochapishwa.",
+        "adHocHint": "Ankara hii haina agizo la ununuzi lililounganishwa, hivyo kulinganisha hakupatikani. Chapisha kupitia mtiririko wa kawaida wa madeni badala yake.",
+        "runMatchButton": "Fanya Ulinganishaji",
+        "matching": "Inalinganisha…",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena.",
+        "varianceUnavailable": "Matokeo ya ulinganishaji hayakusomeka — muundo wake haukuonekana kama ilivyotarajiwa.",
+        "notMatchedYetHint": "Ankara hii bado haijalinganishwa.",
+        "invoiceTotalLabel": "Jumla ya Ankara",
+        "poOrderedQtyLabel": "Idadi Iliyoagizwa (PO)",
+        "grnAcceptedQtyLabel": "Idadi Iliyokubaliwa (GRN)",
+        "grnAcceptedValueLabel": "Thamani Iliyokubaliwa (GRN)",
+        "qtyToleranceLabel": "Idadi ndani ya uvumilivu wa {percent}%",
+        "priceToleranceLabel": "Bei ndani ya {percent}% au KES {absolute}",
+        "withinToleranceLabel": "Ndani ya Uvumilivu",
+        "outsideToleranceLabel": "Nje ya Uvumilivu",
+        "priceVarianceAmountLabel": "Tofauti ya bei: {amount}",
+        "columns": {
+          "poLine": "Mstari wa PO",
+          "poQty": "Idadi ya PO",
+          "grnAcceptedQty": "Idadi Iliyokubaliwa (GRN)",
+          "grnValue": "Thamani ya GRN"
+        },
+        "linesScopeHint": "Hii inalinganisha mistari ya agizo la ununuzi lenyewe dhidi ya upokeaji wa bidhaa uliochapishwa — mchanganuo wa kiwango cha mstari wa ankara yenyewe haujahifadhiwa, hivyo ulinganishaji hufanyika katika kiwango cha jumla kuu.",
+        "resolutionLabel": "Imetatuliwa: {action}",
+        "resolutionActions": {
+          "ACCEPT_VARIANCE": "Tofauti Imekubaliwa",
+          "REJECT": "Imekataliwa kwa Marekebisho"
+        }
+      },
+      "resolveDialog": {
+        "trigger": "Tatua Tofauti",
+        "title": "Tatua Tofauti ya Kulinganisha",
+        "description": "Amua jinsi ya kushughulikia tofauti ya kulinganisha ya ankara {number}.",
+        "resolutionLabel": "Suluhisho",
+        "acceptVarianceOption": "Kubali Tofauti",
+        "rejectOption": "Kataa",
+        "acceptVarianceHint": "Hupitisha tofauti iliyokokotolewa — ankara huhamia Imelinganishwa na inaweza kuchapishwa.",
+        "rejectHint": "Hurudisha ankara kuwa Haijalinganishwa kwa marekebisho — inaweza kulinganishwa tena baada ya kurekebishwa.",
+        "noteLabel": "Kumbuka",
+        "notePlaceholder": "Kwa nini tofauti hii inakubaliwa au kukataliwa?",
+        "resolving": "Inatatua…",
+        "confirmButton": "Thibitisha Suluhisho",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "detail": {
+        "backToList": "Rudi kwa Ankara za Wasambazaji",
+        "supplierRefLabel": "Kumbukumbu ya Msambazaji",
+        "poLabel": "Agizo la Ununuzi",
+        "viewPurchaseOrder": "Ona Agizo la Ununuzi",
+        "adHocInvoice": "Hakuna (ankara huru)",
+        "invoiceDateLabel": "Tarehe ya Ankara",
+        "dueDateLabel": "Tarehe ya Mwisho",
+        "totalLabel": "Jumla",
+        "paidAmountLabel": "Kiasi Kilicholipwa",
+        "viewJournal": "Ona Jarida",
+        "postTrigger": "Chapisha",
+        "postConfirmTitle": "Chapisha Ankara ya Msambazaji",
+        "postConfirmDescription": "Kuchapisha ankara {number} hutuliza deni la upokeaji wa bidhaa na kurekodi madeni ya kulipwa — hii haiwezi kutenduliwa.",
+        "posting": "Inachapisha…",
+        "postConfirmButton": "Chapisha Ankara",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      }
+    },
+    "paymentVouchers": {
+      "list": {
+        "pageTitle": "Hati za Malipo",
+        "pageSubtitle": "Lipa wasambazaji kwa kugawa hati dhidi ya ankara zao wazi.",
+        "listTitle": "Hati za Malipo",
+        "listDescription": "Kila hati ya malipo iliyotolewa kwa msambazaji, katika hali zote.",
+        "columns": {
+          "number": "Nambari",
+          "supplier": "Msambazaji",
+          "method": "Njia",
+          "total": "Jumla",
+          "status": "Hali"
+        },
+        "filters": {
+          "statusLabel": "Hali",
+          "supplierLabel": "Msambazaji",
+          "allStatuses": "Hali zote",
+          "allSuppliers": "Wasambazaji wote",
+          "clearFilters": "Futa vichujio"
+        },
+        "notYetExecuted": "Bado haijatekelezwa"
+      },
+      "detail": {
+        "backToList": "Rudi kwenye hati za malipo",
+        "methodLabel": "Njia",
+        "totalLabel": "Jumla",
+        "remittanceLabel": "Taarifa ya malipo",
+        "remittanceSent": "Imetumwa",
+        "remittanceNotSent": "Haijatumwa",
+        "notYetExecuted": "Bado haijatekelezwa",
+        "allocationsTitle": "Ugawaji",
+        "allocationsDescription": "Ankara ambazo hati hii inalipa, na kiasi kilichogawiwa kwa kila moja.",
+        "columns": {
+          "invoice": "Ankara",
+          "amount": "Kiasi"
+        },
+        "viewJournal": "Angalia ingizo la jarida"
+      },
+      "methods": {
+        "BANK": "Uhamisho wa benki",
+        "CHEQUE": "Hundi",
+        "MPESA": "M-Pesa",
+        "CASH": "Fedha taslimu"
+      },
+      "statuses": {
+        "DRAFT": "Rasimu",
+        "PENDING_APPROVAL": "Inasubiri Idhini",
+        "APPROVED": "Imeidhinishwa",
+        "PAID": "Imelipwa",
+        "CANCELLED": "Imeghairiwa"
+      },
+      "createDialog": {
+        "trigger": "Hati Mpya ya Malipo",
+        "title": "Hati mpya ya malipo",
+        "description": "Chagua msambazaji, kisha gawa hati hii dhidi ya ankara moja au zaidi zilizo wazi.",
+        "supplierLabel": "Msambazaji",
+        "searchSuppliers": "Tafuta wasambazaji…",
+        "selectSupplierPlaceholder": "Chagua msambazaji",
+        "loadingSuppliers": "Inapakia wasambazaji…",
+        "noSuppliersFound": "Hakuna msambazaji aliyepatikana.",
+        "pickSupplierHint": "Chagua msambazaji ili kuona ankara zao wazi.",
+        "methodLabel": "Njia ya malipo",
+        "allocationsLabel": "Ugawaji",
+        "noOpenInvoicesHint": "Msambazaji huyu hana ankara wazi (zilizotumwa, ambazo hazijalipwa).",
+        "columns": {
+          "invoice": "Ankara",
+          "openBalance": "Salio wazi",
+          "allocationAmount": "Gawa"
+        },
+        "createButton": "Tengeneza hati",
+        "creating": "Inatengeneza…",
+        "genericError": "Imeshindwa kutengeneza hati. Tafadhali kagua ugawaji na ujaribu tena."
+      },
+      "statusActions": {
+        "submitTrigger": "Wasilisha kwa idhini",
+        "submitting": "Inawasilisha…",
+        "approveTrigger": "Idhinisha",
+        "approving": "Inaidhinisha…",
+        "approveConfirmTitle": "Idhinisha hati hii ya malipo?",
+        "approveConfirmButton": "Idhinisha",
+        "rejectTrigger": "Kataa",
+        "rejecting": "Inakataa…",
+        "rejectConfirmTitle": "Kataa hati hii ya malipo?",
+        "rejectConfirmButton": "Kataa",
+        "executeTrigger": "Tekeleza malipo",
+        "executing": "Inatekeleza…",
+        "executeConfirmTitle": "Tekeleza malipo haya?",
+        "executeConfirmButton": "Tekeleza",
+        "executeInvoiceEffectNote": "Kutekeleza kunachapisha ingizo halisi la jarida na kuweka alama ankara zilizogawiwa kuwa zimelipwa.",
+        "genericError": "Kitendo hicho hakikuweza kukamilika. Tafadhali jaribu tena."
+      }
+    },
+    "contracts": {
+      "list": {
+        "pageTitle": "Mikataba",
+        "pageSubtitle": "Mikataba ya wasambazaji, arifa za upyaji, na hali yao ya sasa.",
+        "listTitle": "Mikataba",
+        "listDescription": "Kila mkataba wa msambazaji, katika hali zote.",
+        "columns": {
+          "title": "Kichwa",
+          "supplier": "Msambazaji",
+          "startsOn": "Huanza",
+          "endsOn": "Huisha",
+          "value": "Thamani",
+          "status": "Hali"
+        },
+        "filters": {
+          "statusLabel": "Hali",
+          "supplierLabel": "Msambazaji",
+          "allStatuses": "Hali zote",
+          "allSuppliers": "Wasambazaji wote",
+          "clearFilters": "Futa vichujio"
+        }
+      },
+      "detail": {
+        "backToList": "Rudi kwenye mikataba",
+        "startsOnLabel": "Huanza tarehe",
+        "endsOnLabel": "Huisha tarehe",
+        "valueLabel": "Thamani",
+        "renewalAlertDaysLabel": "Arifa ya upyaji (siku kabla ya mwisho)"
+      },
+      "statuses": {
+        "ACTIVE": "Hai",
+        "EXPIRED": "Imeisha",
+        "TERMINATED": "Imesitishwa"
+      },
+      "createDialog": {
+        "trigger": "Mkataba Mpya",
+        "title": "Mkataba mpya",
+        "titleLabel": "Kichwa",
+        "titlePlaceholder": "mfano: Mkataba wa mwaka wa ugavi wa vifaa vya ofisi",
+        "supplierLabel": "Msambazaji",
+        "searchSuppliers": "Tafuta wasambazaji…",
+        "selectSupplierPlaceholder": "Chagua msambazaji",
+        "loadingSuppliers": "Inapakia wasambazaji…",
+        "noSuppliersFound": "Hakuna msambazaji aliyepatikana.",
+        "startsOnLabel": "Huanza tarehe",
+        "endsOnLabel": "Huisha tarehe",
+        "datesInvalidHint": "Tarehe ya mwisho lazima iwe sawa au baada ya tarehe ya kuanza.",
+        "valueLabel": "Thamani (si lazima)",
+        "renewalAlertDaysLabel": "Arifa ya upyaji (siku kabla ya mwisho)",
+        "renewalAlertDaysHint": "Siku ngapi kabla ya mkataba kuisha ili kuutia alama kuwa unakaribia kuisha.",
+        "description": "Sajili mkataba mpya wa msambazaji.",
+        "createButton": "Tengeneza mkataba",
+        "creating": "Inatengeneza…",
+        "genericError": "Imeshindwa kutengeneza mkataba. Tafadhali kagua tarehe na ujaribu tena."
+      },
+      "editDialog": {
+        "titleLabel": "Kichwa",
+        "startsOnLabel": "Huanza tarehe",
+        "endsOnLabel": "Huisha tarehe",
+        "datesInvalidHint": "Tarehe ya mwisho lazima iwe sawa au baada ya tarehe ya kuanza.",
+        "valueLabel": "Thamani (si lazima)",
+        "renewalAlertDaysLabel": "Arifa ya upyaji (siku kabla ya mwisho)",
+        "description": "Sasisha maelezo ya mkataba huu.",
+        "saving": "Inahifadhi…",
+        "genericError": "Imeshindwa kuhifadhi mkataba. Tafadhali jaribu tena."
+      },
+      "statusActions": {
+        "terminateTrigger": "Sitisha",
+        "terminating": "Inasitisha…",
+        "terminateConfirmTitle": "Sitisha mkataba huu?",
+        "terminateConfirmButton": "Sitisha",
+        "markExpiredTrigger": "Weka alama umeisha",
+        "markingExpired": "Inaweka alama umeisha…",
+        "markExpiredConfirmTitle": "Weka alama mkataba huu umeisha?",
+        "markExpiredConfirmButton": "Weka umeisha",
+        "genericError": "Kitendo hicho hakikuweza kukamilika. Tafadhali jaribu tena."
+      },
+      "expiringSoonWidget": {
+        "title": "Inakaribia kuisha",
+        "description": "Mikataba hai inayokaribia dirisha lake la arifa ya upyaji.",
+        "noneHint": "Hakuna mikataba inayokaribia kuisha kwa sasa."
+      }
     }
   }
 }

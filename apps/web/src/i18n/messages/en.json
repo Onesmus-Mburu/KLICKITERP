@@ -96,6 +96,16 @@
       "walletWallets": "Wallets",
       "walletServicePoints": "Service Points",
       "walletReconciliation": "Reconciliation",
+      "accounting": "Accounting",
+      "accountingAccounts": "Accounts",
+      "accountingFiscalYears": "Fiscal Years",
+      "accountingCostCenters": "Cost Centers",
+      "accountingJournals": "Journals",
+      "accountingBudgets": "Budgets",
+      "accountingIntegritySweep": "Integrity Sweep",
+      "procurement": "Procurement",
+      "procurementSuppliers": "Suppliers",
+      "procurementRequisitions": "Requisitions",
       "communications": "Communications",
       "commsTemplates": "Templates",
       "commsBroadcasts": "Broadcasts",
@@ -106,7 +116,11 @@
       "usersAllUsers": "All Users",
       "usersRoles": "Roles",
       "usersDepartments": "Departments",
-      "branding": "Branding"
+      "branding": "Branding",
+      "procurementPurchaseOrders": "Purchase Orders",
+      "procurementSupplierInvoices": "Supplier Invoices",
+      "procurementPaymentVouchers": "Payment Vouchers",
+      "procurementContracts": "Contracts"
     },
     "topbar": {
       "searchPlaceholder": "Search…",
@@ -2771,6 +2785,1178 @@
       "notVerifiedTitle": "Not Verified",
       "notVerifiedDescription": "This link could not be confirmed against our records.",
       "notVerifiedHint": "This document could not be verified. It may be forged, altered, or the verification link may be incorrect. Contact the school directly to confirm this document's authenticity."
+    }
+  },
+  "accounting": {
+    "classes": {
+      "ASSET": "Asset",
+      "LIABILITY": "Liability",
+      "EQUITY": "Equity",
+      "INCOME": "Income",
+      "EXPENSE": "Expense"
+    },
+    "controlDomains": {
+      "AR_STUDENT": "AR — Student",
+      "AR_SPONSOR": "AR — Sponsor",
+      "AP_SUPPLIER": "AP — Supplier",
+      "WALLET": "Wallet",
+      "INVENTORY": "Inventory",
+      "PAYROLL": "Payroll",
+      "PREPAYMENT": "Prepayment",
+      "MPESA_CLEARING": "M-Pesa Clearing",
+      "TRANSFER_CLEARING": "Transfer Clearing"
+    },
+    "fiscalYearStatuses": {
+      "OPEN": "Open",
+      "CLOSING": "Closing",
+      "LOCKED": "Locked"
+    },
+    "periodStatuses": {
+      "OPEN": "Open",
+      "SOFT_CLOSED": "Soft Closed",
+      "HARD_CLOSED": "Hard Closed"
+    },
+    "journalTypes": {
+      "SYSTEM": "System",
+      "MANUAL": "Manual",
+      "REVERSING": "Reversing",
+      "CLOSING": "Closing",
+      "OPENING": "Opening"
+    },
+    "budgetStatuses": {
+      "DRAFT": "Draft",
+      "PENDING_APPROVAL": "Pending Approval",
+      "ACTIVE": "Active",
+      "SUPERSEDED": "Superseded"
+    },
+    "accounts": {
+      "list": {
+        "pageTitle": "Chart of Accounts",
+        "pageSubtitle": "The general ledger's account hierarchy — assets, liabilities, equity, income, and expense.",
+        "listTitle": "Accounts",
+        "listDescription": "Expand a row to see its child accounts. Postable accounts can receive journal postings; header accounts organize the hierarchy only."
+      },
+      "tree": {
+        "expand": "Expand",
+        "collapse": "Collapse",
+        "postable": "Postable",
+        "control": "Control",
+        "deactivate": "Deactivate",
+        "activate": "Activate"
+      },
+      "createDialog": {
+        "trigger": "New account",
+        "title": "Create account",
+        "description": "Add a new account to the chart of accounts. Code, class, parent, and postable are locked once created.",
+        "codeLabel": "Code",
+        "codePlaceholder": "e.g. 1000",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Cash at Bank",
+        "classLabel": "Class",
+        "parentLabel": "Parent account",
+        "loadingAccounts": "Loading accounts…",
+        "parentPlaceholder": "No parent (root account)",
+        "parentSearchPlaceholder": "Search accounts…",
+        "parentEmptyText": "No accounts found.",
+        "isPostableLabel": "Postable",
+        "isPostableHint": "This account can receive journal postings directly.",
+        "isPostableHintNeedsParent": "Select a parent account first — a root account can't be postable.",
+        "isControlLabel": "Control account",
+        "controlDomainLabel": "Control domain",
+        "selectControlDomain": "Select a control domain",
+        "noneOption": "None",
+        "taxTreatmentLabel": "Tax treatment",
+        "taxTreatmentPlaceholder": "Optional",
+        "creating": "Creating…",
+        "createButton": "Create account",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "editDialog": {
+        "title": "Edit {name}",
+        "description": "Code, class, parent, and postable are locked once created — to reclassify, deactivate this account and create a new one.",
+        "nameLabel": "Name",
+        "isControlLabel": "Control account",
+        "controlDomainLabel": "Control domain",
+        "selectControlDomain": "Select a control domain",
+        "noneOption": "None",
+        "taxTreatmentLabel": "Tax treatment",
+        "taxTreatmentPlaceholder": "Optional",
+        "saving": "Saving…",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "deleteDialog": {
+        "title": "Delete account",
+        "description": "Delete {code} — {name}? This cannot be undone.",
+        "hasPostingsError": "This account has postings and can't be deleted — deactivate it instead.",
+        "deleting": "Deleting…",
+        "genericError": "Something went wrong. Please try again."
+      }
+    },
+    "fiscalYears": {
+      "list": {
+        "pageTitle": "Fiscal Years",
+        "pageSubtitle": "Accounting periods for posting and closing the general ledger.",
+        "listTitle": "All fiscal years",
+        "listDescription": "Select a fiscal year to view and manage its periods.",
+        "columns": {
+          "name": "Name",
+          "startsOn": "Starts on",
+          "endsOn": "Ends on",
+          "status": "Status"
+        }
+      },
+      "createDialog": {
+        "trigger": "New fiscal year",
+        "title": "Create fiscal year",
+        "description": "Define a new fiscal year. Its periods are generated automatically.",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. FY2027",
+        "startsOnLabel": "Starts on",
+        "endsOnLabel": "Ends on",
+        "periodCountLabel": "Number of periods",
+        "periodCountHint": "Splits the year into this many equal-length periods by day count, not calendar months.",
+        "creating": "Creating…",
+        "createButton": "Create fiscal year",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "detail": {
+        "backToList": "Back to fiscal years",
+        "periodsTitle": "Periods",
+        "periodsDescription": "Open, soft-close, or hard-close each period. A period can only be hard-closed after it's soft-closed.",
+        "columns": {
+          "seq": "#",
+          "startsOn": "Starts on",
+          "endsOn": "Ends on",
+          "status": "Status",
+          "actions": "Actions"
+        }
+      }
+    },
+    "periods": {
+      "actions": {
+        "open": "Open",
+        "softClose": "Soft close",
+        "hardClose": "Hard close",
+        "hardCloseHint": "Soft-close this period first.",
+        "hardCloseConfirmTitle": "Hard close period {seq}",
+        "hardCloseConfirmDescription": "Hard-closing period {seq} is final and cannot be undone.",
+        "hardClosePermanentWarning": "This action is permanent. The period cannot be reopened once hard-closed.",
+        "hardCloseConfirmButton": "Hard close",
+        "processing": "Processing…",
+        "genericError": "Something went wrong. Please try again."
+      }
+    },
+    "costCenters": {
+      "list": {
+        "pageTitle": "Cost Centers",
+        "pageSubtitle": "Track income and expense by department, project, or activity.",
+        "listTitle": "All cost centers",
+        "listDescription": "Cost centers used to tag journal postings for reporting.",
+        "searchPlaceholder": "Search by code or name…",
+        "noCostCentersMatchSearch": "No cost centers match your search.",
+        "columns": {
+          "code": "Code",
+          "name": "Name",
+          "status": "Status"
+        },
+        "deactivate": "Deactivate",
+        "activate": "Activate"
+      },
+      "createDialog": {
+        "trigger": "New cost center",
+        "title": "Create cost center",
+        "description": "Define a new cost center for tagging journal postings.",
+        "codeLabel": "Code",
+        "codePlaceholder": "e.g. CC-001",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Transport Department",
+        "creating": "Creating…",
+        "createButton": "Create cost center",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "editDialog": {
+        "title": "Edit {name}",
+        "description": "Change the cost center's name.",
+        "nameLabel": "Name",
+        "saving": "Saving…",
+        "genericError": "Something went wrong. Please try again."
+      }
+    },
+    "journals": {
+      "list": {
+        "pageTitle": "Journals",
+        "pageSubtitle": "Every entry posted to the general ledger, system and manual alike.",
+        "listTitle": "All journals",
+        "listDescription": "Filter by source module, date range, or period. Select a journal to see its lines.",
+        "newJournalTrigger": "New Journal Entry",
+        "columns": {
+          "number": "Number",
+          "journalDate": "Date",
+          "sourceModule": "Source",
+          "narration": "Narration",
+          "journalType": "Type"
+        }
+      },
+      "filters": {
+        "sourceModuleLabel": "Source module",
+        "sourceModulePlaceholder": "e.g. GL_MANUAL",
+        "fromDateLabel": "From date",
+        "toDateLabel": "To date",
+        "fiscalYearLabel": "Fiscal year",
+        "allFiscalYears": "All fiscal years",
+        "periodLabel": "Period",
+        "allPeriods": "All periods",
+        "periodOption": "#{seq} ({startsOn} – {endsOn})",
+        "clearFilters": "Clear filters"
+      },
+      "lineEditor": {
+        "account": "Account",
+        "costCenter": "Cost center",
+        "debit": "Debit",
+        "credit": "Credit",
+        "memo": "Memo",
+        "selectAccount": "Select an account",
+        "loadingAccounts": "Loading accounts…",
+        "searchAccounts": "Search accounts…",
+        "noAccountsFound": "No postable accounts found.",
+        "noCostCenter": "No cost center",
+        "searchCostCenters": "Search cost centers…",
+        "noCostCentersFound": "No cost centers found.",
+        "memoPlaceholder": "Optional",
+        "addLine": "Add line",
+        "removeLine": "Remove line",
+        "totalDebits": "Total debits",
+        "totalCredits": "Total credits",
+        "difference": "Difference",
+        "balanced": "Balanced",
+        "unbalanced": "Debits and credits must balance"
+      },
+      "create": {
+        "pageTitle": "New journal entry",
+        "pageSubtitle": "Post a manual journal entry directly to the general ledger.",
+        "backToList": "Back to journals",
+        "headerTitle": "Journal details",
+        "journalDateLabel": "Journal date",
+        "sourceModuleLabel": "Source module",
+        "sourceModulePlaceholder": "e.g. GL_MANUAL",
+        "narrationLabel": "Narration",
+        "narrationPlaceholder": "Describe the reason for this entry",
+        "linesTitle": "Lines",
+        "cancel": "Cancel",
+        "submitting": "Posting…",
+        "submitButton": "Post journal",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "detail": {
+        "backToList": "Back to journals",
+        "journalDateLabel": "Journal date",
+        "sourceModuleLabel": "Source module",
+        "sourceDocTypeLabel": "Source document type",
+        "postedByLabel": "Posted by",
+        "postedAtLabel": "Posted at",
+        "reversalOfLabel": "Reverses",
+        "viewOriginal": "View original journal",
+        "viewReversal": "View reversal",
+        "linesTitle": "Lines",
+        "columns": {
+          "lineNo": "#",
+          "account": "Account",
+          "costCenter": "Cost center",
+          "debit": "Debit",
+          "credit": "Credit",
+          "memo": "Memo"
+        }
+      },
+      "reverseDialog": {
+        "trigger": "Reverse",
+        "title": "Reverse journal",
+        "description": "Post a reversing journal for {number}, with every line's debit and credit swapped.",
+        "narrationLabel": "Reversal narration",
+        "narrationPlaceholder": "Describe the reason for this reversal",
+        "reversing": "Reversing…",
+        "confirmButton": "Reverse journal",
+        "genericError": "Something went wrong. Please try again."
+      }
+    },
+    "budgets": {
+      "list": {
+        "pageTitle": "Budgets",
+        "pageSubtitle": "Draft, submit, and activate annual budgets by fiscal year.",
+        "listTitle": "Budgets",
+        "listDescription": "Select a fiscal year to see its budgets. Select a budget to view and edit its lines.",
+        "fiscalYearLabel": "Fiscal year",
+        "selectFiscalYearPlaceholder": "Select a fiscal year",
+        "selectFiscalYearPrompt": "Select a fiscal year to see its budgets.",
+        "columns": {
+          "name": "Name",
+          "versionLabel": "Version",
+          "status": "Status"
+        }
+      },
+      "createDialog": {
+        "trigger": "New budget",
+        "title": "Create budget",
+        "description": "Draft a new budget for this fiscal year with its initial lines.",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. FY2027 Operating Budget",
+        "versionLabelLabel": "Version label",
+        "versionLabelPlaceholder": "e.g. v1",
+        "linesTitle": "Lines",
+        "account": "Account",
+        "costCenter": "Cost center",
+        "annualAmount": "Annual amount",
+        "selectAccount": "Select an account",
+        "loadingAccounts": "Loading accounts…",
+        "searchAccounts": "Search accounts…",
+        "noAccountsFound": "No postable accounts found.",
+        "noCostCenter": "No cost center",
+        "searchCostCenters": "Search cost centers…",
+        "noCostCentersFound": "No cost centers found.",
+        "addLine": "Add line",
+        "removeLine": "Remove line",
+        "totalLabel": "Total annual amount",
+        "creating": "Creating…",
+        "createButton": "Create budget",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "detail": {
+        "backToList": "Back to budgets",
+        "fiscalYearLabel": "Fiscal year",
+        "versionLabelLabel": "Version",
+        "linesTitle": "Lines",
+        "totalLabel": "Total annual amount",
+        "columns": {
+          "actions": "Actions"
+        }
+      },
+      "lineEditor": {
+        "account": "Account",
+        "costCenter": "Cost center",
+        "annualAmountLabel": "Annual amount",
+        "periodPhasingLabel": "Period phasing",
+        "periodPhasingHint": "Optional, free-form JSON — a month-by-month or term-by-term spread. Not interpreted by the system yet.",
+        "periodPhasingInvalid": "Must be valid JSON representing an object, e.g. {}",
+        "selectAccount": "Select an account",
+        "loadingAccounts": "Loading accounts…",
+        "searchAccounts": "Search accounts…",
+        "noAccountsFound": "No postable accounts found.",
+        "noCostCenter": "No cost center",
+        "searchCostCenters": "Search cost centers…",
+        "noCostCentersFound": "No cost centers found.",
+        "addLineTrigger": "Add line",
+        "addDialogTitle": "Add budget line",
+        "addDialogDescription": "Add a line to this draft budget.",
+        "editDialogTitle": "Edit budget line",
+        "editDialogDescription": "Change this line's annual amount or period phasing. The account and cost center can't be changed — delete and re-add the line instead.",
+        "adding": "Adding…",
+        "addButton": "Add line",
+        "saving": "Saving…",
+        "deleteDialogTitle": "Delete budget line",
+        "deleteDialogDescription": "Delete this line? This cannot be undone.",
+        "deleting": "Deleting…",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "statusActions": {
+        "submitTrigger": "Submit for approval",
+        "submitting": "Submitting…",
+        "noWorkflowError": "No approval workflow is configured for budgets yet — contact an administrator to set one up in Approvals.",
+        "activateTrigger": "Activate",
+        "activateConfirmTitle": "Activate budget",
+        "activateConfirmDescription": "Activate \"{name}\" ({versionLabel})? This makes it the fiscal year's active budget.",
+        "activateSupersedeWarning": "\"{name}\" ({versionLabel}) is already the active budget for this fiscal year. Activating this one will supersede it.",
+        "activateConfirmButton": "Activate",
+        "activating": "Activating…",
+        "rejectTrigger": "Reject",
+        "rejectConfirmTitle": "Reject budget",
+        "rejectConfirmDescription": "Reject this budget back to Draft? It can be edited and resubmitted.",
+        "rejectConfirmButton": "Reject",
+        "rejecting": "Rejecting…",
+        "genericError": "Something went wrong. Please try again."
+      }
+    },
+    "integritySweep": {
+      "page": {
+        "pageTitle": "Integrity Sweep",
+        "pageSubtitle": "Re-derive each account's ledger totals from posted journal lines and compare them against the balances the system has been maintaining."
+      },
+      "runButton": {
+        "trigger": "Run integrity sweep",
+        "running": "Running…",
+        "noMismatchesFound": "No mismatches found — every account total matches its posted journal lines.",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "list": {
+        "title": "Run history",
+        "description": "Most recent sweeps first. Select a run to see its findings.",
+        "columns": {
+          "ranAt": "Ran at",
+          "kind": "Kind",
+          "status": "Status",
+          "mismatchCount": "Mismatches"
+        },
+        "ok": "OK",
+        "mismatchesFound": "Mismatches found"
+      },
+      "findings": {
+        "noMismatches": "No mismatches in this run.",
+        "unstructuredFindings": "This run's findings aren't in this module's standard mismatch format (it may belong to a different sweep sharing this history) — showing the raw result instead.",
+        "columns": {
+          "period": "Period",
+          "account": "Account",
+          "costCenter": "Cost center",
+          "storedDebit": "Stored debit",
+          "derivedDebit": "Derived debit",
+          "storedCredit": "Stored credit",
+          "derivedCredit": "Derived credit"
+        },
+        "noCostCenter": "—",
+        "missing": "Missing"
+      }
+    }
+  },
+  "procurement": {
+    "suppliers": {
+      "statuses": {
+        "ACTIVE": "Active",
+        "BLACKLISTED": "Blacklisted",
+        "INACTIVE": "Inactive"
+      },
+      "categoryTags": {
+        "addButton": "Add"
+      },
+      "list": {
+        "pageTitle": "Suppliers",
+        "pageSubtitle": "Vendors and contractors the school procures goods and services from.",
+        "listTitle": "All suppliers",
+        "listDescription": "Search by name, filter by status, or open a supplier to manage ratings and blacklist status.",
+        "searchLabel": "Search",
+        "searchPlaceholder": "Search suppliers by name…",
+        "statusFilterLabel": "Status",
+        "allStatuses": "All statuses",
+        "noSuppliersMatchSearch": "No suppliers match your search.",
+        "moreCategories": "+{count} more",
+        "columns": {
+          "name": "Name",
+          "tradingName": "Trading name",
+          "kraPin": "KRA PIN",
+          "categories": "Categories",
+          "status": "Status"
+        }
+      },
+      "createDialog": {
+        "trigger": "New supplier",
+        "title": "Create supplier",
+        "description": "Add a new supplier for purchase orders and procurement.",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Acme Office Supplies Ltd",
+        "tradingNameLabel": "Trading name",
+        "tradingNamePlaceholder": "Optional",
+        "kraPinLabel": "KRA PIN",
+        "kraPinPlaceholder": "Optional",
+        "emailLabel": "Remittance email",
+        "emailPlaceholder": "e.g. accounts@supplier.com",
+        "emailHint": "Used to send remittance advice when payments are made to this supplier.",
+        "categoriesLabel": "Categories",
+        "categoriesPlaceholder": "e.g. Stationery — press Enter to add",
+        "paymentTermsDaysLabel": "Payment terms (days)",
+        "paymentTermsDaysHint": "How many days after invoicing this supplier expects payment.",
+        "creating": "Creating…",
+        "createButton": "Create supplier",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "editDialog": {
+        "title": "Edit {name}",
+        "description": "Update this supplier's details.",
+        "nameLabel": "Name",
+        "tradingNameLabel": "Trading name",
+        "kraPinLabel": "KRA PIN",
+        "emailLabel": "Remittance email",
+        "emailPlaceholder": "e.g. accounts@supplier.com",
+        "emailHint": "Used to send remittance advice when payments are made to this supplier.",
+        "categoriesLabel": "Categories",
+        "categoriesPlaceholder": "e.g. Stationery — press Enter to add",
+        "paymentTermsDaysLabel": "Payment terms (days)",
+        "saving": "Saving…",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "blacklistDialog": {
+        "trigger": "Blacklist",
+        "title": "Blacklist supplier",
+        "description": "Blacklisting {name} blocks any new purchase orders against them. This can be reversed later.",
+        "reasonLabel": "Reason",
+        "reasonPlaceholder": "Why is this supplier being blacklisted?",
+        "blacklisting": "Blacklisting…",
+        "confirmButton": "Blacklist supplier",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "ratings": {
+        "title": "Ratings",
+        "description": "Delivery and quality performance, plus a manual score you can set yourself.",
+        "deliveryLabel": "On-time delivery",
+        "deliveryUnavailable": "Not available",
+        "deliveryUnavailableHint": "No expected-delivery-date data exists yet to compute this from — a known, permanent gap, not a loading state.",
+        "qualityLabel": "Quality (GRN rejection rate)",
+        "noRatingYet": "Not rated yet",
+        "recomputeButton": "Recompute",
+        "computing": "Computing…",
+        "manualLabel": "Manual score",
+        "setButton": "Set",
+        "saving": "Saving…",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "detail": {
+        "backToList": "Back to suppliers",
+        "tradingNamePrefix": "Trading as {tradingName}",
+        "reactivateButton": "Reactivate",
+        "reactivating": "Reactivating…",
+        "blacklistReasonPrefix": "Blacklisted: {reason}",
+        "kraPinLabel": "KRA PIN",
+        "paymentTermsDaysLabel": "Payment terms",
+        "paymentTermsDaysValue": "{days} days",
+        "emailLabel": "Remittance email",
+        "categoriesLabel": "Categories",
+        "genericError": "Something went wrong. Please try again."
+      }
+    },
+    "requisitions": {
+      "statuses": {
+        "DRAFT": "Draft",
+        "SUBMITTED": "Submitted",
+        "PENDING_APPROVAL": "Pending Approval",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected",
+        "CONVERTED": "Converted",
+        "CANCELLED": "Cancelled"
+      },
+      "filters": {
+        "statusLabel": "Status",
+        "allStatuses": "All statuses",
+        "departmentLabel": "Department",
+        "allDepartments": "All departments",
+        "clearFilters": "Clear filters"
+      },
+      "list": {
+        "pageTitle": "Requisitions",
+        "pageSubtitle": "Staff purchase requests, from draft through approval.",
+        "listTitle": "All requisitions",
+        "listDescription": "Filter by status or department, or open a requisition to manage its lines and approval.",
+        "columns": {
+          "number": "Number",
+          "department": "Department",
+          "totalEstimate": "Total estimate",
+          "status": "Status"
+        }
+      },
+      "createDialog": {
+        "trigger": "New requisition",
+        "title": "Create requisition",
+        "description": "Start a draft requisition for a department. Add lines once it's created.",
+        "departmentLabel": "Department",
+        "selectDepartmentPlaceholder": "Select a department",
+        "loadingDepartments": "Loading departments…",
+        "justificationLabel": "Justification",
+        "justificationPlaceholder": "Why is this purchase needed?",
+        "creating": "Creating…",
+        "createButton": "Create requisition",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "lineEditor": {
+        "description": "Description",
+        "descriptionPlaceholder": "e.g. 10 reams of A4 paper",
+        "qtyLabel": "Quantity",
+        "estPriceLabel": "Est. unit price",
+        "budgetLineLabel": "Budget line (optional)",
+        "budgetLineIdPlaceholder": "Budget line ID, if known",
+        "budgetLineIdInvalid": "Doesn't look like a valid ID.",
+        "addLineTrigger": "Add line",
+        "addDialogTitle": "Add line",
+        "addDialogDescription": "Add an item to this requisition.",
+        "adding": "Adding…",
+        "addButton": "Add line",
+        "editDialogTitle": "Edit line",
+        "editDialogDescription": "Update this line's details.",
+        "saving": "Saving…",
+        "deleteDialogTitle": "Remove line",
+        "deleteDialogDescription": "This removes the line from the requisition. This can't be undone.",
+        "deleting": "Removing…",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "statusActions": {
+        "submitTrigger": "Submit for approval",
+        "submitting": "Submitting…",
+        "submitNeedsLinesHint": "Add at least one line before submitting.",
+        "noWorkflowError": "No approval workflow is configured for requisitions yet. Ask a System Admin to set one up in Approvals.",
+        "genericError": "Something went wrong. Please try again.",
+        "approveTrigger": "Approve",
+        "approveConfirmTitle": "Approve requisition",
+        "approveConfirmDescription": "Approve requisition {number}? This moves it forward for conversion into a purchase order.",
+        "approving": "Approving…",
+        "approveConfirmButton": "Approve requisition",
+        "rejectTrigger": "Reject",
+        "rejectConfirmTitle": "Reject requisition",
+        "rejectConfirmDescription": "Reject requisition {number}? The requester will need to submit a new one.",
+        "rejecting": "Rejecting…",
+        "rejectConfirmButton": "Reject requisition",
+        "cancelTrigger": "Cancel",
+        "cancelConfirmTitle": "Cancel requisition",
+        "cancelConfirmDescription": "Cancel requisition {number}? This can't be undone.",
+        "cancelling": "Cancelling…",
+        "cancelConfirmButton": "Cancel requisition"
+      },
+      "detail": {
+        "backToList": "Back to requisitions",
+        "justificationLabel": "Justification",
+        "totalEstimateLabel": "Total estimate",
+        "budgetSnapshotTitle": "Budget snapshot (at submission)",
+        "budgetSnapshotCheckedAt": "Checked at {checkedAt}",
+        "budgetSnapshotBudgeted": "Budgeted line",
+        "budgetSnapshotNotBudgeted": "No budget line linked",
+        "budgetSnapshotLineEstimate": "Est. {amount}",
+        "budgetSnapshotWithinAvailable": "Within available budget",
+        "budgetSnapshotOverAvailable": "Over available budget",
+        "linesTitle": "Lines",
+        "columns": {
+          "actions": "Actions"
+        },
+        "viewQuotationsAction": "View quotations"
+      }
+    },
+    "lineEditor": {
+      "description": "Description",
+      "descriptionPlaceholder": "e.g. 10 reams of A4 paper",
+      "qty": "Qty",
+      "unitPrice": "Unit price",
+      "lineTotal": "Line total",
+      "removeLine": "Remove line",
+      "addLine": "Add line",
+      "estimatedSubtotal": "Estimated subtotal",
+      "subtotalHint": "Estimated from these lines — the server computes the real subtotal, tax, and total once saved."
+    },
+    "quotations": {
+      "createDialog": {
+        "trigger": "New quotation",
+        "title": "Capture quotation",
+        "description": "Record a supplier's quote against this requisition. Lines are captured once and can't be edited afterward.",
+        "supplierLabel": "Supplier",
+        "loadingSuppliers": "Loading suppliers…",
+        "selectSupplierPlaceholder": "Select a supplier",
+        "searchSuppliers": "Search suppliers…",
+        "noSuppliersFound": "No suppliers found.",
+        "quoteDateLabel": "Quote date",
+        "validUntilLabel": "Valid until",
+        "termsLabel": "Terms",
+        "termsPlaceholder": "Payment terms, warranty, delivery conditions…",
+        "linesLabel": "Lines",
+        "creating": "Capturing…",
+        "createButton": "Capture quotation",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "comparison": {
+        "pageTitle": "Quotations",
+        "pageSubtitle": "Open a requisition to compare its quotations, or pick one below.",
+        "pageSubtitleForRequisition": "Comparing quotations for requisition {number}.",
+        "pickRequisitionTitle": "Choose a requisition",
+        "pickRequisitionDescription": "Pick an APPROVED requisition to view or capture quotations against.",
+        "selectRequisitionPlaceholder": "Select a requisition",
+        "backToRequisition": "Back to requisition",
+        "awardedBadge": "Awarded",
+        "totalLabel": "Total",
+        "quoteDateLabel": "Quote date",
+        "validUntilLabel": "Valid until",
+        "termsLabel": "Terms",
+        "awardReasonLabel": "Award reason",
+        "awardTrigger": "Award this quotation",
+        "awardDialogTitle": "Award quotation",
+        "awardDialogDescription": "Awarding this quotation marks it as the chosen supplier for this requisition. At most one quotation can be awarded per requisition.",
+        "awardReasonPlaceholder": "Why was this supplier chosen?",
+        "awarding": "Awarding…",
+        "awardConfirmButton": "Award quotation",
+        "alreadyAwardedError": "Another quotation for this requisition has already been awarded.",
+        "genericError": "Something went wrong. Please try again."
+      }
+    },
+    "purchaseOrders": {
+      "statuses": {
+        "DRAFT": "Draft",
+        "PENDING_APPROVAL": "Pending Approval",
+        "APPROVED": "Approved",
+        "ISSUED": "Issued",
+        "PARTIALLY_RECEIVED": "Partially Received",
+        "RECEIVED": "Received",
+        "CLOSED": "Closed",
+        "CANCELLED": "Cancelled"
+      },
+      "filters": {
+        "statusLabel": "Status",
+        "allStatuses": "All statuses",
+        "supplierLabel": "Supplier",
+        "allSuppliers": "All suppliers",
+        "clearFilters": "Clear filters"
+      },
+      "list": {
+        "pageTitle": "Purchase Orders",
+        "pageSubtitle": "Orders placed with suppliers, from draft through issuance and revision.",
+        "listTitle": "All purchase orders",
+        "listDescription": "Filter by status or supplier, or open an order to manage its approval and lines.",
+        "notYetIssued": "Not yet issued",
+        "columns": {
+          "number": "Number",
+          "supplier": "Supplier",
+          "revision": "Revision",
+          "total": "Total",
+          "status": "Status"
+        }
+      },
+      "createDialog": {
+        "trigger": "New purchase order",
+        "title": "Create purchase order",
+        "description": "Create a DRAFT purchase order, from a requisition or directly with a supplier.",
+        "sourceLabel": "Source",
+        "sourceFromRequisition": "From requisition",
+        "sourceDirect": "Direct",
+        "directHint": "Bypasses the requisition workflow entirely — requires a separate permission, and may not be available to every role.",
+        "requisitionLabel": "Requisition",
+        "loadingRequisitions": "Loading requisitions…",
+        "selectRequisitionPlaceholder": "Select an approved requisition",
+        "quotationLabel": "Awarded quotation (optional)",
+        "selectQuotationPlaceholder": "Prefill from an awarded quotation",
+        "quotationOptionLabel": "Awarded quote — {total}",
+        "quotationHint": "Prefills the supplier and lines below from this quotation — you can still edit them before saving.",
+        "supplierLabel": "Supplier",
+        "loadingSuppliers": "Loading suppliers…",
+        "selectSupplierPlaceholder": "Select a supplier",
+        "searchSuppliers": "Search suppliers…",
+        "noSuppliersFound": "No suppliers found.",
+        "orderDateLabel": "Order date",
+        "deliveryTermsLabel": "Delivery terms",
+        "deliveryTermsPlaceholder": "e.g. Delivered within 14 days",
+        "linesLabel": "Lines",
+        "creating": "Creating…",
+        "createButton": "Create purchase order",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "statusActions": {
+        "submitTrigger": "Submit for approval",
+        "submitting": "Submitting…",
+        "approveTrigger": "Approve",
+        "approveConfirmTitle": "Approve purchase order",
+        "approveConfirmDescription": "Approve purchase order {number}? This moves it forward to be issued.",
+        "approving": "Approving…",
+        "approveConfirmButton": "Approve purchase order",
+        "rejectTrigger": "Reject",
+        "rejectConfirmTitle": "Reject purchase order",
+        "rejectConfirmDescription": "Reject purchase order {number}? It returns to draft for changes.",
+        "rejecting": "Rejecting…",
+        "rejectConfirmButton": "Reject purchase order",
+        "issueTrigger": "Issue",
+        "issueConfirmTitle": "Issue purchase order",
+        "issueConfirmDescription": "Issuing allocates the real purchase order number and freezes this order's supplier, lines, and totals from further changes.",
+        "issueSupersedeWarning": "Issuing this will cancel PO {number}, which this order supersedes.",
+        "issueSupersedeWarningGeneric": "Issuing this will also cancel the original purchase order it supersedes.",
+        "issuing": "Issuing…",
+        "issueConfirmButton": "Issue purchase order",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "reviseDialog": {
+        "trigger": "Revise",
+        "title": "Revise purchase order",
+        "description": "Creates a new draft purchase order superseding {number}. The new order goes through submit, approve, and issue again.",
+        "supplierLabel": "Supplier",
+        "loadingSuppliers": "Loading suppliers…",
+        "selectSupplierPlaceholder": "Select a supplier",
+        "searchSuppliers": "Search suppliers…",
+        "noSuppliersFound": "No suppliers found.",
+        "deliveryTermsLabel": "Delivery terms",
+        "deliveryTermsPlaceholder": "e.g. Delivered within 14 days",
+        "linesModeLabel": "Lines",
+        "linesModeKeep": "Keep existing lines",
+        "linesModeSpecify": "Specify new lines",
+        "linesModeKeepHint": "The new order carries forward the original's lines unchanged.",
+        "linesModeSpecifyHint": "Starting from the original order's own lines — edit, add, or remove as needed.",
+        "revising": "Revising…",
+        "reviseButton": "Create revision",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "detail": {
+        "backToList": "Back to purchase orders",
+        "notYetIssued": "Not yet issued",
+        "revisionBadge": "Revision {revision}",
+        "requisitionLabel": "Requisition",
+        "directPo": "Direct (no requisition)",
+        "quotationLabel": "Quotation",
+        "viewQuotation": "View quotation",
+        "orderDateLabel": "Order date",
+        "deliveryTermsLabel": "Delivery terms",
+        "paymentTermsDaysLabel": "Payment terms",
+        "paymentTermsDaysValue": "{days} days",
+        "issuedAtLabel": "Issued at",
+        "subtotalLabel": "Subtotal",
+        "taxAmountLabel": "Tax",
+        "totalLabel": "Total",
+        "revisionHistoryTitle": "Revision history",
+        "supersedesLink": "Supersedes PO {number} — view original",
+        "supersededByLink": "Superseded by PO {number} — view revision",
+        "linesTitle": "Lines",
+        "linesReceivedHint": "Received quantities are updated once goods receipt (GRN) is available.",
+        "columns": {
+          "line": "#",
+          "description": "Description",
+          "qty": "Qty",
+          "unitPrice": "Unit price",
+          "receivedQty": "Received"
+        },
+        "grnHistoryTitle": "Goods receipt history",
+        "grnHistoryDescription": "Every goods receipt (GRN) recorded against this purchase order."
+      }
+    },
+    "grn": {
+      "receiveDialog": {
+        "trigger": "Receive goods",
+        "title": "Receive goods",
+        "description": "Record goods received against purchase order {number}.",
+        "columns": {
+          "description": "Description",
+          "ordered": "Ordered",
+          "alreadyReceived": "Already received",
+          "remaining": "Remaining",
+          "receiveNow": "Receive now",
+          "rejected": "Rejected",
+          "rejectionReason": "Rejection reason",
+          "unitCost": "Unit cost"
+        },
+        "fullyReceivedHint": "Fully received",
+        "rejectionReasonPlaceholder": "Optional",
+        "notesLabel": "Notes",
+        "notesPlaceholder": "Optional notes about this receipt",
+        "receiving": "Receiving…",
+        "receiveButton": "Receive goods",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "list": {
+        "columns": {
+          "number": "Number",
+          "receivedAt": "Received at",
+          "status": "Status",
+          "journal": "Journal",
+          "notes": "Notes"
+        },
+        "notYetPosted": "Not yet posted",
+        "viewJournal": "View journal",
+        "statuses": {
+          "DRAFT": "Draft",
+          "POSTED": "Posted"
+        },
+        "postTrigger": "Post",
+        "postConfirmTitle": "Post goods receipt",
+        "postConfirmDescription": "Posting realizes the accounting entry for this receipt and can't be undone.",
+        "posting": "Posting…",
+        "postConfirmButton": "Post goods receipt",
+        "genericError": "Something went wrong. Please try again."
+      }
+    },
+    "supplierInvoices": {
+      "statuses": {
+        "UNMATCHED": "Unmatched",
+        "MATCH_EXCEPTION": "Match Exception",
+        "MATCHED": "Matched",
+        "POSTED": "Posted",
+        "PAID": "Paid",
+        "PARTIALLY_PAID": "Partially Paid"
+      },
+      "list": {
+        "pageTitle": "Supplier Invoices",
+        "pageSubtitle": "Invoices captured from suppliers, from capture through matching and posting.",
+        "listTitle": "All supplier invoices",
+        "listDescription": "Filter by status or supplier, or open an invoice to match it against its purchase order and post it.",
+        "filters": {
+          "statusLabel": "Status",
+          "allStatuses": "All statuses",
+          "supplierLabel": "Supplier",
+          "allSuppliers": "All suppliers",
+          "clearFilters": "Clear filters"
+        },
+        "columns": {
+          "number": "Number",
+          "supplierRef": "Supplier reference",
+          "supplier": "Supplier",
+          "total": "Total",
+          "dueDate": "Due date",
+          "status": "Status"
+        }
+      },
+      "captureDialog": {
+        "trigger": "Capture invoice",
+        "title": "Capture supplier invoice",
+        "description": "Record an invoice from a supplier, optionally linked to a purchase order for matching.",
+        "supplierLabel": "Supplier",
+        "loadingSuppliers": "Loading suppliers…",
+        "selectSupplierPlaceholder": "Select a supplier",
+        "searchSuppliers": "Search suppliers…",
+        "noSuppliersFound": "No suppliers found.",
+        "poLabel": "Purchase order (optional)",
+        "pickSupplierFirstPlaceholder": "Select a supplier first",
+        "selectPoPlaceholder": "Select a purchase order",
+        "adHocOption": "No purchase order (ad-hoc invoice)",
+        "poHint": "Link a purchase order to enable 3-way matching. Leave unset for a non-PO (services/ad-hoc) invoice.",
+        "supplierRefLabel": "Supplier reference",
+        "supplierRefPlaceholder": "e.g. Supplier's own invoice number",
+        "invoiceDateLabel": "Invoice date",
+        "dueDateLabel": "Due date",
+        "totalLabel": "Total",
+        "linesLabel": "Lines (optional integrity check)",
+        "addLine": "Add line",
+        "linesHint": "Optional — a data-entry check against the purchase order's own lines, not saved as a line-level record.",
+        "columns": {
+          "poLine": "PO line",
+          "qty": "Qty",
+          "unitPrice": "Unit price"
+        },
+        "removeLine": "Remove line",
+        "selectPoLinePlaceholder": "Select a line",
+        "linesSumHint": "Lines sum to {sum} — total is {total}.",
+        "capturing": "Capturing…",
+        "captureButton": "Capture invoice",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "matchPanel": {
+        "title": "3-way match",
+        "description": "Compares this invoice against the purchase order's own lines and their posted goods receipts.",
+        "adHocHint": "This invoice has no linked purchase order, so matching isn't available. Post via the normal accounts payable flow instead.",
+        "runMatchButton": "Run match",
+        "matching": "Matching…",
+        "genericError": "Something went wrong. Please try again.",
+        "varianceUnavailable": "The match result couldn't be read — its shape didn't look as expected.",
+        "notMatchedYetHint": "This invoice hasn't been matched yet.",
+        "invoiceTotalLabel": "Invoice total",
+        "poOrderedQtyLabel": "PO ordered qty",
+        "grnAcceptedQtyLabel": "GRN accepted qty",
+        "grnAcceptedValueLabel": "GRN accepted value",
+        "qtyToleranceLabel": "Qty within {percent}% tolerance",
+        "priceToleranceLabel": "Price within {percent}% or KES {absolute}",
+        "withinToleranceLabel": "Within tolerance",
+        "outsideToleranceLabel": "Outside tolerance",
+        "priceVarianceAmountLabel": "Price variance: {amount}",
+        "columns": {
+          "poLine": "PO line",
+          "poQty": "PO qty",
+          "grnAcceptedQty": "GRN accepted qty",
+          "grnValue": "GRN value"
+        },
+        "linesScopeHint": "This compares the purchase order's own lines against posted goods receipts — the invoice's own line-level breakdown isn't stored, so matching happens at the header total level.",
+        "resolutionLabel": "Resolved: {action}",
+        "resolutionActions": {
+          "ACCEPT_VARIANCE": "Variance accepted",
+          "REJECT": "Rejected for correction"
+        }
+      },
+      "resolveDialog": {
+        "trigger": "Resolve exception",
+        "title": "Resolve match exception",
+        "description": "Decide how to handle invoice {number}'s match exception.",
+        "resolutionLabel": "Resolution",
+        "acceptVarianceOption": "Accept variance",
+        "rejectOption": "Reject",
+        "acceptVarianceHint": "Overrides the computed variance — the invoice moves to Matched and can be posted.",
+        "rejectHint": "Sends the invoice back to Unmatched for correction — it can be matched again once fixed.",
+        "noteLabel": "Note",
+        "notePlaceholder": "Why is this variance being accepted or rejected?",
+        "resolving": "Resolving…",
+        "confirmButton": "Confirm resolution",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "detail": {
+        "backToList": "Back to supplier invoices",
+        "supplierRefLabel": "Supplier reference",
+        "poLabel": "Purchase order",
+        "viewPurchaseOrder": "View purchase order",
+        "adHocInvoice": "None (ad-hoc invoice)",
+        "invoiceDateLabel": "Invoice date",
+        "dueDateLabel": "Due date",
+        "totalLabel": "Total",
+        "paidAmountLabel": "Paid amount",
+        "viewJournal": "View journal",
+        "postTrigger": "Post",
+        "postConfirmTitle": "Post supplier invoice",
+        "postConfirmDescription": "Posting invoice {number} settles the goods receipt accrual and books accounts payable — this can't be undone.",
+        "posting": "Posting…",
+        "postConfirmButton": "Post invoice",
+        "genericError": "Something went wrong. Please try again."
+      }
+    },
+    "paymentVouchers": {
+      "list": {
+        "pageTitle": "Payment Vouchers",
+        "pageSubtitle": "Pay suppliers by allocating a voucher against their open invoices.",
+        "listTitle": "Payment Vouchers",
+        "listDescription": "Every payment voucher raised against a supplier, across every status.",
+        "columns": {
+          "number": "Number",
+          "supplier": "Supplier",
+          "method": "Method",
+          "total": "Total",
+          "status": "Status"
+        },
+        "filters": {
+          "statusLabel": "Status",
+          "supplierLabel": "Supplier",
+          "allStatuses": "All statuses",
+          "allSuppliers": "All suppliers",
+          "clearFilters": "Clear filters"
+        },
+        "notYetExecuted": "Not yet executed"
+      },
+      "detail": {
+        "backToList": "Back to payment vouchers",
+        "methodLabel": "Method",
+        "totalLabel": "Total",
+        "remittanceLabel": "Remittance advice",
+        "remittanceSent": "Sent",
+        "remittanceNotSent": "Not sent",
+        "notYetExecuted": "Not yet executed",
+        "allocationsTitle": "Allocations",
+        "allocationsDescription": "The invoices this voucher settles, and how much of each is allocated.",
+        "columns": {
+          "invoice": "Invoice",
+          "amount": "Amount"
+        },
+        "viewJournal": "View journal entry"
+      },
+      "methods": {
+        "BANK": "Bank transfer",
+        "CHEQUE": "Cheque",
+        "MPESA": "M-Pesa",
+        "CASH": "Cash"
+      },
+      "statuses": {
+        "DRAFT": "Draft",
+        "PENDING_APPROVAL": "Pending Approval",
+        "APPROVED": "Approved",
+        "PAID": "Paid",
+        "CANCELLED": "Cancelled"
+      },
+      "createDialog": {
+        "trigger": "New Payment Voucher",
+        "title": "New payment voucher",
+        "description": "Pick a supplier, then allocate this voucher against one or more of their open invoices.",
+        "supplierLabel": "Supplier",
+        "searchSuppliers": "Search suppliers…",
+        "selectSupplierPlaceholder": "Select a supplier",
+        "loadingSuppliers": "Loading suppliers…",
+        "noSuppliersFound": "No suppliers found.",
+        "pickSupplierHint": "Pick a supplier to see their open invoices.",
+        "methodLabel": "Payment method",
+        "allocationsLabel": "Allocations",
+        "noOpenInvoicesHint": "This supplier has no open (posted, unpaid) invoices.",
+        "columns": {
+          "invoice": "Invoice",
+          "openBalance": "Open balance",
+          "allocationAmount": "Allocate"
+        },
+        "createButton": "Create voucher",
+        "creating": "Creating…",
+        "genericError": "Couldn't create the voucher. Please check the allocations and try again."
+      },
+      "statusActions": {
+        "submitTrigger": "Submit for approval",
+        "submitting": "Submitting…",
+        "approveTrigger": "Approve",
+        "approving": "Approving…",
+        "approveConfirmTitle": "Approve this payment voucher?",
+        "approveConfirmButton": "Approve",
+        "rejectTrigger": "Reject",
+        "rejecting": "Rejecting…",
+        "rejectConfirmTitle": "Reject this payment voucher?",
+        "rejectConfirmButton": "Reject",
+        "executeTrigger": "Execute payment",
+        "executing": "Executing…",
+        "executeConfirmTitle": "Execute this payment?",
+        "executeConfirmButton": "Execute",
+        "executeInvoiceEffectNote": "Executing posts a real journal entry and marks the allocated invoices as paid.",
+        "genericError": "That action couldn't be completed. Please try again."
+      }
+    },
+    "contracts": {
+      "list": {
+        "pageTitle": "Contracts",
+        "pageSubtitle": "Supplier contracts, renewal alerts, and their current status.",
+        "listTitle": "Contracts",
+        "listDescription": "Every supplier contract, across every status.",
+        "columns": {
+          "title": "Title",
+          "supplier": "Supplier",
+          "startsOn": "Starts",
+          "endsOn": "Ends",
+          "value": "Value",
+          "status": "Status"
+        },
+        "filters": {
+          "statusLabel": "Status",
+          "supplierLabel": "Supplier",
+          "allStatuses": "All statuses",
+          "allSuppliers": "All suppliers",
+          "clearFilters": "Clear filters"
+        }
+      },
+      "detail": {
+        "backToList": "Back to contracts",
+        "startsOnLabel": "Starts on",
+        "endsOnLabel": "Ends on",
+        "valueLabel": "Value",
+        "renewalAlertDaysLabel": "Renewal alert (days before end)"
+      },
+      "statuses": {
+        "ACTIVE": "Active",
+        "EXPIRED": "Expired",
+        "TERMINATED": "Terminated"
+      },
+      "createDialog": {
+        "trigger": "New Contract",
+        "title": "New contract",
+        "titleLabel": "Title",
+        "titlePlaceholder": "e.g. Annual stationery supply agreement",
+        "supplierLabel": "Supplier",
+        "searchSuppliers": "Search suppliers…",
+        "selectSupplierPlaceholder": "Select a supplier",
+        "loadingSuppliers": "Loading suppliers…",
+        "noSuppliersFound": "No suppliers found.",
+        "startsOnLabel": "Starts on",
+        "endsOnLabel": "Ends on",
+        "datesInvalidHint": "The end date must be on or after the start date.",
+        "valueLabel": "Value (optional)",
+        "renewalAlertDaysLabel": "Renewal alert (days before end)",
+        "renewalAlertDaysHint": "How many days before the contract ends to flag it as expiring soon.",
+        "description": "Record a new supplier contract.",
+        "createButton": "Create contract",
+        "creating": "Creating…",
+        "genericError": "Couldn't create the contract. Please check the dates and try again."
+      },
+      "editDialog": {
+        "titleLabel": "Title",
+        "startsOnLabel": "Starts on",
+        "endsOnLabel": "Ends on",
+        "datesInvalidHint": "The end date must be on or after the start date.",
+        "valueLabel": "Value (optional)",
+        "renewalAlertDaysLabel": "Renewal alert (days before end)",
+        "description": "Update this contract's details.",
+        "saving": "Saving…",
+        "genericError": "Couldn't save the contract. Please try again."
+      },
+      "statusActions": {
+        "terminateTrigger": "Terminate",
+        "terminating": "Terminating…",
+        "terminateConfirmTitle": "Terminate this contract?",
+        "terminateConfirmButton": "Terminate",
+        "markExpiredTrigger": "Mark as expired",
+        "markingExpired": "Marking as expired…",
+        "markExpiredConfirmTitle": "Mark this contract as expired?",
+        "markExpiredConfirmButton": "Mark expired",
+        "genericError": "That action couldn't be completed. Please try again."
+      },
+      "expiringSoonWidget": {
+        "title": "Expiring soon",
+        "description": "Active contracts approaching their own renewal-alert window.",
+        "noneHint": "No contracts are approaching expiry right now."
+      }
     }
   }
 }
