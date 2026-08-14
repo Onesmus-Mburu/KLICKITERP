@@ -33,10 +33,24 @@ import { normalizeMoneyInput, sumMoneyStrings } from "@/lib/money";
  * authoritative `subtotal`/`taxAmount`/`total` are always server-computed on
  * the actual create/revise response, never trusted from this client-side
  * arithmetic.
+ *
+ * Phase 6 Slice 19 Part 1 (Inventory Foundations, Module 13) — `itemId` is a
+ * new, OPTIONAL field on this row shape (the "no `inv_item` picker exists
+ * anywhere in this codebase yet" reasoning above no longer applies now that
+ * Module 13's frontend exists). Purely additive: `emptyPoLineRow()` still
+ * defaults it to `undefined`, `poLineRowsToDto()` only includes it in the
+ * wire shape when set, and every pre-existing caller that never touches this
+ * field (nothing did, before this pass) is completely unaffected — a row
+ * with no `itemId` behaves EXACTLY as it did before this change, free-text
+ * only.
  */
 export interface PoLineFormRow {
   /** Client-only stable React key — never sent to the server. */
   key: string;
+  /** Optional forward reference to `inv_item`, set only via `<ItemCombobox>` — see this file's own doc comment. */
+  itemId?: string;
+  /** Client-only display cache for `<ItemCombobox>`'s own trigger label (`"${code} — ${name}"`) — never sent to the server, same "client-only" treatment `key` gets. */
+  itemLabel?: string;
   description: string;
   qty: string;
   unitPrice: string;
@@ -54,9 +68,10 @@ export function isPoLineRowComplete(row: PoLineFormRow): boolean {
   return row.description.trim().length > 0 && normalizeMoneyInput(row.qty) !== null && normalizeMoneyInput(row.unitPrice) !== null;
 }
 
-/** Converts committed form rows into the wire shape (`CreateQuotationLineDto[]`/`PurchaseOrderLineDto[]` — structurally identical, see this file's own doc comment). `normalizeMoneyInput` guards defense-in-depth, same as `journalLineRowsToDto()`. */
-export function poLineRowsToDto(rows: PoLineFormRow[]): { description: string; qty: string; unitPrice: string }[] {
+/** Converts committed form rows into the wire shape (`CreateQuotationLineDto[]`/`PurchaseOrderLineDto[]` — structurally identical, see this file's own doc comment). `normalizeMoneyInput` guards defense-in-depth, same as `journalLineRowsToDto()`. `itemId` is included only when the row actually has one — an untouched row (no `<ItemCombobox>` selection ever made) omits the key entirely, preserving the exact pre-Slice-19 wire shape. */
+export function poLineRowsToDto(rows: PoLineFormRow[]): { itemId?: string; description: string; qty: string; unitPrice: string }[] {
   return rows.map((row) => ({
+    ...(row.itemId ? { itemId: row.itemId } : {}),
     description: row.description.trim(),
     qty: normalizeMoneyInput(row.qty) ?? "0",
     unitPrice: normalizeMoneyInput(row.unitPrice) ?? "0",

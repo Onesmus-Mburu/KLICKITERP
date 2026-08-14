@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MoneyInput } from "@/components/patterns/money-input";
 import { formatMoney } from "@/lib/money";
+import { ItemCombobox, type SelectedInventoryItem } from "@/features/inventory/components/item-combobox";
 import { emptyPoLineRow, multiplyDecimalStrings, poLineRowsSubtotal, updatePoLineRow, type PoLineFormRow } from "../lib/po-lines";
 
 const DESCRIPTION_MAX_LENGTH = 200; // PurchaseOrderLineDto.description / CreateQuotationLineDto.description's own @MaxLength(200).
@@ -27,12 +28,37 @@ const MIN_ROWS = 1; // both CreateQuotationDto.lines and CreatePurchaseOrderDto.
  * precedent this was asked to skim): no account/cost-center pickers, no
  * debit/credit clearing logic — just description/qty/unit price, matching
  * `CreateQuotationLineDto`/`PurchaseOrderLineDto`'s own real shape.
+ *
+ * Phase 6 Slice 19 Part 1 (Inventory Foundations, Module 13) — an ADDITIONAL,
+ * OPTIONAL `<ItemCombobox>` column, per this part's own explicit retrofit
+ * scope: selecting an item sets that row's `itemId` (`../lib/po-lines.ts`'s
+ * new optional field — previously always `undefined`/unset, since no
+ * `inv_item` picker existed anywhere in this codebase before this part) and
+ * convenience-prefills `description` with the item's own name IF
+ * `description` is still empty (never overwrites text the user already
+ * typed — a genuinely optional autofill, not a forced sync). Leaving this
+ * column untouched preserves the EXACT prior behavior: `itemId` stays
+ * `undefined`, `description` stays free text, `poLineRowsToDto()` omits the
+ * key entirely — this is additive only, no existing behavior removed or
+ * restructured.
  */
 export function PoLineEditor({ rows, onChange }: { rows: PoLineFormRow[]; onChange: (rows: PoLineFormRow[]) => void }) {
   const t = useTranslations("procurement.lineEditor");
 
   function patchRow(key: string, patch: Partial<PoLineFormRow>) {
     onChange(updatePoLineRow(rows, key, patch));
+  }
+
+  function handleItemSelect(row: PoLineFormRow, item: SelectedInventoryItem | null) {
+    if (!item) {
+      patchRow(row.key, { itemId: undefined, itemLabel: undefined });
+      return;
+    }
+    patchRow(row.key, {
+      itemId: item.id,
+      itemLabel: `${item.code} — ${item.name}`,
+      ...(row.description.trim() === "" ? { description: item.name.slice(0, DESCRIPTION_MAX_LENGTH) } : {}),
+    });
   }
 
   function addRow() {
@@ -51,6 +77,7 @@ export function PoLineEditor({ rows, onChange }: { rows: PoLineFormRow[]; onChan
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-56">{t("item")}</TableHead>
               <TableHead>{t("description")}</TableHead>
               <TableHead className="w-28">{t("qty")}</TableHead>
               <TableHead className="w-36">{t("unitPrice")}</TableHead>
@@ -61,6 +88,9 @@ export function PoLineEditor({ rows, onChange }: { rows: PoLineFormRow[]; onChan
           <TableBody>
             {rows.map((row) => (
               <TableRow key={row.key}>
+                <TableCell className="min-w-[200px]">
+                  <ItemCombobox value={row.itemId ?? ""} valueLabel={row.itemLabel} onSelect={(item) => handleItemSelect(row, item)} />
+                </TableCell>
                 <TableCell className="min-w-[220px]">
                   <Input
                     value={row.description}

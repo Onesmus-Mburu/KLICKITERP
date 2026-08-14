@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { CheckSquare, ChevronDown, GraduationCap, Landmark, LayoutDashboard, Layers, Megaphone, Palette, Receipt, Settings, Truck, UserCog, Wallet, WalletCards } from "lucide-react";
+import { CheckSquare, ChevronDown, CreditCard, GraduationCap, Landmark, LayoutDashboard, Layers, Megaphone, Package, Palette, Receipt, Settings, Truck, UserCog, Wallet, WalletCards } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { hasAnyRole } from "@/lib/permissions";
@@ -305,6 +305,162 @@ const NAV_ITEMS: NavItem[] = [
       { href: "/procurement/supplier-invoices", labelKey: "procurementSupplierInvoices" },
       { href: "/procurement/payment-vouchers", labelKey: "procurementPaymentVouchers" },
       { href: "/procurement/contracts", labelKey: "procurementContracts" },
+    ],
+  },
+  // Phase 6 Slice 19 Part 1 (Inventory Foundations, Module 13) —
+  // Inventory's first nav entry (`inventory/*` — Categories, Stores, Items —
+  // had NO home in the flat nav at all before this pass, despite the
+  // backend itself being complete since Phase 5, 2026-07-19). Positioned
+  // AFTER the Procurement dropdown directly above and before Communications
+  // below, per this part's own plan — matching this file's own established
+  // ordering of backend-complete-module dropdowns by the order each
+  // module's frontend actually shipped, with the two newest module
+  // dropdowns (Procurement: Slice 18; this: Slice 19) kept adjacent, the
+  // same "insert right after the most-recently-shipped module dropdown"
+  // placement Procurement itself followed relative to Accounting in Slice
+  // 18's own comment above. Styled as a `children`-bearing dropdown FROM THE
+  // START (the same mechanism every other multi-part module dropdown in
+  // this file already established), all 3 children shipping together in
+  // this one part since this part's own scope covers Categories/Stores/
+  // Items at once — Stock Movements/Transfers/Stock Takes (the rest of
+  // Module 13's backend surface) are explicitly NOT part of this dropdown
+  // yet, a future part's own scope. `Package` (confirmed not already used
+  // elsewhere in this file, and confirmed actually exported by
+  // `lucide-react` by checking that package's own compiled
+  // `dist/esm/icons/package.js` file directly, not assumed — a
+  // box/inventory glyph, a clear semantic fit for "Inventory" distinct from
+  // `Truck`/`Landmark`/`Wallet`/`WalletCards`/`Receipt`, all already claimed
+  // by other entries above). Same `allowedRoles: []`/`<QueryBoundary>`-is-
+  // the-real-gate reasoning as every other entry above:
+  // `inventory:category:manage`/`inventory:store:manage`/`inventory:item:view`
+  // are the real permissions gating each of the 3 children (Categories/
+  // Stores share one bundled `:manage` permission with no separate view
+  // permission; Items splits `:view`/`:manage`, confirmed by reading all 3
+  // controllers directly — see `features/inventory/api/*.ts`'s own doc
+  // comments), no permission-list endpoint exists to target them precisely
+  // from a coarse role-name check.
+  //
+  // Phase 6 Slice 19 Part 2 (Stock Movements + Transfers, Module 13) —
+  // appends 2 more children (Stock Movements, Transfers) to this SAME
+  // dropdown, per this part's own explicit "append-only, same pattern every
+  // multi-part slice uses" instruction — mirrors Communications Part 2
+  // appending Broadcasts below. Gated by `inventory:movement:view` and
+  // `inventory:transfer:issue` respectively (both real, confirmed by reading
+  // `StockMovementsController`/`TransfersController` directly). Still NOT
+  // this dropdown's final shape — Stock Takes (the last of Module 13's
+  // backend surface) may still append one more child in a future part.
+  //
+  // Phase 6 Slice 19 Part 3 (FINAL shape of this dropdown) — 6th and last
+  // child appended without touching the mechanism itself: Stock Takes
+  // (`/inventory/stock-takes`, `inventory:stock-take:create` gating
+  // list/detail/lines — the same "one bundled permission reused across every
+  // GET" shape Stores/Transfers already established, confirmed by reading
+  // `StockTakesController` directly). This completes Module 13's whole
+  // backend surface (Categories, Stores, Items, Stock Movements, Transfers,
+  // Stock Takes) — matching the same "FINAL shape, no more children planned"
+  // declaration Accounting's/Procurement's own dropdowns already make once
+  // their own last part ships.
+  {
+    href: "/inventory/categories",
+    labelKey: "inventory",
+    icon: Package,
+    allowedRoles: [],
+    children: [
+      { href: "/inventory/categories", labelKey: "inventoryCategories" },
+      { href: "/inventory/stores", labelKey: "inventoryStores" },
+      { href: "/inventory/items", labelKey: "inventoryItems" },
+      { href: "/inventory/stock-movements", labelKey: "inventoryStockMovements" },
+      { href: "/inventory/transfers", labelKey: "inventoryTransfers" },
+      { href: "/inventory/stock-takes", labelKey: "inventoryStockTakes" },
+    ],
+  },
+  // Phase 6 Slice 20 Part 1 (Expenses Foundations, Module 14) — Expenses'
+  // first nav entry (`expenses/*` — Categories, Expense Vouchers — had NO
+  // home in the flat nav at all before this pass, despite the backend itself
+  // being complete since Phase 5, 2026-07-19). Positioned AFTER the Inventory
+  // dropdown directly above and before Communications below, per this part's
+  // own plan — matching this file's own established ordering of
+  // backend-complete-module dropdowns by the order each module's frontend
+  // actually shipped, with the two newest module dropdowns (Inventory: Slice
+  // 19; this: Slice 20) kept adjacent, the same "insert right after the
+  // most-recently-shipped module dropdown" placement Inventory itself
+  // followed relative to Procurement in Slice 19's own comment above. Styled
+  // as a `children`-bearing dropdown FROM THE START (the same mechanism every
+  // other multi-part module dropdown in this file already established), with
+  // 2 children (Categories, Vouchers) shipping together in this one part —
+  // Petty Cash, Staff Claims, and Recurring Templates (the rest of Module
+  // 14's real backend surface, confirmed present in
+  // `packages/server/src/domains/expenses/api/` — `petty-cash.controller.ts`/
+  // `claims.controller.ts`/`recurring.controller.ts`) are explicitly NOT part
+  // of this dropdown yet, a future part's own scope. `CreditCard` (confirmed
+  // not already used elsewhere in this file — `Receipt`/`Wallet`/`WalletCards`
+  // are already claimed by Billing/Payments/Wallet respectively, per this
+  // part's own task brief warning; `CreditCard` is a clear semantic fit for
+  // Expenses' own payment-method-driven vouchers,
+  // `CASH`/`BANK`/`PETTY_CASH`/`MPESA`/`CHEQUE`). Same `allowedRoles: []`/
+  // `<QueryBoundary>`-is-the-real-gate reasoning as every other entry above:
+  // `expenses:category:manage`/`expenses:voucher:create` are the real
+  // permissions gating each of the 2 children (confirmed by reading
+  // `CategoriesController`/`VouchersController` directly — Categories shares
+  // one bundled `:manage` permission with no separate view permission,
+  // exactly like Inventory's own Categories; Vouchers reuses its own
+  // `:create` permission across every GET too, no separate view permission
+  // either), no permission-list endpoint exists to target them precisely
+  // from a coarse role-name check.
+  //
+  // Phase 6 Slice 20 Part 2 (Petty Cash, Module 14) — 3rd child appended
+  // without touching the mechanism itself: Petty Cash (`/expenses/petty-cash`,
+  // `expenses:petty-cash:manage` gating the float list/detail/create/ceiling-
+  // update/spend-and-replenishment history screens — the SAME real permission
+  // `PettyCashController` uses for those routes; the narrower
+  // `expenses:petty-cash:spend`/`:replenish-request`/`:replenish-decide`/
+  // `:replenish-execute` permissions gate the individual action buttons
+  // WITHIN that screen, not the nav entry itself, confirmed by reading
+  // `PettyCashController` directly — 5 distinct permissions on one
+  // controller, more granular than this dropdown's other 2 children). Still
+  // NOT this dropdown's final shape — Staff Claims/Recurring Templates (the
+  // rest of Module 14's real backend surface, confirmed present in
+  // `packages/server/src/domains/expenses/api/{claims,recurring}.controller.ts`)
+  // may still append further children in a future part.
+  //
+  // Phase 6 Slice 20 Part 3 (Staff Claims, Module 14) — 4th child appended
+  // without touching the mechanism itself: Claims (`/expenses/claims`,
+  // `expenses:claim:create` gating the list/detail/line-mutation screens —
+  // the SAME real permission `ClaimsController` bundles across every GET and
+  // every DRAFT-only line mutation, confirmed by reading it directly; the
+  // narrower `expenses:claim:submit`/`:decide`/`:reimburse` permissions gate
+  // the individual status-action buttons WITHIN the detail screen, not the
+  // nav entry itself — the same "coarse nav gate, granular in-screen gates"
+  // shape Petty Cash's own comment above already establishes for its 5
+  // distinct permissions). Still NOT necessarily this dropdown's final shape
+  // — Recurring Templates (the last of Module 14's real backend surface,
+  // confirmed present in `packages/server/src/domains/expenses/api/recurring.controller.ts`)
+  // may still append one more child in a future part.
+  //
+  // Phase 6 Slice 20 Part 4 (FINAL shape of this dropdown) — 5th and last
+  // child appended without touching the mechanism itself: Recurring
+  // (`/expenses/recurring`, `expenses:recurring:manage` gating the
+  // list/detail/create/edit screens — the SAME real permission
+  // `RecurringController` bundles across every GET and CRUD route, confirmed
+  // by reading it directly; the separate `expenses:recurring:run` permission
+  // gates ONLY the "Run Due Templates" action within the list screen — the
+  // same "coarse nav gate, granular in-screen gates" shape Petty Cash's/
+  // Claims' own comments above already establish). This completes Module
+  // 14's whole backend surface (Categories, Expense Vouchers, Petty Cash,
+  // Staff Claims, Recurring Templates) — matching the same "FINAL shape, no
+  // more children planned" declaration Accounting's/Procurement's/
+  // Inventory's own dropdowns already make once their own last part ships.
+  {
+    href: "/expenses/categories",
+    labelKey: "expenses",
+    icon: CreditCard,
+    allowedRoles: [],
+    children: [
+      { href: "/expenses/categories", labelKey: "expensesCategories" },
+      { href: "/expenses/vouchers", labelKey: "expensesVouchers" },
+      { href: "/expenses/petty-cash", labelKey: "expensesPettyCash" },
+      { href: "/expenses/claims", labelKey: "expensesClaims" },
+      { href: "/expenses/recurring", labelKey: "expensesRecurring" },
     ],
   },
   // Phase 6 Slice 15 Part 1 (Communications Foundation + Templates, Module

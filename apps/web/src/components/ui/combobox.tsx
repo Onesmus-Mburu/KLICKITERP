@@ -39,6 +39,20 @@ import { cn } from "@/lib/utils";
  * stays reachable by clearing the search box, and is independently
  * scrollable (`max-h-64 overflow-y-auto`) — both "type to filter" and "clear
  * and scroll to browse" are real, supported paths, not just the former.
+ *
+ * Phase 6 Slice 19 Part 1 (Inventory) — `onQueryChange` is a new, optional,
+ * ADDITIVE prop (every pre-existing caller omits it and is completely
+ * unaffected: `filtered`'s own branch below only changes behavior when it is
+ * supplied). Added for `<ItemCombobox>`'s own server-side trigram search:
+ * when a caller owns its own remote, debounced search (feeding `items` from
+ * a live API result rather than a static in-memory list), this component's
+ * own client-side substring filter must be SKIPPED entirely — a trigram/
+ * fuzzy match can legitimately return a result that doesn't contain the
+ * typed text as a literal substring, and re-filtering it back out here would
+ * silently defeat the whole point of fuzzy search. `onQueryChange` fires on
+ * every keystroke in the internal search input (unaffected by `delayMs` —
+ * the caller owns its own debounce, e.g. `useDebouncedValue`, before acting
+ * on it).
  */
 export interface ComboboxItem {
   value: string;
@@ -54,6 +68,7 @@ export function Combobox({
   emptyText = "No results found.",
   disabled,
   className,
+  onQueryChange,
 }: {
   items: ComboboxItem[];
   value: string;
@@ -63,6 +78,8 @@ export function Combobox({
   emptyText?: string;
   disabled?: boolean;
   className?: string;
+  /** See this file's own doc comment above — when supplied, `items` is treated as already-filtered by the caller and this component's own client-side substring filter is skipped. */
+  onQueryChange?: (query: string) => void;
 }) {
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
@@ -73,16 +90,22 @@ export function Combobox({
   const selectedLabel = React.useMemo(() => items.find((item) => item.value === value)?.label, [items, value]);
 
   const filtered = React.useMemo(() => {
+    if (onQueryChange) return items;
     const needle = query.trim().toLowerCase();
     if (!needle) return items;
     return items.filter((item) => item.label.toLowerCase().includes(needle));
-  }, [items, query]);
+  }, [items, query, onQueryChange]);
 
   // Re-clamp the highlighted row whenever the filtered set changes (typing
   // narrows the list out from under whatever index was highlighted before).
   React.useEffect(() => {
     setHighlighted(0);
   }, [query]);
+
+  // Notify the caller of every keystroke — see this file's own doc comment above.
+  React.useEffect(() => {
+    onQueryChange?.(query);
+  }, [query, onQueryChange]);
 
   React.useEffect(() => {
     if (!open) return;

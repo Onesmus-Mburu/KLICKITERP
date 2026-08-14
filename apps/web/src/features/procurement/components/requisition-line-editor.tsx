@@ -14,6 +14,7 @@ import { MoneyInput } from "@/components/patterns/money-input";
 import { QueryBoundary } from "@/components/patterns/query-boundary";
 import { formatMoney, normalizeMoneyInput } from "@/lib/money";
 import { ApiError } from "@/lib/api-error";
+import { ItemCombobox, type SelectedInventoryItem } from "@/features/inventory/components/item-combobox";
 import { useAddRequisitionLine, useDeleteRequisitionLine, useRequisitionLines, useUpdateRequisitionLine } from "../hooks/use-requisitions";
 
 const FREE_TEXT_MAX_LENGTH = 200; // CreateRequisitionLineDto.freeText's own @MaxLength(200).
@@ -32,18 +33,23 @@ const UUID_LIKE_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9
  * `requisition.status !== "DRAFT"`, rather than exposing controls that would
  * just 422).
  *
- * **`itemId` has no picker anywhere in this pass, and this editor never sets
- * it** — it's a forward reference to `inv_item` (a future Inventory module,
- * Module 13, that doesn't exist in this codebase yet) with no lookup
- * endpoint to build a `<Combobox>` against. Every line created here uses
- * `freeText` only — the plan's own explicitly-called-out pragmatic choice,
- * not an oversight. `CreateRequisitionLineDto`'s real "at least one of
- * itemId/freeText" server-side rule
- * (`ck_proc_requisition_line_item_or_free_text`) is satisfied by requiring a
- * non-empty `freeText` client-side instead. A line whose `itemId` happens to
- * already be set (impossible to create through THIS UI, but reachable if a
- * future module ever populates one) still displays it as a fallback in the
- * description column.
+ * **Phase 6 Slice 19 Part 1 (Inventory Foundations, Module 13) retrofit —
+ * `itemId` now HAS a real picker**: `<ItemCombobox>` (an additional,
+ * OPTIONAL field in both the add/edit line dialogs below) lets a user
+ * attach a real `inv_item` to a line, now that Module 13's frontend exists.
+ * Selecting an item sets that dialog's own local `itemId` state and
+ * convenience-prefills `freeText` with the item's name IF `freeText` is
+ * still empty (never overwrites text already typed — a genuinely optional
+ * autofill). Leaving the combobox untouched preserves the EXACT prior
+ * behavior this file originally shipped with: `itemId` stays unset,
+ * `freeText` stays free text, `CreateRequisitionLineDto`'s real "at least
+ * one of itemId/freeText" server-side rule
+ * (`ck_proc_requisition_line_item_or_free_text`) is still satisfied by the
+ * always-required non-empty `freeText` regardless of whether `itemId` is
+ * also set — this retrofit is purely additive, not a replacement for the
+ * free-text path. A line whose `itemId` was set through a DIFFERENT path
+ * (impossible before this pass, still not this editor's own concern) still
+ * displays it as a fallback in the description column, unchanged.
  *
  * **`budgetLineId` is a plain optional uuid text input, not a real picker**
  * — cross-referencing every ACTIVE budget's lines (`GET
@@ -130,6 +136,8 @@ function AddRequisitionLineDialog({ requisitionId }: { requisitionId: string }) 
   const t = useTranslations("procurement.requisitions.lineEditor");
   const tCommon = useTranslations("common");
   const [open, setOpen] = React.useState(false);
+  const [itemId, setItemId] = React.useState("");
+  const [itemLabel, setItemLabel] = React.useState<string | undefined>(undefined);
   const [freeText, setFreeText] = React.useState("");
   const [qty, setQty] = React.useState(DEFAULT_QTY);
   const [estPrice, setEstPrice] = React.useState("");
@@ -140,12 +148,25 @@ function AddRequisitionLineDialog({ requisitionId }: { requisitionId: string }) 
   function handleOpenChange(next: boolean) {
     setOpen(next);
     if (next) {
+      setItemId("");
+      setItemLabel(undefined);
       setFreeText("");
       setQty(DEFAULT_QTY);
       setEstPrice("");
       setBudgetLineId("");
       setError(null);
     }
+  }
+
+  function handleItemSelect(item: SelectedInventoryItem | null) {
+    if (!item) {
+      setItemId("");
+      setItemLabel(undefined);
+      return;
+    }
+    setItemId(item.id);
+    setItemLabel(`${item.code} — ${item.name}`);
+    if (freeText.trim() === "") setFreeText(item.name.slice(0, FREE_TEXT_MAX_LENGTH));
   }
 
   const budgetLineIdValid = budgetLineId.trim() === "" || UUID_LIKE_PATTERN.test(budgetLineId.trim());
@@ -163,6 +184,7 @@ function AddRequisitionLineDialog({ requisitionId }: { requisitionId: string }) 
       await addMutation.mutateAsync({
         requisitionId,
         dto: {
+          ...(itemId ? { itemId } : {}),
           freeText: freeText.trim(),
           qty: normalizeMoneyInput(qty) ?? "0",
           estPrice: normalizeMoneyInput(estPrice) ?? "0",
@@ -196,6 +218,11 @@ function AddRequisitionLineDialog({ requisitionId }: { requisitionId: string }) 
         )}
 
         <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label>{t("itemLabel")}</Label>
+            <ItemCombobox value={itemId} valueLabel={itemLabel} onSelect={handleItemSelect} />
+            <p className="text-xs text-muted-foreground">{t("itemHint")}</p>
+          </div>
           <div className="space-y-1.5">
             <Label required>{t("description")}</Label>
             <Input
@@ -239,6 +266,8 @@ function EditRequisitionLineDialog({ requisitionId, line }: { requisitionId: str
   const t = useTranslations("procurement.requisitions.lineEditor");
   const tCommon = useTranslations("common");
   const [open, setOpen] = React.useState(false);
+  const [itemId, setItemId] = React.useState(line.itemId ?? "");
+  const [itemLabel, setItemLabel] = React.useState<string | undefined>(undefined);
   const [freeText, setFreeText] = React.useState(line.freeText ?? "");
   const [qty, setQty] = React.useState(line.qty);
   const [estPrice, setEstPrice] = React.useState(line.estPrice);
@@ -249,12 +278,25 @@ function EditRequisitionLineDialog({ requisitionId, line }: { requisitionId: str
   function handleOpenChange(next: boolean) {
     setOpen(next);
     if (next) {
+      setItemId(line.itemId ?? "");
+      setItemLabel(undefined);
       setFreeText(line.freeText ?? "");
       setQty(line.qty);
       setEstPrice(line.estPrice);
       setBudgetLineId(line.budgetLineId ?? "");
       setError(null);
     }
+  }
+
+  function handleItemSelect(item: SelectedInventoryItem | null) {
+    if (!item) {
+      setItemId("");
+      setItemLabel(undefined);
+      return;
+    }
+    setItemId(item.id);
+    setItemLabel(`${item.code} — ${item.name}`);
+    if (freeText.trim() === "") setFreeText(item.name.slice(0, FREE_TEXT_MAX_LENGTH));
   }
 
   const budgetLineIdValid = budgetLineId.trim() === "" || UUID_LIKE_PATTERN.test(budgetLineId.trim());
@@ -273,6 +315,7 @@ function EditRequisitionLineDialog({ requisitionId, line }: { requisitionId: str
         requisitionId,
         lineId: line.id,
         dto: {
+          ...(itemId ? { itemId } : {}),
           freeText: freeText.trim(),
           qty: normalizeMoneyInput(qty) ?? "0",
           estPrice: normalizeMoneyInput(estPrice) ?? "0",
@@ -305,6 +348,11 @@ function EditRequisitionLineDialog({ requisitionId, line }: { requisitionId: str
         )}
 
         <div className="space-y-3">
+          <div className="space-y-1.5">
+            <Label>{t("itemLabel")}</Label>
+            <ItemCombobox value={itemId} valueLabel={itemLabel} onSelect={handleItemSelect} />
+            <p className="text-xs text-muted-foreground">{t("itemHint")}</p>
+          </div>
           <div className="space-y-1.5">
             <Label required>{t("description")}</Label>
             <Input value={freeText} maxLength={FREE_TEXT_MAX_LENGTH} onChange={(e) => setFreeText(e.target.value)} />
