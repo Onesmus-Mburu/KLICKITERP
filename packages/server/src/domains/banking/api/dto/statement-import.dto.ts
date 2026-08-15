@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsIn, IsObject, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsArray, IsIn, IsObject, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class BankStatementColumnMapDto {
   @ApiProperty({ description: "Raw column/key name carrying the line date" })
@@ -58,7 +58,24 @@ export class ImportBankStatementLinesDto {
   @IsObject()
   mappingTemplate!: BankStatementMappingTemplateDto;
 
+  // Phase 6 Slice 21 Part 3 (Statement Import frontend) — real, confirmed bug
+  // fix found via live verification, not a frontend-only concern: this field
+  // previously carried ZERO class-validator decorators. The app's global
+  // `ValidationPipe` (`apps/api/src/app.module.ts`) runs with
+  // `whitelist: true`, which strips any `@Body()` property that has no
+  // validation decorator at all from the transformed DTO instance BEFORE the
+  // controller ever sees it — so `dto.rawRows` was always `undefined` at
+  // runtime, and `BankStatementImportService.importLines()`'s own
+  // `input.rawRows.map(...)` crashed with a real 500
+  // ("Cannot read properties of undefined (reading 'map')") on every single
+  // call, confirmed live against the running API with a real, well-formed
+  // request body before this fix. `@IsArray()` alone is enough to make
+  // whitelist retain the property; no nested-shape validation is added here
+  // (each row is a genuinely arbitrary `Record<string, unknown>` keyed by
+  // whatever headers the source file happened to have — there is no fixed
+  // shape to validate against).
   @ApiProperty({ type: [Object], description: "Flat rows already parsed from the source file (CSV/XLSX parsing is out of this endpoint's scope)" })
+  @IsArray()
   rawRows!: Array<Record<string, unknown>>;
 }
 

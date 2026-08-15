@@ -133,7 +133,16 @@
       "expensesVouchers": "Vouchers",
       "expensesPettyCash": "Petty Cash",
       "expensesClaims": "Claims",
-      "expensesRecurring": "Recurring"
+      "expensesRecurring": "Recurring",
+      "banking": "Banking",
+      "bankingAccounts": "Accounts",
+      "bankingTransfers": "Transfers",
+      "bankingDeposits": "Deposits",
+      "bankingWithdrawals": "Withdrawals",
+      "bankingStatementImports": "Statement Import",
+      "bankingReconciliations": "Reconciliation",
+      "bankingChequeBooks": "Cheque Books",
+      "bankingChequeLeaves": "Cheque Leaves"
     },
     "topbar": {
       "searchPlaceholder": "Search…",
@@ -2956,7 +2965,8 @@
         "hardClosePermanentWarning": "This action is permanent. The period cannot be reopened once hard-closed.",
         "hardCloseConfirmButton": "Hard close",
         "processing": "Processing…",
-        "genericError": "Something went wrong. Please try again."
+        "genericError": "Something went wrong. Please try again.",
+        "reconciliationWarning": "{count} bank account(s) have an unlocked reconciliation for this period — hard-closing will not be blocked by the server, but is not recommended until reconciliation is complete."
       }
     },
     "costCenters": {
@@ -3861,6 +3871,12 @@
         "noSuppliersFound": "No suppliers found.",
         "pickSupplierHint": "Pick a supplier to see their open invoices.",
         "methodLabel": "Payment method",
+        "bankAccountLabel": "Bank account",
+        "selectBankAccountPlaceholder": "Select a bank account",
+        "searchBankAccounts": "Search bank accounts…",
+        "loadingBankAccounts": "Loading bank accounts…",
+        "noBankAccountsFound": "No bank accounts found.",
+        "bankAccountHint": "Only used for Bank transfer vouchers — optional even then.",
         "allocationsLabel": "Allocations",
         "noOpenInvoicesHint": "This supplier has no open (posted, unpaid) invoices.",
         "columns": {
@@ -3870,7 +3886,13 @@
         },
         "createButton": "Create voucher",
         "creating": "Creating…",
-        "genericError": "Couldn't create the voucher. Please check the allocations and try again."
+        "genericError": "Couldn't create the voucher. Please check the allocations and try again.",
+        "chequeLeafLabel": "Cheque leaf",
+        "selectChequeLeafPlaceholder": "Select a cheque leaf",
+        "searchChequeLeaves": "Search cheque leaves…",
+        "loadingChequeLeaves": "Loading cheque leaves…",
+        "noChequeLeavesFound": "No unused cheque leaves found.",
+        "chequeLeafHint": "Only unused leaves are shown. Only used for Cheque vouchers — optional even then."
       },
       "statusActions": {
         "submitTrigger": "Submit for approval",
@@ -4968,6 +4990,692 @@
         "lastFiredDescription": "The most recent DRAFT voucher this template produced, if any.",
         "viewLastVoucher": "View last voucher",
         "neverFired": "This template has never fired yet."
+      }
+    }
+  },
+  "banking": {
+    "kinds": {
+      "BANK": "Bank",
+      "CASH": "Cash",
+      "MPESA_SETTLEMENT": "M-Pesa Settlement",
+      "PETTY": "Petty Cash"
+    },
+    "accounts": {
+      "list": {
+        "pageTitle": "Bank Accounts",
+        "pageSubtitle": "The bank, cash, M-Pesa settlement, and petty cash accounts this school holds, each linked to its own GL account.",
+        "listTitle": "All accounts",
+        "listDescription": "Every bank account, across every kind and status.",
+        "active": "Active",
+        "inactive": "Inactive",
+        "columns": {
+          "name": "Name",
+          "kind": "Kind",
+          "bankName": "Bank",
+          "accountNo": "Account No.",
+          "status": "Status"
+        },
+        "filters": {
+          "kindLabel": "Kind",
+          "statusLabel": "Status",
+          "allKinds": "All kinds",
+          "allStatuses": "All statuses",
+          "clearFilters": "Clear filters"
+        }
+      },
+      "createDialog": {
+        "trigger": "New Account",
+        "title": "New bank account",
+        "description": "Create a new bank, cash, M-Pesa settlement, or petty cash account, backed by an active, postable GL account.",
+        "nameLabel": "Name",
+        "namePlaceholder": "e.g. Operating Account",
+        "kindLabel": "Kind",
+        "glAccountLabel": "GL account",
+        "glAccountPlaceholder": "Select a GL account",
+        "glAccountSearchPlaceholder": "Search accounts…",
+        "glAccountEmptyText": "No postable accounts found.",
+        "glAccountHint": "Only active, postable GL accounts are shown. Each GL account can back at most one bank account.",
+        "loadingAccounts": "Loading accounts…",
+        "bankNameLabel": "Bank name",
+        "bankNamePlaceholder": "e.g. Equity Bank",
+        "branchLabel": "Branch",
+        "branchPlaceholder": "e.g. Westlands",
+        "accountNoLabel": "Account number",
+        "accountNoPlaceholder": "e.g. 0123456789",
+        "createButton": "Create account",
+        "creating": "Creating…",
+        "genericError": "Couldn't create the account. The name may already be in use, or this GL account may already back another bank account."
+      },
+      "editDialog": {
+        "title": "Edit {name}",
+        "description": "Update this account's name, bank details, or status. Kind and GL account can't be changed after creation.",
+        "nameLabel": "Name",
+        "bankNameLabel": "Bank name",
+        "branchLabel": "Branch",
+        "accountNoLabel": "Account number",
+        "isActiveLabel": "Active",
+        "saving": "Saving…",
+        "genericError": "Couldn't save the account. The name may already be in use."
+      },
+      "detail": {
+        "backToList": "Back to bank accounts",
+        "active": "Active",
+        "inactive": "Inactive",
+        "bankNameLabel": "Bank name",
+        "branchLabel": "Branch",
+        "accountNoLabel": "Account number",
+        "glAccountLabel": "GL account"
+      }
+    },
+    "statuses": {
+      "DRAFT": "Draft",
+      "PENDING_APPROVAL": "Pending Approval",
+      "APPROVED": "Approved",
+      "POSTED": "Posted"
+    },
+    "transfers": {
+      "list": {
+        "pageTitle": "Bank Transfers",
+        "pageSubtitle": "Move money between this school's own bank, cash, M-Pesa settlement, and petty cash accounts.",
+        "listTitle": "All transfers",
+        "listDescription": "Every inter-account transfer, across every status.",
+        "columns": {
+          "number": "Number",
+          "fromAccount": "From account",
+          "toAccount": "To account",
+          "amount": "Amount",
+          "status": "Status"
+        },
+        "filters": {
+          "statusLabel": "Status",
+          "accountLabel": "Account",
+          "allStatuses": "All statuses",
+          "allAccounts": "All accounts",
+          "clearFilters": "Clear filters"
+        },
+        "notYetPosted": "Not yet posted"
+      },
+      "createDialog": {
+        "trigger": "New Transfer",
+        "title": "New bank transfer",
+        "description": "Move money from one account to another. Both accounts must be different.",
+        "fromAccountLabel": "From account",
+        "toAccountLabel": "To account",
+        "selectAccountPlaceholder": "Select an account",
+        "loadingAccounts": "Loading accounts…",
+        "searchAccounts": "Search accounts…",
+        "noAccountsFound": "No accounts found.",
+        "sameAccountError": "The destination account must be different from the source account.",
+        "amountLabel": "Amount",
+        "createButton": "Create transfer",
+        "creating": "Creating…",
+        "genericError": "Couldn't create the transfer. The two accounts may be the same, or something else went wrong."
+      },
+      "detail": {
+        "backToList": "Back to transfers",
+        "fromAccountLabel": "From account",
+        "toAccountLabel": "To account",
+        "amountLabel": "Amount",
+        "notYetPosted": "Not yet posted",
+        "viewJournal": "View journal entry",
+        "howThisPostsNote": "Posting this transfer creates one balanced journal entry with two legs, both routed through a Transfer Clearing account: the source account's balance goes down and Transfer Clearing goes up, then Transfer Clearing goes back down while the destination account's balance goes up. The two Transfer Clearing lines always net to zero by construction, not a separate balancing step."
+      },
+      "statusActions": {
+        "submitTrigger": "Submit for approval",
+        "submitting": "Submitting…",
+        "approveTrigger": "Approve",
+        "approving": "Approving…",
+        "approveConfirmTitle": "Approve this transfer?",
+        "approveConfirmDescription": "Transfer {number} will move to Approved and become ready to post.",
+        "approveConfirmButton": "Approve",
+        "rejectTrigger": "Reject",
+        "rejecting": "Rejecting…",
+        "rejectConfirmTitle": "Reject this transfer?",
+        "rejectConfirmDescription": "Transfer {number} will revert to Draft so it can be corrected and resubmitted.",
+        "rejectConfirmButton": "Reject",
+        "postTrigger": "Post",
+        "posting": "Posting…",
+        "postConfirmTitle": "Post this transfer?",
+        "postConfirmDescription": "Transfer {number} will be posted and can no longer be changed.",
+        "postConfirmButton": "Post",
+        "postJournalNote": "Posting moves money between the two accounts through a Transfer Clearing account and creates a real journal entry. This can't be undone from here.",
+        "genericError": "That action couldn't be completed. Please try again."
+      }
+    },
+    "deposits": {
+      "list": {
+        "pageTitle": "Bank Deposits",
+        "pageSubtitle": "Record cash and cheques banked from a till or safe into one of this school's bank accounts.",
+        "listTitle": "All deposits",
+        "listDescription": "Every deposit into a bank account, across every status.",
+        "columns": {
+          "number": "Number",
+          "account": "Account",
+          "amount": "Amount",
+          "slipRef": "Slip ref.",
+          "status": "Status"
+        },
+        "filters": {
+          "statusLabel": "Status",
+          "accountLabel": "Account",
+          "allStatuses": "All statuses",
+          "allAccounts": "All accounts",
+          "clearFilters": "Clear filters"
+        },
+        "notYetPosted": "Not yet posted"
+      },
+      "createDialog": {
+        "trigger": "New Deposit",
+        "title": "New bank deposit",
+        "description": "Record cash or cheques banked into one of this school's own bank accounts.",
+        "accountLabel": "Account",
+        "selectAccountPlaceholder": "Select an account",
+        "loadingAccounts": "Loading accounts…",
+        "searchAccounts": "Search accounts…",
+        "noAccountsFound": "No accounts found.",
+        "amountLabel": "Amount",
+        "slipRefLabel": "Slip reference",
+        "slipRefPlaceholder": "e.g. slip number",
+        "createButton": "Create deposit",
+        "creating": "Creating…",
+        "genericError": "Couldn't create the deposit. Please try again."
+      },
+      "detail": {
+        "backToList": "Back to deposits",
+        "amountLabel": "Amount",
+        "slipRefLabel": "Slip reference",
+        "sourceSessionLabel": "Source cashier session",
+        "noSourceSession": "No linked session",
+        "notYetPosted": "Not yet posted",
+        "viewJournal": "View journal entry"
+      },
+      "statusActions": {
+        "submitTrigger": "Submit for approval",
+        "submitting": "Submitting…",
+        "approveTrigger": "Approve",
+        "approving": "Approving…",
+        "approveConfirmTitle": "Approve this deposit?",
+        "approveConfirmDescription": "Deposit {number} will move to Approved and become ready to post.",
+        "approveConfirmButton": "Approve",
+        "rejectTrigger": "Reject",
+        "rejecting": "Rejecting…",
+        "rejectConfirmTitle": "Reject this deposit?",
+        "rejectConfirmDescription": "Deposit {number} will revert to Draft so it can be corrected and resubmitted.",
+        "rejectConfirmButton": "Reject",
+        "postTrigger": "Post",
+        "posting": "Posting…",
+        "postConfirmTitle": "Post this deposit?",
+        "postConfirmDescription": "Deposit {number} will be posted and can no longer be changed.",
+        "postConfirmButton": "Post",
+        "postJournalNote": "Posting increases the destination account's balance and clears the amount out of Undeposited Funds. This can't be undone from here.",
+        "genericError": "That action couldn't be completed. Please try again.",
+        "ackSectionTitle": "Acknowledgment",
+        "ackSenderLabel": "Sender",
+        "ackReceiverLabel": "Receiver",
+        "ackSenderTrigger": "Acknowledge as sender",
+        "ackReceiverTrigger": "Acknowledge as receiver",
+        "acknowledging": "Acknowledging…"
+      }
+    },
+    "withdrawals": {
+      "list": {
+        "pageTitle": "Bank Withdrawals",
+        "pageSubtitle": "Record cash drawn from one of this school's bank accounts into a till or safe.",
+        "listTitle": "All withdrawals",
+        "listDescription": "Every withdrawal from a bank account, across every status.",
+        "columns": {
+          "number": "Number",
+          "account": "Account",
+          "amount": "Amount",
+          "slipRef": "Slip ref.",
+          "status": "Status"
+        },
+        "filters": {
+          "statusLabel": "Status",
+          "accountLabel": "Account",
+          "allStatuses": "All statuses",
+          "allAccounts": "All accounts",
+          "clearFilters": "Clear filters"
+        },
+        "notYetPosted": "Not yet posted"
+      },
+      "createDialog": {
+        "trigger": "New Withdrawal",
+        "title": "New bank withdrawal",
+        "description": "Record cash drawn from one of this school's own bank accounts.",
+        "accountLabel": "Account",
+        "selectAccountPlaceholder": "Select an account",
+        "loadingAccounts": "Loading accounts…",
+        "searchAccounts": "Search accounts…",
+        "noAccountsFound": "No accounts found.",
+        "amountLabel": "Amount",
+        "slipRefLabel": "Slip reference",
+        "slipRefPlaceholder": "e.g. slip number",
+        "createButton": "Create withdrawal",
+        "creating": "Creating…",
+        "genericError": "Couldn't create the withdrawal. Please try again."
+      },
+      "detail": {
+        "backToList": "Back to withdrawals",
+        "amountLabel": "Amount",
+        "slipRefLabel": "Slip reference",
+        "sourceSessionLabel": "Source cashier session",
+        "noSourceSession": "No linked session",
+        "notYetPosted": "Not yet posted",
+        "viewJournal": "View journal entry"
+      },
+      "statusActions": {
+        "submitTrigger": "Submit for approval",
+        "submitting": "Submitting…",
+        "approveTrigger": "Approve",
+        "approving": "Approving…",
+        "approveConfirmTitle": "Approve this withdrawal?",
+        "approveConfirmDescription": "Withdrawal {number} will move to Approved and become ready to post.",
+        "approveConfirmButton": "Approve",
+        "rejectTrigger": "Reject",
+        "rejecting": "Rejecting…",
+        "rejectConfirmTitle": "Reject this withdrawal?",
+        "rejectConfirmDescription": "Withdrawal {number} will revert to Draft so it can be corrected and resubmitted.",
+        "rejectConfirmButton": "Reject",
+        "postTrigger": "Post",
+        "posting": "Posting…",
+        "postConfirmTitle": "Post this withdrawal?",
+        "postConfirmDescription": "Withdrawal {number} will be posted and can no longer be changed.",
+        "postConfirmButton": "Post",
+        "postJournalNote": "Posting decreases the source account's balance and moves the amount into Undeposited Funds. This can't be undone from here.",
+        "genericError": "That action couldn't be completed. Please try again.",
+        "ackSectionTitle": "Acknowledgment",
+        "ackSenderLabel": "Sender",
+        "ackReceiverLabel": "Receiver",
+        "ackSenderTrigger": "Acknowledge as sender",
+        "ackReceiverTrigger": "Acknowledge as receiver",
+        "acknowledging": "Acknowledging…"
+      }
+    },
+    "statementImports": {
+      "list": {
+        "pageTitle": "Statement Imports",
+        "pageSubtitle": "Import bank statement lines from a CSV export, mapped onto one of this school's own accounts.",
+        "newImportTrigger": "New Import",
+        "listTitle": "Import history",
+        "listDescription": "Every statement import run, across every account.",
+        "columns": {
+          "importedAt": "Imported",
+          "account": "Account",
+          "lineCount": "Lines imported",
+          "duplicateCount": "Duplicates skipped"
+        },
+        "filters": {
+          "accountLabel": "Account",
+          "allAccounts": "All accounts",
+          "clearFilters": "Clear filters"
+        }
+      },
+      "detail": {
+        "backToList": "Back to statement imports",
+        "accountLabel": "Account",
+        "fileIdLabel": "Uploaded file reference",
+        "duplicateCountLabel": "Duplicates skipped",
+        "mappingTitle": "Column mapping used",
+        "mappingDate": "Date column: {column} (format {format})",
+        "mappingDescription": "Description column: {column}",
+        "mappingSeparate": "Debit column: {debit} — Credit column: {credit}",
+        "mappingSigned": "Amount column (signed): {column}",
+        "mappingRef": "Reference column: {column}"
+      },
+      "new": {
+        "backToList": "Back to statement imports",
+        "pageTitle": "New Statement Import",
+        "pageSubtitle": "Upload a CSV bank statement, map its columns, and import its lines against one of this school's own accounts.",
+        "stepIndicator": "Step {current} of {total} — {label}",
+        "steps": {
+          "account": "Account",
+          "upload": "Upload file",
+          "preview": "Preview rows",
+          "mapping": "Map columns",
+          "confirm": "Confirm",
+          "result": "Done"
+        },
+        "account": {
+          "title": "Choose an account",
+          "description": "Which of this school's own accounts is this statement for?",
+          "accountLabel": "Account",
+          "selectAccountPlaceholder": "Select an account",
+          "loadingAccounts": "Loading accounts…",
+          "searchAccounts": "Search accounts…",
+          "noAccountsFound": "No accounts found."
+        },
+        "upload": {
+          "title": "Upload the statement file",
+          "description": "Choose a CSV export of this account's bank statement.",
+          "fileLabel": "CSV file",
+          "csvOnlyHint": "Only plain CSV files are supported. If your bank only exports Excel (.xlsx), save it as CSV first.",
+          "emptyFileError": "This file has no header row or no data rows.",
+          "parseError": "Couldn't read this file as CSV. Check that it's a plain CSV export and try again.",
+          "uploadError": "Couldn't upload this file. Please try again.",
+          "uploading": "Uploading file…",
+          "parsedSummary": "{rows} rows parsed across {columns} columns."
+        },
+        "preview": {
+          "title": "Preview the parsed rows",
+          "rowCount": "{count} rows parsed from this file.",
+          "truncatedNote": "Showing the first {shown} of {total} rows parsed from this file."
+        },
+        "mapping": {
+          "title": "Map the columns",
+          "description": "Tell the system which column in your file carries which field.",
+          "dateColumnLabel": "Date column",
+          "descriptionColumnLabel": "Description column",
+          "conventionLabel": "Debit/credit convention",
+          "conventionSeparate": "Separate debit and credit columns",
+          "conventionSigned": "One signed amount column",
+          "conventionSeparateHint": "Money in and money out are in two different columns.",
+          "conventionSignedHint": "Money in and money out are in one column — positive for money in, negative for money out.",
+          "debitColumnLabel": "Debit column",
+          "creditColumnLabel": "Credit column",
+          "amountColumnLabel": "Amount column",
+          "refColumnLabel": "Reference column",
+          "refColumnNone": "No reference column",
+          "refColumnHint": "Optional — an external reference number, if your file has one.",
+          "selectColumnPlaceholder": "Select a column",
+          "dateFormatLabel": "Date format",
+          "dateFormatPlaceholder": "e.g. YYYY-MM-DD",
+          "dateFormatHint": "Built from YYYY, MM, and DD in the order they appear in your file's date column, e.g. \"DD/MM/YYYY\".",
+          "prefillButton": "Use mapping from last import",
+          "prefillHint": "This account's last statement import (on {date}) used a column mapping — reuse it as a starting point and adjust if needed."
+        },
+        "confirm": {
+          "title": "Confirm and import",
+          "description": "Review the details below, then import these rows.",
+          "accountLabel": "Account",
+          "fileLabel": "File",
+          "rowCountLabel": "Rows to import",
+          "mappingRecapTitle": "Column mapping",
+          "mappingRecapDate": "Date column: {column} (format {format})",
+          "mappingRecapDescription": "Description column: {column}",
+          "mappingRecapSeparate": "Debit column: {debit} — Credit column: {credit}",
+          "mappingRecapSigned": "Amount column (signed): {column}",
+          "mappingRecapRef": "Reference column: {column}",
+          "dedupeNote": "Rows that match a line already imported for this account (same date, amount, and reference) are automatically skipped as duplicates — that's expected on a re-import, not an error.",
+          "uploadingFileHint": "Still uploading the file — the import button will enable once that finishes.",
+          "importButton": "Import statement",
+          "importing": "Importing…",
+          "genericError": "Couldn't import this statement. Please check the mapping and try again."
+        },
+        "result": {
+          "title": "Import complete",
+          "duplicateExplainer": "Duplicate lines are rows that were already imported for this account in a previous import — they were skipped automatically, not counted as errors.",
+          "rowsSubmitted": "{count} rows submitted",
+          "newImportButton": "Import another statement",
+          "backToListButton": "Back to statement imports",
+          "viewImportButton": "View this import"
+        }
+      },
+      "dedupeSummary": "{inserted} lines imported, {duplicates} duplicates skipped"
+    },
+    "reconciliations": {
+      "statuses": {
+        "IN_PROGRESS": "In Progress",
+        "LOCKED": "Locked",
+        "REOPENED": "Reopened"
+      },
+      "list": {
+        "pageTitle": "Bank Reconciliations",
+        "pageSubtitle": "Match statement lines against posted journal entries, then lock each account's own period once reconciled.",
+        "listTitle": "All reconciliations",
+        "listDescription": "Every reconciliation started, across every account and status.",
+        "columns": {
+          "account": "Account",
+          "period": "Period",
+          "bookBalance": "Book balance",
+          "bankBalance": "Bank balance",
+          "status": "Status"
+        },
+        "filters": {
+          "statusLabel": "Status",
+          "accountLabel": "Account",
+          "allStatuses": "All statuses",
+          "allAccounts": "All accounts",
+          "clearFilters": "Clear filters"
+        }
+      },
+      "startDialog": {
+        "trigger": "Start Reconciliation",
+        "title": "Start a bank reconciliation",
+        "description": "Pick an account and the accounting period to reconcile it against. Only one reconciliation can ever exist per account and period.",
+        "accountLabel": "Account",
+        "selectAccountPlaceholder": "Select an account",
+        "loadingAccounts": "Loading accounts…",
+        "searchAccounts": "Search accounts…",
+        "noAccountsFound": "No accounts found.",
+        "fiscalYearLabel": "Fiscal year",
+        "selectFiscalYearPlaceholder": "Select a fiscal year",
+        "periodLabel": "Period",
+        "selectPeriodPlaceholder": "Select a period",
+        "chooseFiscalYearFirst": "Choose a fiscal year first",
+        "periodOptionLabel": "Period {seq} ({startsOn} — {endsOn})",
+        "periodHint": "The book balance is computed as of this period's own end date.",
+        "startButton": "Start reconciliation",
+        "starting": "Starting…",
+        "genericError": "Couldn't start this reconciliation. One may already exist for this account and period."
+      },
+      "detail": {
+        "backToList": "Back to reconciliations",
+        "viewAccount": "View account",
+        "bookBalanceLabel": "Book balance",
+        "bankBalanceLabel": "Bank balance",
+        "differenceLabel": "Difference"
+      },
+      "autoMatch": {
+        "title": "Auto-match",
+        "description": "Runs 3 passes against this account's unmatched statement lines and unreconciled journal lines.",
+        "runButton": "Run auto-match",
+        "running": "Running…",
+        "genericError": "Couldn't run auto-match. Please try again.",
+        "pass1Summary": "{count} matched automatically by exact reference (Pass 1)",
+        "pass2Summary": "{count} matched automatically by amount and date within 3 days (Pass 2)",
+        "pass3Title": "Suggested matches (Pass 3 — amount only)",
+        "pass3Description": "These are not applied automatically. Review each suggestion and apply the ones that are correct.",
+        "noSuggestions": "No amount-only suggestions from the last run.",
+        "suggestionAmount": "Amount: {amount}",
+        "suggestionStatementLine": "Statement line {id}…",
+        "suggestionJournalLine": "Journal line {id}…",
+        "applyButton": "Apply this match",
+        "applying": "Applying…",
+        "matchesTitle": "Matches so far",
+        "matchesDescription": "Every match and adjustment recorded against this reconciliation so far.",
+        "matchStatementLine": "Statement line {id}…",
+        "matchKindMatched": "Matched",
+        "matchKindAdjustment": "Adjustment"
+      },
+      "adjustmentDialog": {
+        "trigger": "New Adjustment",
+        "title": "Record a bank charge or interest adjustment",
+        "description": "Posts a real 2-line journal entry and marks the given statement line as adjusted (P-33).",
+        "statementLineIdLabel": "Statement line ID",
+        "statementLineIdPlaceholder": "e.g. a Pass 3 suggestion's statement line ID",
+        "statementLineIdInvalid": "That doesn't look like a valid ID.",
+        "statementLineIdHint": "There is no browsing list for unmatched statement lines while a reconciliation is in progress — use an ID surfaced in a Pass 3 suggestion above, or one you already have from your own records.",
+        "kindLabel": "Kind",
+        "kindCHARGE": "Bank charge",
+        "kindINTEREST": "Interest income",
+        "amountLabel": "Amount",
+        "createButton": "Create adjustment",
+        "creating": "Creating…",
+        "genericError": "Couldn't create this adjustment. Please check the statement line ID and try again."
+      },
+      "lockPanel": {
+        "lockTitle": "Lock this reconciliation",
+        "lockDescription": "Recomputes both balances, snapshots every outstanding item, and locks the reconciliation (BR-BANK-03). It can be reopened afterward if needed.",
+        "lockButton": "Lock",
+        "lockConfirmTitle": "Lock this reconciliation?",
+        "lockConfirmDescription": "No further matches or adjustments can be recorded once locked, unless it's reopened.",
+        "lockConfirmButton": "Lock",
+        "locking": "Locking…",
+        "genericError": "Couldn't lock this reconciliation. Please try again.",
+        "statementTitle": "Reconciliation statement",
+        "statementDescription": "Everything still outstanding as of the moment this reconciliation was locked.",
+        "unmatchedStatementLinesTitle": "Unmatched statement lines ({count})",
+        "unreconciledJournalLinesTitle": "Unreconciled journal lines ({count})",
+        "noneOutstanding": "None outstanding.",
+        "noDescription": "No description",
+        "journalRef": "Journal {id}…",
+        "reopenHistoryTitle": "Reopen history",
+        "reopenHistoryDescription": "Every time this reconciliation has been reopened, and why.",
+        "reopenedBy": "By {id}…",
+        "reopenedDeadEndNote": "This reconciliation was reopened and can't be locked again through this workflow — a reopened reconciliation has no route back to In Progress."
+      },
+      "reopenDialog": {
+        "trigger": "Reopen",
+        "title": "Reopen this reconciliation",
+        "description": "Requires a reason, and the separate reconciliation-reopen permission.",
+        "deadEndWarning": "Once reopened, this reconciliation can never be locked again through this workflow — treat this as a real, final step.",
+        "reasonLabel": "Reason",
+        "reasonPlaceholder": "Why is this reconciliation being reopened?",
+        "reopenButton": "Reopen",
+        "reopening": "Reopening…",
+        "genericError": "Couldn't reopen this reconciliation. Please try again."
+      }
+    },
+    "chequeBooks": {
+      "createDialog": {
+        "trigger": "New Cheque Book",
+        "title": "Register a cheque book",
+        "description": "Registering a cheque book auto-generates every leaf in its range as Unused — there's no separate step to generate leaves.",
+        "accountLabel": "Account",
+        "loadingAccounts": "Loading accounts…",
+        "selectAccountPlaceholder": "Select an account",
+        "searchAccounts": "Search accounts…",
+        "noAccountsFound": "No accounts found.",
+        "prefixLabel": "Prefix",
+        "prefixPlaceholder": "e.g. CHQ",
+        "startLeafLabel": "Start leaf",
+        "endLeafLabel": "End leaf",
+        "invalidRangeError": "The end leaf must be a number greater than or equal to the start leaf.",
+        "leafCountHint": "This will generate {count} unused leaves.",
+        "createButton": "Register cheque book",
+        "creating": "Registering…",
+        "genericError": "Couldn't register the cheque book. Please check the account and leaf range and try again."
+      },
+      "list": {
+        "pageTitle": "Cheque Books",
+        "pageSubtitle": "Registered cheque books and the leaf ranges they cover.",
+        "listTitle": "All cheque books",
+        "listDescription": "Every registered cheque book, across every account.",
+        "columns": {
+          "prefix": "Prefix",
+          "account": "Account",
+          "range": "Leaf range",
+          "leafCount": "Leaves"
+        },
+        "filters": {
+          "accountLabel": "Account",
+          "allAccounts": "All accounts",
+          "clearFilters": "Clear filters"
+        }
+      },
+      "detail": {
+        "backToList": "Back to cheque books",
+        "rangeLabel": "Leaves {start}–{end}",
+        "accountLabel": "Account",
+        "leafCountLabel": "Total leaves",
+        "leavesTitle": "Leaves in this book",
+        "columns": {
+          "leafNo": "Leaf #",
+          "status": "Status",
+          "payee": "Payee",
+          "amount": "Amount",
+          "issuedOn": "Issued on",
+          "actions": "Actions"
+        }
+      }
+    },
+    "chequeLeaves": {
+      "statuses": {
+        "UNUSED": "Unused",
+        "ISSUED": "Issued",
+        "PRESENTED": "Presented",
+        "CLEARED": "Cleared",
+        "STOPPED": "Stopped",
+        "CANCELLED": "Cancelled",
+        "STALE": "Stale"
+      },
+      "list": {
+        "pageTitle": "Cheque Leaves",
+        "pageSubtitle": "Every cheque leaf across every cheque book, and its current status.",
+        "listTitle": "All cheque leaves",
+        "listDescription": "Filter by cheque book or status to find a specific leaf.",
+        "columns": {
+          "book": "Cheque book",
+          "leafNo": "Leaf #",
+          "status": "Status",
+          "payee": "Payee",
+          "amount": "Amount",
+          "issuedOn": "Issued on",
+          "actions": "Actions"
+        },
+        "filters": {
+          "bookLabel": "Cheque book",
+          "allBooks": "All cheque books",
+          "statusLabel": "Status",
+          "allStatuses": "All statuses",
+          "clearFilters": "Clear filters"
+        }
+      },
+      "issueDialog": {
+        "trigger": "Issue Cheque",
+        "title": "Issue the next cheque leaf",
+        "description": "Pick a cheque book — the lowest-numbered unused leaf in that book is issued automatically. You won't know which leaf number until after you issue it.",
+        "bookLabel": "Cheque book",
+        "loadingBooks": "Loading cheque books…",
+        "selectBookPlaceholder": "Select a cheque book",
+        "searchBooks": "Search cheque books…",
+        "noBooksFound": "No cheque books found.",
+        "bookHint": "The next available leaf in this book will be issued — you can't pick a specific leaf number.",
+        "payeeLabel": "Payee",
+        "payeePlaceholder": "Who is this cheque payable to?",
+        "amountLabel": "Amount",
+        "voucherIdLabel": "Linked payment voucher (optional)",
+        "voucherIdPlaceholder": "Payment voucher ID, if this cheque is for one",
+        "voucherIdInvalid": "That doesn't look like a valid ID.",
+        "voucherIdHint": "Only needed if you already know the payment voucher this cheque pays — leave blank otherwise.",
+        "issuedSummary": "Leaf #{leafNo} was issued.",
+        "resultPayeeLabel": "Payee",
+        "resultAmountLabel": "Amount",
+        "viewLinkedVoucher": "View linked payment voucher",
+        "issuing": "Issuing…",
+        "issueButton": "Issue cheque",
+        "genericError": "Couldn't issue a cheque from this book. It may have no unused leaves left."
+      },
+      "statusActions": {
+        "markPresentedTrigger": "Mark presented",
+        "markingPresented": "Marking presented…",
+        "markClearedTrigger": "Mark cleared",
+        "markingCleared": "Marking cleared…",
+        "stopTrigger": "Stop",
+        "stopConfirmTitle": "Stop this cheque?",
+        "stopConfirmDescription": "Leaf #{leafNo} will be marked Stopped. A reason is required and can't be changed later.",
+        "stopping": "Stopping…",
+        "stopConfirmButton": "Stop cheque",
+        "cancelTrigger": "Cancel",
+        "cancelConfirmTitle": "Cancel this leaf?",
+        "cancelConfirmDescription": "Leaf #{leafNo} will be marked Cancelled and permanently skipped. A reason is required and can't be changed later.",
+        "cancelling": "Cancelling…",
+        "cancelConfirmButton": "Cancel leaf",
+        "reasonLabel": "Reason",
+        "reasonPlaceholder": "Why is this happening?",
+        "genericError": "That action couldn't be completed. Please try again."
+      },
+      "flagStale": {
+        "trigger": "Flag Stale Cheques",
+        "title": "Flag stale cheque leaves",
+        "description": "Finds every Issued leaf that's been sitting unpresented for more than 6 months and flags it Stale. There's no automatic schedule for this — it only runs when you click the button.",
+        "noneWereStale": "No leaves qualified — everything issued is either already presented, cleared, or still within 6 months.",
+        "resultSummary": "{count} leaf(es) flagged Stale.",
+        "leafRow": "Leaf #{leafNo}",
+        "running": "Checking…",
+        "runButton": "Run now",
+        "genericError": "Couldn't run the stale check. Please try again."
       }
     }
   }

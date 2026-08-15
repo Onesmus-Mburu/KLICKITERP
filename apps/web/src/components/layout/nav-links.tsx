@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { CheckSquare, ChevronDown, CreditCard, GraduationCap, Landmark, LayoutDashboard, Layers, Megaphone, Package, Palette, Receipt, Settings, Truck, UserCog, Wallet, WalletCards } from "lucide-react";
+import { Banknote, CheckSquare, ChevronDown, CreditCard, GraduationCap, Landmark, LayoutDashboard, Layers, Megaphone, Package, Palette, Receipt, Settings, Truck, UserCog, Wallet, WalletCards } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { hasAnyRole } from "@/lib/permissions";
@@ -461,6 +461,120 @@ const NAV_ITEMS: NavItem[] = [
       { href: "/expenses/petty-cash", labelKey: "expensesPettyCash" },
       { href: "/expenses/claims", labelKey: "expensesClaims" },
       { href: "/expenses/recurring", labelKey: "expensesRecurring" },
+    ],
+  },
+  // Phase 6 Slice 21 Part 1 (Banking, Module 16) — Banking's first nav entry
+  // (`banking/*` — Accounts — had NO home in the flat nav at all before this
+  // pass, despite the backend itself being complete since Phase 5,
+  // 2026-07-20; only a minimal read-only picker existed pre-this-part,
+  // `features/payments/components/bank-account-select.tsx`, consumed by
+  // Payments' own receipt-capture screen, and that component has no nav entry
+  // of its own — it's embedded inline in a form). Positioned AFTER the
+  // Expenses dropdown directly above and before Communications below, per
+  // this part's own plan — matching this file's own established ordering of
+  // backend-complete-module dropdowns by the order each module's frontend
+  // actually shipped, with the two newest module dropdowns (Expenses: Slice
+  // 20; this: Slice 21) kept adjacent, the same "insert right after the
+  // most-recently-shipped module dropdown" placement Expenses itself followed
+  // relative to Inventory in Slice 20's own comment above. Styled as a
+  // `children`-bearing dropdown FROM THE START (the same mechanism every
+  // other multi-part module dropdown in this file already established), even
+  // though it has only ONE child today — Accounts — since Module 16's real
+  // backend surface (Transfers, Deposits/Withdrawals, Cheque Books/Leaves,
+  // Statement Import, Reconciliation — all confirmed present under
+  // `packages/server/src/domains/banking/api/`) is far larger than this
+  // part's own scope, the same "ship the mechanism with 1 child now, append
+  // more as later parts land" pattern Procurement/Inventory/Expenses' own
+  // Part 1s already established rather than a flat leaf link that would need
+  // converting later. `Banknote` (confirmed not already used elsewhere in
+  // this file, and confirmed actually exported by `lucide-react` — `Landmark`
+  // was already claimed by Accounting above, per this part's own task brief
+  // warning; `Wallet`/`WalletCards`/`Receipt`/`Truck`/`Package`/`CreditCard`
+  // are likewise already claimed by Payments/Wallet/Billing/Procurement/
+  // Inventory/Expenses respectively — `Banknote` is a clear semantic fit for
+  // Banking's own cash/bank-account register distinct from all of those).
+  // Same `allowedRoles: []`/`<QueryBoundary>`-is-the-real-gate reasoning as
+  // every other entry above — with a real wrinkle worth stating plainly:
+  // `banking:account:manage` is the ONE shared permission gating ALL 4 routes
+  // on `AccountsController`, including the LIST route itself (confirmed by
+  // reading it directly — there is no separate read-only view permission for
+  // bank accounts at all), so most non-admin roles will see this nav entry
+  // but hit a real 403 once `/banking/accounts` itself loads — the same
+  // `<QueryBoundary>`-is-the-real-gate shape every other entry in this file
+  // already relies on, just with a narrower-than-usual set of roles that
+  // actually clear it.
+  //
+  // Phase 6 Slice 21 Part 2 — 2nd, 3rd, and 4th children appended without
+  // touching the mechanism itself: Transfers (`/banking/transfers`,
+  // `banking:transfer:create` gating list/detail/submit — the same
+  // "LIST/GET share the CREATE permission, no separate view permission"
+  // shape Accounts' own Part 1 comment above already established, confirmed
+  // by reading `TransfersController` directly), Deposits
+  // (`/banking/deposits`, `banking:deposit:create`), and Withdrawals
+  // (`/banking/withdrawals`, `banking:withdrawal:create`) — the rest of
+  // Module 16's real backend surface confirmed present under
+  // `packages/server/src/domains/banking/api/` (`transfers.controller.ts`/
+  // `deposits.controller.ts`/`withdrawals.controller.ts`). Still NOT this
+  // dropdown's final shape — Cheque Books/Leaves, Statement Import, and
+  // Reconciliation may still append further children in a future part.
+  //
+  // Phase 6 Slice 21 Part 3 — 5th child appended: Statement Import
+  // (`/banking/statement-imports`, `banking:statement:import` gating
+  // list/detail/import — the SAME "LIST/GET share the one CREATE-shaped
+  // permission" shape every other child in this dropdown already
+  // establishes, confirmed by reading `StatementImportController` directly).
+  // Still NOT this dropdown's final shape — Cheque Books/Leaves and
+  // Reconciliation may still append further children in a future part.
+  //
+  // Phase 6 Slice 21 Part 4 — 6th child appended without touching the
+  // mechanism itself: Reconciliation (`/banking/reconciliations`,
+  // `banking:reconciliation:manage` gating start/list/detail/matches/
+  // auto-match/manual-match/adjustments/lock — the SAME "LIST/GET share the
+  // one manage-shaped permission" shape every other child in this dropdown
+  // already establishes; `reopen` alone needs the separate, more-privileged
+  // `banking:reconciliation:reopen`, confirmed by reading
+  // `ReconciliationController` directly — never client-side hidden here
+  // either, same reasoning `procurement:po:create-direct`/
+  // `procurement:payment-voucher:execute` above already established for
+  // their own narrower action-level permissions). Still NOT this dropdown's
+  // final shape — Cheque Books/Leaves (the last of Module 16's real backend
+  // surface) may still append one more child in a future part.
+  //
+  // Phase 6 Slice 21 Part 5 — 7th and 8th (FINAL) children appended: Cheque
+  // Books (`/banking/cheque-books`, `banking:cheque-book:manage` gating all
+  // 3 routes including LIST, the same "one shared manage-shaped permission"
+  // shape every other child in this dropdown already establishes) and
+  // Cheque Leaves (`/banking/cheque-leaves`, `banking:cheque-leaf:manage`
+  // gating list/detail/mark-presented/mark-cleared/stop/cancel/flag-stale;
+  // `issueNext` alone needs the separate `banking:cheque-leaf:issue`,
+  // confirmed by reading `ChequeLeavesController` directly — the SAME
+  // privilege-separation shape `banking:reconciliation:{manage,reopen}`
+  // (Part 4) already established, just with the narrower permission gating
+  // the ACTION and the broader one gating everything else, the mirror image
+  // of Reconciliation's own split — never client-side hidden here either,
+  // same reasoning as every other narrower action-level permission above).
+  // **THIS IS THE BANKING DROPDOWN'S FINAL SHAPE — 8 children, no more
+  // planned.** Module 16 (Banking)'s entire real backend surface confirmed
+  // present under `packages/server/src/domains/banking/api/` (Accounts,
+  // Transfers, Deposits, Withdrawals, Statement Import, Reconciliation,
+  // Cheque Books, Cheque Leaves) now has a real, working, verified frontend
+  // screen reachable from this one completed dropdown — the same "FINAL
+  // shape, no more planned" closure Expenses' own 5-child dropdown (Slice 20
+  // Part 4) already declared for its own module.
+  {
+    href: "/banking/accounts",
+    labelKey: "banking",
+    icon: Banknote,
+    allowedRoles: [],
+    children: [
+      { href: "/banking/accounts", labelKey: "bankingAccounts" },
+      { href: "/banking/transfers", labelKey: "bankingTransfers" },
+      { href: "/banking/deposits", labelKey: "bankingDeposits" },
+      { href: "/banking/withdrawals", labelKey: "bankingWithdrawals" },
+      { href: "/banking/statement-imports", labelKey: "bankingStatementImports" },
+      { href: "/banking/reconciliations", labelKey: "bankingReconciliations" },
+      { href: "/banking/cheque-books", labelKey: "bankingChequeBooks" },
+      { href: "/banking/cheque-leaves", labelKey: "bankingChequeLeaves" },
     ],
   },
   // Phase 6 Slice 15 Part 1 (Communications Foundation + Templates, Module

@@ -133,7 +133,16 @@
       "expensesVouchers": "Hati za Malipo",
       "expensesPettyCash": "Fedha Ndogo",
       "expensesClaims": "Madai",
-      "expensesRecurring": "Marudio"
+      "expensesRecurring": "Marudio",
+      "banking": "Benki",
+      "bankingAccounts": "Akaunti",
+      "bankingTransfers": "Uhamisho",
+      "bankingDeposits": "Amana",
+      "bankingWithdrawals": "Utoaji",
+      "bankingStatementImports": "Uingizaji wa Taarifa",
+      "bankingReconciliations": "Upatanisho",
+      "bankingChequeBooks": "Vitabu vya Hundi",
+      "bankingChequeLeaves": "Hundi"
     },
     "topbar": {
       "searchPlaceholder": "Search…",
@@ -2956,7 +2965,8 @@
         "hardClosePermanentWarning": "Kitendo hiki ni cha kudumu. Kipindi hakiwezi kufunguliwa tena baada ya kufungwa kabisa.",
         "hardCloseConfirmButton": "Funga kabisa",
         "processing": "Inachakata…",
-        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena.",
+        "reconciliationWarning": "Akaunti {count} za benki zina upatanisho ambao haujafungwa kwa kipindi hiki — kufunga kabisa hakutazuiliwa na seva, lakini haipendekezwi hadi upatanisho ukamilike."
       }
     },
     "costCenters": {
@@ -3861,6 +3871,12 @@
         "noSuppliersFound": "Hakuna msambazaji aliyepatikana.",
         "pickSupplierHint": "Chagua msambazaji ili kuona ankara zao wazi.",
         "methodLabel": "Njia ya malipo",
+        "bankAccountLabel": "Akaunti ya benki",
+        "selectBankAccountPlaceholder": "Chagua akaunti ya benki",
+        "searchBankAccounts": "Tafuta akaunti za benki…",
+        "loadingBankAccounts": "Inapakia akaunti za benki…",
+        "noBankAccountsFound": "Hakuna akaunti za benki zilizopatikana.",
+        "bankAccountHint": "Hutumika kwa hati za uhamisho wa benki pekee — si lazima hata hapo.",
         "allocationsLabel": "Ugawaji",
         "noOpenInvoicesHint": "Msambazaji huyu hana ankara wazi (zilizotumwa, ambazo hazijalipwa).",
         "columns": {
@@ -3870,7 +3886,13 @@
         },
         "createButton": "Tengeneza hati",
         "creating": "Inatengeneza…",
-        "genericError": "Imeshindwa kutengeneza hati. Tafadhali kagua ugawaji na ujaribu tena."
+        "genericError": "Imeshindwa kutengeneza hati. Tafadhali kagua ugawaji na ujaribu tena.",
+        "chequeLeafLabel": "Hundi",
+        "selectChequeLeafPlaceholder": "Chagua hundi",
+        "searchChequeLeaves": "Tafuta hundi…",
+        "loadingChequeLeaves": "Inapakia hundi…",
+        "noChequeLeavesFound": "Hakuna hundi zisizotumika zilizopatikana.",
+        "chequeLeafHint": "Hundi zisizotumika pekee ndizo zinaonyeshwa. Hutumika kwa hati za Hundi pekee — si lazima hata hapo."
       },
       "statusActions": {
         "submitTrigger": "Wasilisha kwa idhini",
@@ -4968,6 +4990,692 @@
         "lastFiredDescription": "Rasimu ya hati ya karibuni zaidi ambayo kiolezo hiki kimetengeneza, ikiwa ipo.",
         "viewLastVoucher": "Tazama hati ya mwisho",
         "neverFired": "Kiolezo hiki hakijawahi kuendeshwa."
+      }
+    }
+  },
+  "banking": {
+    "kinds": {
+      "BANK": "Benki",
+      "CASH": "Fedha taslimu",
+      "MPESA_SETTLEMENT": "Usuluhishi wa M-Pesa",
+      "PETTY": "Fedha Ndogo"
+    },
+    "accounts": {
+      "list": {
+        "pageTitle": "Akaunti za Benki",
+        "pageSubtitle": "Akaunti za benki, fedha taslimu, usuluhishi wa M-Pesa, na fedha ndogo anazomiliki shule hii, kila moja ikiunganishwa na akaunti yake ya Daftari Kuu.",
+        "listTitle": "Akaunti zote",
+        "listDescription": "Kila akaunti ya benki, katika aina na hali zote.",
+        "active": "Inatumika",
+        "inactive": "Haitumiki",
+        "columns": {
+          "name": "Jina",
+          "kind": "Aina",
+          "bankName": "Benki",
+          "accountNo": "Namba ya Akaunti",
+          "status": "Hali"
+        },
+        "filters": {
+          "kindLabel": "Aina",
+          "statusLabel": "Hali",
+          "allKinds": "Aina zote",
+          "allStatuses": "Hali zote",
+          "clearFilters": "Futa vichujio"
+        }
+      },
+      "createDialog": {
+        "trigger": "Akaunti Mpya",
+        "title": "Akaunti mpya ya benki",
+        "description": "Unda akaunti mpya ya benki, fedha taslimu, usuluhishi wa M-Pesa, au fedha ndogo, ikiunganishwa na akaunti ya Daftari Kuu inayotumika na inayoweza kuandikiwa.",
+        "nameLabel": "Jina",
+        "namePlaceholder": "mfano: Akaunti ya Uendeshaji",
+        "kindLabel": "Aina",
+        "glAccountLabel": "Akaunti ya Daftari Kuu",
+        "glAccountPlaceholder": "Chagua akaunti ya Daftari Kuu",
+        "glAccountSearchPlaceholder": "Tafuta akaunti…",
+        "glAccountEmptyText": "Hakuna akaunti zinazoweza kuandikiwa zilizopatikana.",
+        "glAccountHint": "Ni akaunti za Daftari Kuu zinazotumika na zinazoweza kuandikiwa pekee zinazoonyeshwa. Kila akaunti ya Daftari Kuu inaweza kuunganishwa na akaunti moja tu ya benki.",
+        "loadingAccounts": "Inapakia akaunti…",
+        "bankNameLabel": "Jina la benki",
+        "bankNamePlaceholder": "mfano: Equity Bank",
+        "branchLabel": "Tawi",
+        "branchPlaceholder": "mfano: Westlands",
+        "accountNoLabel": "Namba ya akaunti",
+        "accountNoPlaceholder": "mfano: 0123456789",
+        "createButton": "Unda akaunti",
+        "creating": "Inaunda…",
+        "genericError": "Imeshindwa kuunda akaunti. Huenda jina tayari linatumika, au akaunti hii ya Daftari Kuu tayari imeunganishwa na akaunti nyingine ya benki."
+      },
+      "editDialog": {
+        "title": "Hariri {name}",
+        "description": "Sasisha jina la akaunti hii, maelezo ya benki, au hali. Aina na akaunti ya Daftari Kuu haziwezi kubadilishwa baada ya kuundwa.",
+        "nameLabel": "Jina",
+        "bankNameLabel": "Jina la benki",
+        "branchLabel": "Tawi",
+        "accountNoLabel": "Namba ya akaunti",
+        "isActiveLabel": "Inatumika",
+        "saving": "Inahifadhi…",
+        "genericError": "Imeshindwa kuhifadhi akaunti. Huenda jina tayari linatumika."
+      },
+      "detail": {
+        "backToList": "Rudi kwenye akaunti za benki",
+        "active": "Inatumika",
+        "inactive": "Haitumiki",
+        "bankNameLabel": "Jina la benki",
+        "branchLabel": "Tawi",
+        "accountNoLabel": "Namba ya akaunti",
+        "glAccountLabel": "Akaunti ya Daftari Kuu"
+      }
+    },
+    "statuses": {
+      "DRAFT": "Rasimu",
+      "PENDING_APPROVAL": "Inasubiri Idhini",
+      "APPROVED": "Imeidhinishwa",
+      "POSTED": "Imechapishwa"
+    },
+    "transfers": {
+      "list": {
+        "pageTitle": "Uhamisho wa Benki",
+        "pageSubtitle": "Hamisha fedha kati ya akaunti za benki, fedha taslimu, usuluhishi wa M-Pesa, na fedha ndogo za shule hii.",
+        "listTitle": "Uhamisho wote",
+        "listDescription": "Kila uhamisho kati ya akaunti, katika hali zote.",
+        "columns": {
+          "number": "Nambari",
+          "fromAccount": "Kutoka akaunti",
+          "toAccount": "Kwenda akaunti",
+          "amount": "Kiasi",
+          "status": "Hali"
+        },
+        "filters": {
+          "statusLabel": "Hali",
+          "accountLabel": "Akaunti",
+          "allStatuses": "Hali zote",
+          "allAccounts": "Akaunti zote",
+          "clearFilters": "Futa vichujio"
+        },
+        "notYetPosted": "Bado haijachapishwa"
+      },
+      "createDialog": {
+        "trigger": "Uhamisho Mpya",
+        "title": "Uhamisho mpya wa benki",
+        "description": "Hamisha fedha kutoka akaunti moja kwenda nyingine. Akaunti zote mbili lazima ziwe tofauti.",
+        "fromAccountLabel": "Kutoka akaunti",
+        "toAccountLabel": "Kwenda akaunti",
+        "selectAccountPlaceholder": "Chagua akaunti",
+        "loadingAccounts": "Inapakia akaunti…",
+        "searchAccounts": "Tafuta akaunti…",
+        "noAccountsFound": "Hakuna akaunti zilizopatikana.",
+        "sameAccountError": "Akaunti unayohamisha kwenda lazima iwe tofauti na akaunti unayohamisha kutoka.",
+        "amountLabel": "Kiasi",
+        "createButton": "Tengeneza uhamisho",
+        "creating": "Inatengeneza…",
+        "genericError": "Imeshindwa kutengeneza uhamisho. Huenda akaunti mbili ni ile ile, au kuna hitilafu nyingine."
+      },
+      "detail": {
+        "backToList": "Rudi kwenye uhamisho",
+        "fromAccountLabel": "Kutoka akaunti",
+        "toAccountLabel": "Kwenda akaunti",
+        "amountLabel": "Kiasi",
+        "notYetPosted": "Bado haijachapishwa",
+        "viewJournal": "Angalia ingizo la jarida",
+        "howThisPostsNote": "Kuchapisha uhamisho huu kunatengeneza ingizo moja la jarida lililosawazishwa lenye sehemu mbili, zote zikipitia akaunti ya Usuluhishi wa Uhamisho: salio la akaunti ya chanzo linapungua na Usuluhishi wa Uhamisho linaongezeka, kisha Usuluhishi wa Uhamisho linapungua tena huku salio la akaunti ya marudio likiongezeka. Mistari miwili ya Usuluhishi wa Uhamisho daima inasawazika kuwa sifuri kwa muundo wenyewe, si hatua tofauti ya kusawazisha."
+      },
+      "statusActions": {
+        "submitTrigger": "Wasilisha kwa idhini",
+        "submitting": "Inawasilisha…",
+        "approveTrigger": "Idhinisha",
+        "approving": "Inaidhinisha…",
+        "approveConfirmTitle": "Idhinisha uhamisho huu?",
+        "approveConfirmDescription": "Uhamisho {number} utahamia Imeidhinishwa na kuwa tayari kuchapishwa.",
+        "approveConfirmButton": "Idhinisha",
+        "rejectTrigger": "Kataa",
+        "rejecting": "Inakataa…",
+        "rejectConfirmTitle": "Kataa uhamisho huu?",
+        "rejectConfirmDescription": "Uhamisho {number} utarudi kuwa Rasimu ili uweze kusahihishwa na kuwasilishwa tena.",
+        "rejectConfirmButton": "Kataa",
+        "postTrigger": "Chapisha",
+        "posting": "Inachapisha…",
+        "postConfirmTitle": "Chapisha uhamisho huu?",
+        "postConfirmDescription": "Uhamisho {number} utachapishwa na hautaweza kubadilishwa tena.",
+        "postConfirmButton": "Chapisha",
+        "postJournalNote": "Kuchapisha kunahamisha fedha kati ya akaunti hizo mbili kupitia akaunti ya Usuluhishi wa Uhamisho na kutengeneza ingizo halisi la jarida. Hili haliwezi kutenguliwa kutoka hapa.",
+        "genericError": "Kitendo hicho hakikuweza kukamilika. Tafadhali jaribu tena."
+      }
+    },
+    "deposits": {
+      "list": {
+        "pageTitle": "Amana za Benki",
+        "pageSubtitle": "Rekodi fedha taslimu na hundi zilizowekwa kutoka kwa mtunza fedha kwenda kwenye moja ya akaunti za benki za shule hii.",
+        "listTitle": "Amana zote",
+        "listDescription": "Kila amana kwenye akaunti ya benki, katika hali zote.",
+        "columns": {
+          "number": "Nambari",
+          "account": "Akaunti",
+          "amount": "Kiasi",
+          "slipRef": "Slip",
+          "status": "Hali"
+        },
+        "filters": {
+          "statusLabel": "Hali",
+          "accountLabel": "Akaunti",
+          "allStatuses": "Hali zote",
+          "allAccounts": "Akaunti zote",
+          "clearFilters": "Futa vichujio"
+        },
+        "notYetPosted": "Bado haijachapishwa"
+      },
+      "createDialog": {
+        "trigger": "Amana Mpya",
+        "title": "Amana mpya ya benki",
+        "description": "Rekodi fedha taslimu au hundi zilizowekwa kwenye moja ya akaunti za benki za shule hii.",
+        "accountLabel": "Akaunti",
+        "selectAccountPlaceholder": "Chagua akaunti",
+        "loadingAccounts": "Inapakia akaunti…",
+        "searchAccounts": "Tafuta akaunti…",
+        "noAccountsFound": "Hakuna akaunti zilizopatikana.",
+        "amountLabel": "Kiasi",
+        "slipRefLabel": "Rejea ya slip",
+        "slipRefPlaceholder": "mfano: namba ya slip",
+        "createButton": "Tengeneza amana",
+        "creating": "Inatengeneza…",
+        "genericError": "Imeshindwa kutengeneza amana. Tafadhali jaribu tena."
+      },
+      "detail": {
+        "backToList": "Rudi kwenye amana",
+        "amountLabel": "Kiasi",
+        "slipRefLabel": "Rejea ya slip",
+        "sourceSessionLabel": "Kikao cha mtunza fedha (chanzo)",
+        "noSourceSession": "Hakuna kikao kilichounganishwa",
+        "notYetPosted": "Bado haijachapishwa",
+        "viewJournal": "Angalia ingizo la jarida"
+      },
+      "statusActions": {
+        "submitTrigger": "Wasilisha kwa idhini",
+        "submitting": "Inawasilisha…",
+        "approveTrigger": "Idhinisha",
+        "approving": "Inaidhinisha…",
+        "approveConfirmTitle": "Idhinisha amana huu?",
+        "approveConfirmDescription": "Amana {number} utahamia Imeidhinishwa na kuwa tayari kuchapishwa.",
+        "approveConfirmButton": "Idhinisha",
+        "rejectTrigger": "Kataa",
+        "rejecting": "Inakataa…",
+        "rejectConfirmTitle": "Kataa amana huu?",
+        "rejectConfirmDescription": "Amana {number} utarudi kuwa Rasimu ili uweze kusahihishwa na kuwasilishwa tena.",
+        "rejectConfirmButton": "Kataa",
+        "postTrigger": "Chapisha",
+        "posting": "Inachapisha…",
+        "postConfirmTitle": "Chapisha amana huu?",
+        "postConfirmDescription": "Amana {number} utachapishwa na hautaweza kubadilishwa tena.",
+        "postConfirmButton": "Chapisha",
+        "postJournalNote": "Kuchapisha kunaongeza salio la akaunti ya marudio na kufuta kiasi hicho kutoka Fedha Zisizowekwa Benki. Hili haliwezi kutenguliwa kutoka hapa.",
+        "genericError": "Kitendo hicho hakikuweza kukamilika. Tafadhali jaribu tena.",
+        "ackSectionTitle": "Uthibitisho",
+        "ackSenderLabel": "Mtumaji",
+        "ackReceiverLabel": "Mpokeaji",
+        "ackSenderTrigger": "Thibitisha kama mtumaji",
+        "ackReceiverTrigger": "Thibitisha kama mpokeaji",
+        "acknowledging": "Inathibitisha…"
+      }
+    },
+    "withdrawals": {
+      "list": {
+        "pageTitle": "Utoaji wa Benki",
+        "pageSubtitle": "Rekodi fedha taslimu zilizotolewa kutoka kwa moja ya akaunti za benki za shule hii kwenda kwa mtunza fedha.",
+        "listTitle": "Utoaji wote",
+        "listDescription": "Kila utoaji kutoka akaunti ya benki, katika hali zote.",
+        "columns": {
+          "number": "Nambari",
+          "account": "Akaunti",
+          "amount": "Kiasi",
+          "slipRef": "Slip",
+          "status": "Hali"
+        },
+        "filters": {
+          "statusLabel": "Hali",
+          "accountLabel": "Akaunti",
+          "allStatuses": "Hali zote",
+          "allAccounts": "Akaunti zote",
+          "clearFilters": "Futa vichujio"
+        },
+        "notYetPosted": "Bado haijachapishwa"
+      },
+      "createDialog": {
+        "trigger": "Utoaji Mpya",
+        "title": "Utoaji mpya wa benki",
+        "description": "Rekodi fedha taslimu zilizotolewa kutoka moja ya akaunti za benki za shule hii.",
+        "accountLabel": "Akaunti",
+        "selectAccountPlaceholder": "Chagua akaunti",
+        "loadingAccounts": "Inapakia akaunti…",
+        "searchAccounts": "Tafuta akaunti…",
+        "noAccountsFound": "Hakuna akaunti zilizopatikana.",
+        "amountLabel": "Kiasi",
+        "slipRefLabel": "Rejea ya slip",
+        "slipRefPlaceholder": "mfano: namba ya slip",
+        "createButton": "Tengeneza utoaji",
+        "creating": "Inatengeneza…",
+        "genericError": "Imeshindwa kutengeneza utoaji. Tafadhali jaribu tena."
+      },
+      "detail": {
+        "backToList": "Rudi kwenye utoaji",
+        "amountLabel": "Kiasi",
+        "slipRefLabel": "Rejea ya slip",
+        "sourceSessionLabel": "Kikao cha mtunza fedha (chanzo)",
+        "noSourceSession": "Hakuna kikao kilichounganishwa",
+        "notYetPosted": "Bado haijachapishwa",
+        "viewJournal": "Angalia ingizo la jarida"
+      },
+      "statusActions": {
+        "submitTrigger": "Wasilisha kwa idhini",
+        "submitting": "Inawasilisha…",
+        "approveTrigger": "Idhinisha",
+        "approving": "Inaidhinisha…",
+        "approveConfirmTitle": "Idhinisha utoaji huu?",
+        "approveConfirmDescription": "Utoaji {number} utahamia Imeidhinishwa na kuwa tayari kuchapishwa.",
+        "approveConfirmButton": "Idhinisha",
+        "rejectTrigger": "Kataa",
+        "rejecting": "Inakataa…",
+        "rejectConfirmTitle": "Kataa utoaji huu?",
+        "rejectConfirmDescription": "Utoaji {number} utarudi kuwa Rasimu ili uweze kusahihishwa na kuwasilishwa tena.",
+        "rejectConfirmButton": "Kataa",
+        "postTrigger": "Chapisha",
+        "posting": "Inachapisha…",
+        "postConfirmTitle": "Chapisha utoaji huu?",
+        "postConfirmDescription": "Utoaji {number} utachapishwa na hautaweza kubadilishwa tena.",
+        "postConfirmButton": "Chapisha",
+        "postJournalNote": "Kuchapisha kunapunguza salio la akaunti ya chanzo na kuhamisha kiasi hicho kwenda Fedha Zisizowekwa Benki. Hili haliwezi kutenguliwa kutoka hapa.",
+        "genericError": "Kitendo hicho hakikuweza kukamilika. Tafadhali jaribu tena.",
+        "ackSectionTitle": "Uthibitisho",
+        "ackSenderLabel": "Mtumaji",
+        "ackReceiverLabel": "Mpokeaji",
+        "ackSenderTrigger": "Thibitisha kama mtumaji",
+        "ackReceiverTrigger": "Thibitisha kama mpokeaji",
+        "acknowledging": "Inathibitisha…"
+      }
+    },
+    "statementImports": {
+      "list": {
+        "pageTitle": "Uingizaji wa Taarifa za Benki",
+        "pageSubtitle": "Ingiza mistari ya taarifa ya benki kutoka faili la CSV, ikilinganishwa na moja ya akaunti za shule hii.",
+        "newImportTrigger": "Uingizaji Mpya",
+        "listTitle": "Historia ya uingizaji",
+        "listDescription": "Kila zoezi la uingizaji wa taarifa, katika akaunti zote.",
+        "columns": {
+          "importedAt": "Ilioingizwa",
+          "account": "Akaunti",
+          "lineCount": "Mistari iliyoingizwa",
+          "duplicateCount": "Nakala zilizorukwa"
+        },
+        "filters": {
+          "accountLabel": "Akaunti",
+          "allAccounts": "Akaunti zote",
+          "clearFilters": "Futa vichujio"
+        }
+      },
+      "detail": {
+        "backToList": "Rudi kwenye uingizaji wa taarifa",
+        "accountLabel": "Akaunti",
+        "fileIdLabel": "Rejea ya faili lililopakiwa",
+        "duplicateCountLabel": "Nakala zilizorukwa",
+        "mappingTitle": "Ulinganishaji wa safu uliotumika",
+        "mappingDate": "Safu ya tarehe: {column} (muundo {format})",
+        "mappingDescription": "Safu ya maelezo: {column}",
+        "mappingSeparate": "Safu ya deni: {debit} — Safu ya mkopo: {credit}",
+        "mappingSigned": "Safu ya kiasi (yenye alama): {column}",
+        "mappingRef": "Safu ya rejea: {column}"
+      },
+      "new": {
+        "backToList": "Rudi kwenye uingizaji wa taarifa",
+        "pageTitle": "Uingizaji Mpya wa Taarifa ya Benki",
+        "pageSubtitle": "Pakia taarifa ya benki ya CSV, linganisha safu zake, kisha ingiza mistari yake dhidi ya moja ya akaunti za shule hii.",
+        "stepIndicator": "Hatua ya {current} kati ya {total} — {label}",
+        "steps": {
+          "account": "Akaunti",
+          "upload": "Pakia faili",
+          "preview": "Onyesho la awali la mistari",
+          "mapping": "Linganisha safu",
+          "confirm": "Thibitisha",
+          "result": "Imekamilika"
+        },
+        "account": {
+          "title": "Chagua akaunti",
+          "description": "Taarifa hii ni ya akaunti ipi kati ya akaunti za shule hii?",
+          "accountLabel": "Akaunti",
+          "selectAccountPlaceholder": "Chagua akaunti",
+          "loadingAccounts": "Inapakia akaunti…",
+          "searchAccounts": "Tafuta akaunti…",
+          "noAccountsFound": "Hakuna akaunti zilizopatikana."
+        },
+        "upload": {
+          "title": "Pakia faili la taarifa",
+          "description": "Chagua faili la CSV la taarifa ya benki ya akaunti hii.",
+          "fileLabel": "Faili la CSV",
+          "csvOnlyHint": "Ni faili za CSV pekee zinazotumika. Iwapo benki yako inatoa Excel (.xlsx) pekee, ihifadhi kama CSV kwanza.",
+          "emptyFileError": "Faili hili halina mstari wa vichwa au mistari ya data.",
+          "parseError": "Imeshindwa kusoma faili hili kama CSV. Hakikisha ni faili la CSV halisi kisha jaribu tena.",
+          "uploadError": "Imeshindwa kupakia faili hili. Tafadhali jaribu tena.",
+          "uploading": "Inapakia faili…",
+          "parsedSummary": "Mistari {rows} imesomwa katika safu {columns}."
+        },
+        "preview": {
+          "title": "Onyesho la awali la mistari iliyosomwa",
+          "rowCount": "Mistari {count} imesomwa kutoka faili hili.",
+          "truncatedNote": "Inaonyesha mistari {shown} ya kwanza kati ya {total} iliyosomwa kutoka faili hili."
+        },
+        "mapping": {
+          "title": "Linganisha safu",
+          "description": "Mwambie mfumo ni safu ipi katika faili lako inayobeba uga upi.",
+          "dateColumnLabel": "Safu ya tarehe",
+          "descriptionColumnLabel": "Safu ya maelezo",
+          "conventionLabel": "Mfumo wa deni/mkopo",
+          "conventionSeparate": "Safu tofauti za deni na mkopo",
+          "conventionSigned": "Safu moja ya kiasi yenye alama",
+          "conventionSeparateHint": "Fedha zinazoingia na zinazotoka ziko katika safu mbili tofauti.",
+          "conventionSignedHint": "Fedha zinazoingia na zinazotoka ziko katika safu moja — chanya kwa fedha zinazoingia, hasi kwa fedha zinazotoka.",
+          "debitColumnLabel": "Safu ya deni",
+          "creditColumnLabel": "Safu ya mkopo",
+          "amountColumnLabel": "Safu ya kiasi",
+          "refColumnLabel": "Safu ya rejea",
+          "refColumnNone": "Hakuna safu ya rejea",
+          "refColumnHint": "Si lazima — namba ya rejea ya nje, ikiwa faili lako linayo.",
+          "selectColumnPlaceholder": "Chagua safu",
+          "dateFormatLabel": "Muundo wa tarehe",
+          "dateFormatPlaceholder": "mfano: YYYY-MM-DD",
+          "dateFormatHint": "Umejengwa kwa YYYY, MM, na DD kwa mpangilio zinavyoonekana katika safu ya tarehe ya faili lako, mfano \"DD/MM/YYYY\".",
+          "prefillButton": "Tumia ulinganishaji wa uingizaji uliopita",
+          "prefillHint": "Uingizaji wa mwisho wa taarifa wa akaunti hii (tarehe {date}) ulitumia ulinganishaji wa safu — utumie kama mwanzo kisha urekebishe inapohitajika."
+        },
+        "confirm": {
+          "title": "Thibitisha na ingiza",
+          "description": "Kagua maelezo hapa chini, kisha ingiza mistari hii.",
+          "accountLabel": "Akaunti",
+          "fileLabel": "Faili",
+          "rowCountLabel": "Mistari ya kuingiza",
+          "mappingRecapTitle": "Ulinganishaji wa safu",
+          "mappingRecapDate": "Safu ya tarehe: {column} (muundo {format})",
+          "mappingRecapDescription": "Safu ya maelezo: {column}",
+          "mappingRecapSeparate": "Safu ya deni: {debit} — Safu ya mkopo: {credit}",
+          "mappingRecapSigned": "Safu ya kiasi (yenye alama): {column}",
+          "mappingRecapRef": "Safu ya rejea: {column}",
+          "dedupeNote": "Mistari inayolingana na mstari uliokwisha kuingizwa kwa akaunti hii (tarehe, kiasi, na rejea sawa) inarukwa moja kwa moja kama nakala — hili ni la kawaida wakati wa kuingiza tena, si hitilafu.",
+          "uploadingFileHint": "Bado inapakia faili — kitufe cha kuingiza kitawezeshwa mara hilo litakapokamilika.",
+          "importButton": "Ingiza taarifa",
+          "importing": "Inaingiza…",
+          "genericError": "Imeshindwa kuingiza taarifa hii. Tafadhali kagua ulinganishaji kisha jaribu tena."
+        },
+        "result": {
+          "title": "Uingizaji umekamilika",
+          "duplicateExplainer": "Mistari ya nakala ni mistari iliyokwisha kuingizwa kwa akaunti hii katika uingizaji uliopita — iliruka moja kwa moja, haikuhesabiwa kama hitilafu.",
+          "rowsSubmitted": "Mistari {count} imewasilishwa",
+          "newImportButton": "Ingiza taarifa nyingine",
+          "backToListButton": "Rudi kwenye uingizaji wa taarifa",
+          "viewImportButton": "Angalia uingizaji huu"
+        }
+      },
+      "dedupeSummary": "Mistari {inserted} imeingizwa, nakala {duplicates} zimerukwa"
+    },
+    "reconciliations": {
+      "statuses": {
+        "IN_PROGRESS": "Inaendelea",
+        "LOCKED": "Imefungwa",
+        "REOPENED": "Imefunguliwa Tena"
+      },
+      "list": {
+        "pageTitle": "Upatanisho wa Benki",
+        "pageSubtitle": "Linganisha mistari ya taarifa ya benki na maingizo ya jarida yaliyochapishwa, kisha funga kipindi cha akaunti husika baada ya kupatanishwa.",
+        "listTitle": "Upatanisho wote",
+        "listDescription": "Kila upatanisho ulioanzishwa, katika akaunti na hali zote.",
+        "columns": {
+          "account": "Akaunti",
+          "period": "Kipindi",
+          "bookBalance": "Salio la vitabu",
+          "bankBalance": "Salio la benki",
+          "status": "Hali"
+        },
+        "filters": {
+          "statusLabel": "Hali",
+          "accountLabel": "Akaunti",
+          "allStatuses": "Hali zote",
+          "allAccounts": "Akaunti zote",
+          "clearFilters": "Futa vichujio"
+        }
+      },
+      "startDialog": {
+        "trigger": "Anzisha Upatanisho",
+        "title": "Anzisha upatanisho wa benki",
+        "description": "Chagua akaunti na kipindi cha uhasibu cha kuipatanisha nacho. Upatanisho mmoja tu unaweza kuwepo kwa kila akaunti na kipindi.",
+        "accountLabel": "Akaunti",
+        "selectAccountPlaceholder": "Chagua akaunti",
+        "loadingAccounts": "Inapakia akaunti…",
+        "searchAccounts": "Tafuta akaunti…",
+        "noAccountsFound": "Hakuna akaunti zilizopatikana.",
+        "fiscalYearLabel": "Mwaka wa kifedha",
+        "selectFiscalYearPlaceholder": "Chagua mwaka wa kifedha",
+        "periodLabel": "Kipindi",
+        "selectPeriodPlaceholder": "Chagua kipindi",
+        "chooseFiscalYearFirst": "Chagua mwaka wa kifedha kwanza",
+        "periodOptionLabel": "Kipindi {seq} ({startsOn} — {endsOn})",
+        "periodHint": "Salio la vitabu linahesabiwa kama lilivyo mwishoni mwa kipindi hiki.",
+        "startButton": "Anzisha upatanisho",
+        "starting": "Inaanzisha…",
+        "genericError": "Imeshindwa kuanzisha upatanisho huu. Huenda tayari upo kwa akaunti na kipindi hiki."
+      },
+      "detail": {
+        "backToList": "Rudi kwenye upatanisho",
+        "viewAccount": "Angalia akaunti",
+        "bookBalanceLabel": "Salio la vitabu",
+        "bankBalanceLabel": "Salio la benki",
+        "differenceLabel": "Tofauti"
+      },
+      "autoMatch": {
+        "title": "Ulinganishaji wa Kiotomatiki",
+        "description": "Inaendesha hatua 3 dhidi ya mistari ya taarifa isiyolinganishwa na mistari ya jarida isiyopatanishwa ya akaunti hii.",
+        "runButton": "Endesha ulinganishaji wa kiotomatiki",
+        "running": "Inaendesha…",
+        "genericError": "Imeshindwa kuendesha ulinganishaji wa kiotomatiki. Tafadhali jaribu tena.",
+        "pass1Summary": "{count} zimelinganishwa kiotomatiki kwa rejea sahihi (Hatua ya 1)",
+        "pass2Summary": "{count} zimelinganishwa kiotomatiki kwa kiasi na tarehe ndani ya siku 3 (Hatua ya 2)",
+        "pass3Title": "Mapendekezo ya kulinganisha (Hatua ya 3 — kiasi pekee)",
+        "pass3Description": "Haya hayajatumika kiotomatiki. Kagua kila pendekezo kisha tumia yale sahihi.",
+        "noSuggestions": "Hakuna mapendekezo ya kiasi pekee kutoka mwendo wa mwisho.",
+        "suggestionAmount": "Kiasi: {amount}",
+        "suggestionStatementLine": "Mstari wa taarifa {id}…",
+        "suggestionJournalLine": "Mstari wa jarida {id}…",
+        "applyButton": "Tumia ulinganisho huu",
+        "applying": "Inatumia…",
+        "matchesTitle": "Ulinganisho hadi sasa",
+        "matchesDescription": "Kila ulinganisho na marekebisho yaliyorekodiwa dhidi ya upatanisho huu hadi sasa.",
+        "matchStatementLine": "Mstari wa taarifa {id}…",
+        "matchKindMatched": "Imelinganishwa",
+        "matchKindAdjustment": "Marekebisho"
+      },
+      "adjustmentDialog": {
+        "trigger": "Marekebisho Mapya",
+        "title": "Rekodi ada ya benki au marekebisho ya riba",
+        "description": "Inachapisha ingizo halisi la jarida lenye mistari miwili na kuweka alama mstari huu wa taarifa kuwa umerekebishwa (P-33).",
+        "statementLineIdLabel": "Kitambulisho cha mstari wa taarifa",
+        "statementLineIdPlaceholder": "mfano: kitambulisho cha mstari wa taarifa kutoka pendekezo la Hatua ya 3",
+        "statementLineIdInvalid": "Hiki hakionekani kuwa kitambulisho sahihi.",
+        "statementLineIdHint": "Hakuna orodha ya kuvinjari mistari ya taarifa isiyolinganishwa wakati upatanisho unaendelea — tumia kitambulisho kilichoonyeshwa kwenye pendekezo la Hatua ya 3 hapo juu, au kile unachokijua tayari kutoka kwenye kumbukumbu zako.",
+        "kindLabel": "Aina",
+        "kindCHARGE": "Ada ya benki",
+        "kindINTEREST": "Mapato ya riba",
+        "amountLabel": "Kiasi",
+        "createButton": "Tengeneza marekebisho",
+        "creating": "Inatengeneza…",
+        "genericError": "Imeshindwa kutengeneza marekebisho haya. Tafadhali kagua kitambulisho cha mstari wa taarifa kisha jaribu tena."
+      },
+      "lockPanel": {
+        "lockTitle": "Funga upatanisho huu",
+        "lockDescription": "Inahesabu upya masalio yote mawili, inanasa picha ya kila kipengele kilichosalia, na kufunga upatanisho (BR-BANK-03). Unaweza kufunguliwa tena baadaye ikihitajika.",
+        "lockButton": "Funga",
+        "lockConfirmTitle": "Funga upatanisho huu?",
+        "lockConfirmDescription": "Hakuna ulinganisho au marekebisho zaidi yatakayorekodiwa mara ukifungwa, isipokuwa ufunguliwe tena.",
+        "lockConfirmButton": "Funga",
+        "locking": "Inafunga…",
+        "genericError": "Imeshindwa kufunga upatanisho huu. Tafadhali jaribu tena.",
+        "statementTitle": "Taarifa ya upatanisho",
+        "statementDescription": "Kila kitu kilichosalia wakati upatanisho huu ulipofungwa.",
+        "unmatchedStatementLinesTitle": "Mistari ya taarifa isiyolinganishwa ({count})",
+        "unreconciledJournalLinesTitle": "Mistari ya jarida isiyopatanishwa ({count})",
+        "noneOutstanding": "Hakuna kilichosalia.",
+        "noDescription": "Hakuna maelezo",
+        "journalRef": "Jarida {id}…",
+        "reopenHistoryTitle": "Historia ya kufunguliwa tena",
+        "reopenHistoryDescription": "Kila mara upatanisho huu ulipofunguliwa tena, na sababu.",
+        "reopenedBy": "Na {id}…",
+        "reopenedDeadEndNote": "Upatanisho huu ulifunguliwa tena na hauwezi kufungwa tena kupitia mchakato huu — upatanisho ulioufunguliwa tena hauna njia ya kurudi Kinaendelea."
+      },
+      "reopenDialog": {
+        "trigger": "Fungua Tena",
+        "title": "Fungua upatanisho huu tena",
+        "description": "Inahitaji sababu, na ruhusa tofauti ya kufungua upatanisho tena.",
+        "deadEndWarning": "Ukishafunguliwa tena, upatanisho huu hauwezi kamwe kufungwa tena kupitia mchakato huu — chukulia hili kama hatua halisi na ya mwisho.",
+        "reasonLabel": "Sababu",
+        "reasonPlaceholder": "Kwa nini upatanisho huu unafunguliwa tena?",
+        "reopenButton": "Fungua Tena",
+        "reopening": "Inafungua tena…",
+        "genericError": "Imeshindwa kufungua upatanisho huu tena. Tafadhali jaribu tena."
+      }
+    },
+    "chequeBooks": {
+      "createDialog": {
+        "trigger": "Kitabu Kipya cha Hundi",
+        "title": "Sajili kitabu cha hundi",
+        "description": "Kusajili kitabu cha hundi kunazalisha kiotomatiki kila hundi katika wigo wake kama Haijatumika — hakuna hatua tofauti ya kuzalisha hundi.",
+        "accountLabel": "Akaunti",
+        "loadingAccounts": "Inapakia akaunti…",
+        "selectAccountPlaceholder": "Chagua akaunti",
+        "searchAccounts": "Tafuta akaunti…",
+        "noAccountsFound": "Hakuna akaunti zilizopatikana.",
+        "prefixLabel": "Kiambishi",
+        "prefixPlaceholder": "mfano CHQ",
+        "startLeafLabel": "Hundi ya kwanza",
+        "endLeafLabel": "Hundi ya mwisho",
+        "invalidRangeError": "Hundi ya mwisho lazima iwe nambari sawa au kubwa kuliko hundi ya kwanza.",
+        "leafCountHint": "Hii itazalisha hundi {count} zisizotumika.",
+        "createButton": "Sajili kitabu cha hundi",
+        "creating": "Inasajili…",
+        "genericError": "Imeshindwa kusajili kitabu cha hundi. Tafadhali kagua akaunti na wigo wa hundi kisha ujaribu tena."
+      },
+      "list": {
+        "pageTitle": "Vitabu vya Hundi",
+        "pageSubtitle": "Vitabu vya hundi vilivyosajiliwa na wigo wa hundi wanazohusika.",
+        "listTitle": "Vitabu vyote vya hundi",
+        "listDescription": "Kila kitabu cha hundi kilichosajiliwa, katika akaunti zote.",
+        "columns": {
+          "prefix": "Kiambishi",
+          "account": "Akaunti",
+          "range": "Wigo wa hundi",
+          "leafCount": "Idadi ya hundi"
+        },
+        "filters": {
+          "accountLabel": "Akaunti",
+          "allAccounts": "Akaunti zote",
+          "clearFilters": "Futa vichujio"
+        }
+      },
+      "detail": {
+        "backToList": "Rudi kwa vitabu vya hundi",
+        "rangeLabel": "Hundi {start}–{end}",
+        "accountLabel": "Akaunti",
+        "leafCountLabel": "Jumla ya hundi",
+        "leavesTitle": "Hundi katika kitabu hiki",
+        "columns": {
+          "leafNo": "Namba ya hundi",
+          "status": "Hali",
+          "payee": "Mlipwaji",
+          "amount": "Kiasi",
+          "issuedOn": "Ilitolewa tarehe",
+          "actions": "Vitendo"
+        }
+      }
+    },
+    "chequeLeaves": {
+      "statuses": {
+        "UNUSED": "Haijatumika",
+        "ISSUED": "Imetolewa",
+        "PRESENTED": "Imewasilishwa",
+        "CLEARED": "Imelipwa",
+        "STOPPED": "Imesimamishwa",
+        "CANCELLED": "Imefutwa",
+        "STALE": "Imepitwa na Wakati"
+      },
+      "list": {
+        "pageTitle": "Hundi",
+        "pageSubtitle": "Kila hundi katika kila kitabu cha hundi, na hali yake ya sasa.",
+        "listTitle": "Hundi zote",
+        "listDescription": "Chuja kwa kitabu cha hundi au hali ili kupata hundi mahususi.",
+        "columns": {
+          "book": "Kitabu cha hundi",
+          "leafNo": "Namba ya hundi",
+          "status": "Hali",
+          "payee": "Mlipwaji",
+          "amount": "Kiasi",
+          "issuedOn": "Ilitolewa tarehe",
+          "actions": "Vitendo"
+        },
+        "filters": {
+          "bookLabel": "Kitabu cha hundi",
+          "allBooks": "Vitabu vyote vya hundi",
+          "statusLabel": "Hali",
+          "allStatuses": "Hali zote",
+          "clearFilters": "Futa vichujio"
+        }
+      },
+      "issueDialog": {
+        "trigger": "Toa Hundi",
+        "title": "Toa hundi inayofuata",
+        "description": "Chagua kitabu cha hundi — hundi yenye namba ndogo zaidi isiyotumika katika kitabu hicho itatolewa kiotomatiki. Hutajua namba ya hundi mpaka baada ya kuitoa.",
+        "bookLabel": "Kitabu cha hundi",
+        "loadingBooks": "Inapakia vitabu vya hundi…",
+        "selectBookPlaceholder": "Chagua kitabu cha hundi",
+        "searchBooks": "Tafuta vitabu vya hundi…",
+        "noBooksFound": "Hakuna vitabu vya hundi vilivyopatikana.",
+        "bookHint": "Hundi inayofuata inayopatikana katika kitabu hiki ndiyo itakayotolewa — huwezi kuchagua namba mahususi ya hundi.",
+        "payeeLabel": "Mlipwaji",
+        "payeePlaceholder": "Hundi hii inalipwa kwa nani?",
+        "amountLabel": "Kiasi",
+        "voucherIdLabel": "Hati ya malipo iliyounganishwa (si lazima)",
+        "voucherIdPlaceholder": "Kitambulisho cha hati ya malipo, kama hundi hii ni ya moja",
+        "voucherIdInvalid": "Hicho hakionekani kama kitambulisho sahihi.",
+        "voucherIdHint": "Inahitajika tu kama tayari unajua hati ya malipo ambayo hundi hii inalipia — vinginevyo acha wazi.",
+        "issuedSummary": "Hundi #{leafNo} imetolewa.",
+        "resultPayeeLabel": "Mlipwaji",
+        "resultAmountLabel": "Kiasi",
+        "viewLinkedVoucher": "Angalia hati ya malipo iliyounganishwa",
+        "issuing": "Inatoa…",
+        "issueButton": "Toa hundi",
+        "genericError": "Imeshindwa kutoa hundi kutoka kitabu hiki. Huenda hakina hundi zisizotumika zilizobaki."
+      },
+      "statusActions": {
+        "markPresentedTrigger": "Weka kama imewasilishwa",
+        "markingPresented": "Inaweka kama imewasilishwa…",
+        "markClearedTrigger": "Weka kama imelipwa",
+        "markingCleared": "Inaweka kama imelipwa…",
+        "stopTrigger": "Simamisha",
+        "stopConfirmTitle": "Simamisha hundi hii?",
+        "stopConfirmDescription": "Hundi #{leafNo} itawekwa kama Imesimamishwa. Sababu inahitajika na haiwezi kubadilishwa baadaye.",
+        "stopping": "Inasimamisha…",
+        "stopConfirmButton": "Simamisha hundi",
+        "cancelTrigger": "Futa",
+        "cancelConfirmTitle": "Futa hundi hii?",
+        "cancelConfirmDescription": "Hundi #{leafNo} itawekwa kama Imefutwa na kurukwa kabisa. Sababu inahitajika na haiwezi kubadilishwa baadaye.",
+        "cancelling": "Inafuta…",
+        "cancelConfirmButton": "Futa hundi",
+        "reasonLabel": "Sababu",
+        "reasonPlaceholder": "Kwa nini hili linatokea?",
+        "genericError": "Kitendo hicho hakikuweza kukamilika. Tafadhali jaribu tena."
+      },
+      "flagStale": {
+        "trigger": "Weka Alama Hundi Zilizopitwa na Wakati",
+        "title": "Weka alama kwa hundi zilizopitwa na wakati",
+        "description": "Hutafuta kila hundi Iliyotolewa ambayo imekaa bila kuwasilishwa kwa zaidi ya miezi 6 na kuiweka alama Imepitwa na Wakati. Hakuna ratiba ya kiotomatiki kwa hili — inaendeshwa tu unapobofya kitufe.",
+        "noneWereStale": "Hakuna hundi iliyostahili — kila iliyotolewa ama tayari imewasilishwa, imelipwa, au bado iko ndani ya miezi 6.",
+        "resultSummary": "Hundi {count} zimewekwa alama Zimepitwa na Wakati.",
+        "leafRow": "Hundi #{leafNo}",
+        "running": "Inakagua…",
+        "runButton": "Endesha sasa",
+        "genericError": "Imeshindwa kuendesha ukaguzi wa hundi zilizopitwa na wakati. Tafadhali jaribu tena."
       }
     }
   }

@@ -133,7 +133,16 @@
       "expensesVouchers": "Bons de Dépense",
       "expensesPettyCash": "Petite Caisse",
       "expensesClaims": "Notes de Frais",
-      "expensesRecurring": "Récurrences"
+      "expensesRecurring": "Récurrences",
+      "banking": "Banque",
+      "bankingAccounts": "Comptes",
+      "bankingTransfers": "Virements",
+      "bankingDeposits": "Dépôts",
+      "bankingWithdrawals": "Retraits",
+      "bankingStatementImports": "Import de relevé",
+      "bankingReconciliations": "Rapprochement",
+      "bankingChequeBooks": "Carnets de Chèques",
+      "bankingChequeLeaves": "Feuillets de Chèques"
     },
     "topbar": {
       "searchPlaceholder": "Search…",
@@ -2956,7 +2965,8 @@
         "hardClosePermanentWarning": "Cette action est permanente. La période ne pourra plus être rouverte après une clôture définitive.",
         "hardCloseConfirmButton": "Clôturer définitivement",
         "processing": "Traitement…",
-        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+        "genericError": "Une erreur s'est produite. Veuillez réessayer.",
+        "reconciliationWarning": "{count} compte(s) bancaire(s) ont un rapprochement non verrouillé pour cette période — la clôture définitive ne sera pas bloquée par le serveur, mais elle est déconseillée tant que le rapprochement n'est pas terminé."
       }
     },
     "costCenters": {
@@ -3861,6 +3871,12 @@
         "noSuppliersFound": "Aucun fournisseur trouvé.",
         "pickSupplierHint": "Choisissez un fournisseur pour voir ses factures ouvertes.",
         "methodLabel": "Méthode de paiement",
+        "bankAccountLabel": "Compte bancaire",
+        "selectBankAccountPlaceholder": "Sélectionner un compte bancaire",
+        "searchBankAccounts": "Rechercher des comptes bancaires…",
+        "loadingBankAccounts": "Chargement des comptes bancaires…",
+        "noBankAccountsFound": "Aucun compte bancaire trouvé.",
+        "bankAccountHint": "Utilisé uniquement pour les virements bancaires — facultatif même dans ce cas.",
         "allocationsLabel": "Affectations",
         "noOpenInvoicesHint": "Ce fournisseur n'a aucune facture ouverte (émise, non payée).",
         "columns": {
@@ -3870,7 +3886,13 @@
         },
         "createButton": "Créer le bon",
         "creating": "Création…",
-        "genericError": "Impossible de créer le bon. Veuillez vérifier les affectations et réessayer."
+        "genericError": "Impossible de créer le bon. Veuillez vérifier les affectations et réessayer.",
+        "chequeLeafLabel": "Feuillet de chèque",
+        "selectChequeLeafPlaceholder": "Sélectionner un feuillet de chèque",
+        "searchChequeLeaves": "Rechercher des feuillets de chèque…",
+        "loadingChequeLeaves": "Chargement des feuillets de chèque…",
+        "noChequeLeavesFound": "Aucun feuillet de chèque non utilisé trouvé.",
+        "chequeLeafHint": "Seuls les feuillets non utilisés sont affichés. Utilisé uniquement pour les bons par Chèque — facultatif même dans ce cas."
       },
       "statusActions": {
         "submitTrigger": "Soumettre pour approbation",
@@ -4968,6 +4990,692 @@
         "lastFiredDescription": "Le bon BROUILLON le plus récent produit par ce modèle, le cas échéant.",
         "viewLastVoucher": "Voir le dernier bon",
         "neverFired": "Ce modèle ne s'est jamais encore déclenché."
+      }
+    }
+  },
+  "banking": {
+    "kinds": {
+      "BANK": "Banque",
+      "CASH": "Espèces",
+      "MPESA_SETTLEMENT": "Compensation M-Pesa",
+      "PETTY": "Petite caisse"
+    },
+    "accounts": {
+      "list": {
+        "pageTitle": "Comptes bancaires",
+        "pageSubtitle": "Les comptes bancaires, de caisse, de compensation M-Pesa et de petite caisse détenus par cet établissement, chacun lié à son propre compte du grand livre.",
+        "listTitle": "Tous les comptes",
+        "listDescription": "Chaque compte bancaire, tous types et statuts confondus.",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "columns": {
+          "name": "Nom",
+          "kind": "Type",
+          "bankName": "Banque",
+          "accountNo": "N° de compte",
+          "status": "Statut"
+        },
+        "filters": {
+          "kindLabel": "Type",
+          "statusLabel": "Statut",
+          "allKinds": "Tous les types",
+          "allStatuses": "Tous les statuts",
+          "clearFilters": "Effacer les filtres"
+        }
+      },
+      "createDialog": {
+        "trigger": "Nouveau compte",
+        "title": "Nouveau compte bancaire",
+        "description": "Créer un nouveau compte bancaire, de caisse, de compensation M-Pesa ou de petite caisse, lié à un compte du grand livre actif et imputable.",
+        "nameLabel": "Nom",
+        "namePlaceholder": "ex. Compte d'exploitation",
+        "kindLabel": "Type",
+        "glAccountLabel": "Compte du grand livre",
+        "glAccountPlaceholder": "Sélectionner un compte du grand livre",
+        "glAccountSearchPlaceholder": "Rechercher des comptes…",
+        "glAccountEmptyText": "Aucun compte imputable trouvé.",
+        "glAccountHint": "Seuls les comptes du grand livre actifs et imputables sont affichés. Chaque compte du grand livre ne peut être lié qu'à un seul compte bancaire.",
+        "loadingAccounts": "Chargement des comptes…",
+        "bankNameLabel": "Nom de la banque",
+        "bankNamePlaceholder": "ex. Equity Bank",
+        "branchLabel": "Agence",
+        "branchPlaceholder": "ex. Westlands",
+        "accountNoLabel": "Numéro de compte",
+        "accountNoPlaceholder": "ex. 0123456789",
+        "createButton": "Créer le compte",
+        "creating": "Création…",
+        "genericError": "Impossible de créer le compte. Le nom est peut-être déjà utilisé, ou ce compte du grand livre est déjà lié à un autre compte bancaire."
+      },
+      "editDialog": {
+        "title": "Modifier {name}",
+        "description": "Mettre à jour le nom, les coordonnées bancaires ou le statut de ce compte. Le type et le compte du grand livre ne peuvent pas être modifiés après création.",
+        "nameLabel": "Nom",
+        "bankNameLabel": "Nom de la banque",
+        "branchLabel": "Agence",
+        "accountNoLabel": "Numéro de compte",
+        "isActiveLabel": "Actif",
+        "saving": "Enregistrement…",
+        "genericError": "Impossible d'enregistrer le compte. Le nom est peut-être déjà utilisé."
+      },
+      "detail": {
+        "backToList": "Retour aux comptes bancaires",
+        "active": "Actif",
+        "inactive": "Inactif",
+        "bankNameLabel": "Nom de la banque",
+        "branchLabel": "Agence",
+        "accountNoLabel": "Numéro de compte",
+        "glAccountLabel": "Compte du grand livre"
+      }
+    },
+    "statuses": {
+      "DRAFT": "Brouillon",
+      "PENDING_APPROVAL": "En attente d'approbation",
+      "APPROVED": "Approuvé",
+      "POSTED": "Comptabilisé"
+    },
+    "transfers": {
+      "list": {
+        "pageTitle": "Virements bancaires",
+        "pageSubtitle": "Déplacez des fonds entre les comptes bancaires, de caisse, de compensation M-Pesa et de petite caisse de cet établissement.",
+        "listTitle": "Tous les virements",
+        "listDescription": "Chaque virement entre comptes, tous statuts confondus.",
+        "columns": {
+          "number": "Numéro",
+          "fromAccount": "Compte source",
+          "toAccount": "Compte destinataire",
+          "amount": "Montant",
+          "status": "Statut"
+        },
+        "filters": {
+          "statusLabel": "Statut",
+          "accountLabel": "Compte",
+          "allStatuses": "Tous les statuts",
+          "allAccounts": "Tous les comptes",
+          "clearFilters": "Effacer les filtres"
+        },
+        "notYetPosted": "Pas encore comptabilisé"
+      },
+      "createDialog": {
+        "trigger": "Nouveau virement",
+        "title": "Nouveau virement bancaire",
+        "description": "Déplacez des fonds d'un compte vers un autre. Les deux comptes doivent être différents.",
+        "fromAccountLabel": "Compte source",
+        "toAccountLabel": "Compte destinataire",
+        "selectAccountPlaceholder": "Sélectionner un compte",
+        "loadingAccounts": "Chargement des comptes…",
+        "searchAccounts": "Rechercher des comptes…",
+        "noAccountsFound": "Aucun compte trouvé.",
+        "sameAccountError": "Le compte destinataire doit être différent du compte source.",
+        "amountLabel": "Montant",
+        "createButton": "Créer le virement",
+        "creating": "Création…",
+        "genericError": "Impossible de créer le virement. Les deux comptes sont peut-être identiques, ou une autre erreur s'est produite."
+      },
+      "detail": {
+        "backToList": "Retour aux virements",
+        "fromAccountLabel": "Compte source",
+        "toAccountLabel": "Compte destinataire",
+        "amountLabel": "Montant",
+        "notYetPosted": "Pas encore comptabilisé",
+        "viewJournal": "Voir l'écriture comptable",
+        "howThisPostsNote": "La comptabilisation de ce virement crée une seule écriture comptable équilibrée à deux volets, tous deux passant par un compte de Compensation de Virements : le solde du compte source diminue et la Compensation de Virements augmente, puis la Compensation de Virements diminue à nouveau tandis que le solde du compte de destination augmente. Les deux lignes de Compensation de Virements s'annulent toujours exactement, par construction, sans étape d'équilibrage séparée."
+      },
+      "statusActions": {
+        "submitTrigger": "Soumettre pour approbation",
+        "submitting": "Soumission…",
+        "approveTrigger": "Approuver",
+        "approving": "Approbation…",
+        "approveConfirmTitle": "Approuver ce virement ?",
+        "approveConfirmDescription": "Le virement {number} passera à Approuvé et sera prêt à être comptabilisé.",
+        "approveConfirmButton": "Approuver",
+        "rejectTrigger": "Rejeter",
+        "rejecting": "Rejet…",
+        "rejectConfirmTitle": "Rejeter ce virement ?",
+        "rejectConfirmDescription": "Le virement {number} reviendra à Brouillon afin de pouvoir être corrigé et soumis à nouveau.",
+        "rejectConfirmButton": "Rejeter",
+        "postTrigger": "Comptabiliser",
+        "posting": "Comptabilisation…",
+        "postConfirmTitle": "Comptabiliser ce virement ?",
+        "postConfirmDescription": "Le virement {number} sera comptabilisé et ne pourra plus être modifié.",
+        "postConfirmButton": "Comptabiliser",
+        "postJournalNote": "La comptabilisation déplace les fonds entre les deux comptes via un compte de Compensation de Virements et crée une véritable écriture comptable. Cette action est irréversible depuis cet écran.",
+        "genericError": "Cette action n'a pas pu être effectuée. Veuillez réessayer."
+      }
+    },
+    "deposits": {
+      "list": {
+        "pageTitle": "Dépôts bancaires",
+        "pageSubtitle": "Enregistrez les espèces et chèques déposés depuis une caisse vers l'un des comptes bancaires de cet établissement.",
+        "listTitle": "Tous les dépôts",
+        "listDescription": "Chaque dépôt sur un compte bancaire, tous statuts confondus.",
+        "columns": {
+          "number": "Numéro",
+          "account": "Compte",
+          "amount": "Montant",
+          "slipRef": "Bordereau",
+          "status": "Statut"
+        },
+        "filters": {
+          "statusLabel": "Statut",
+          "accountLabel": "Compte",
+          "allStatuses": "Tous les statuts",
+          "allAccounts": "Tous les comptes",
+          "clearFilters": "Effacer les filtres"
+        },
+        "notYetPosted": "Pas encore comptabilisé"
+      },
+      "createDialog": {
+        "trigger": "Nouveau dépôt",
+        "title": "Nouveau dépôt bancaire",
+        "description": "Enregistrez des espèces ou des chèques déposés sur l'un des comptes bancaires de cet établissement.",
+        "accountLabel": "Compte",
+        "selectAccountPlaceholder": "Sélectionner un compte",
+        "loadingAccounts": "Chargement des comptes…",
+        "searchAccounts": "Rechercher des comptes…",
+        "noAccountsFound": "Aucun compte trouvé.",
+        "amountLabel": "Montant",
+        "slipRefLabel": "Référence du bordereau",
+        "slipRefPlaceholder": "ex. numéro de bordereau",
+        "createButton": "Créer le dépôt",
+        "creating": "Création…",
+        "genericError": "Impossible de créer le dépôt. Veuillez réessayer."
+      },
+      "detail": {
+        "backToList": "Retour aux dépôts",
+        "amountLabel": "Montant",
+        "slipRefLabel": "Référence du bordereau",
+        "sourceSessionLabel": "Session de caissier (source)",
+        "noSourceSession": "Aucune session liée",
+        "notYetPosted": "Pas encore comptabilisé",
+        "viewJournal": "Voir l'écriture comptable"
+      },
+      "statusActions": {
+        "submitTrigger": "Soumettre pour approbation",
+        "submitting": "Soumission…",
+        "approveTrigger": "Approuver",
+        "approving": "Approbation…",
+        "approveConfirmTitle": "Approuver ce dépôt ?",
+        "approveConfirmDescription": "Le dépôt {number} passera à Approuvé et sera prêt à être comptabilisé.",
+        "approveConfirmButton": "Approuver",
+        "rejectTrigger": "Rejeter",
+        "rejecting": "Rejet…",
+        "rejectConfirmTitle": "Rejeter ce dépôt ?",
+        "rejectConfirmDescription": "Le dépôt {number} reviendra à Brouillon afin de pouvoir être corrigé et soumis à nouveau.",
+        "rejectConfirmButton": "Rejeter",
+        "postTrigger": "Comptabiliser",
+        "posting": "Comptabilisation…",
+        "postConfirmTitle": "Comptabiliser ce dépôt ?",
+        "postConfirmDescription": "Le dépôt {number} sera comptabilisé et ne pourra plus être modifié.",
+        "postConfirmButton": "Comptabiliser",
+        "postJournalNote": "La comptabilisation augmente le solde du compte de destination et solde le montant depuis les Fonds non déposés. Cette action est irréversible depuis cet écran.",
+        "genericError": "Cette action n'a pas pu être effectuée. Veuillez réessayer.",
+        "ackSectionTitle": "Accusé de réception",
+        "ackSenderLabel": "Expéditeur",
+        "ackReceiverLabel": "Destinataire",
+        "ackSenderTrigger": "Accuser réception en tant qu'expéditeur",
+        "ackReceiverTrigger": "Accuser réception en tant que destinataire",
+        "acknowledging": "Confirmation…"
+      }
+    },
+    "withdrawals": {
+      "list": {
+        "pageTitle": "Retraits bancaires",
+        "pageSubtitle": "Enregistrez les espèces retirées de l'un des comptes bancaires de cet établissement vers une caisse.",
+        "listTitle": "Tous les retraits",
+        "listDescription": "Chaque retrait d'un compte bancaire, tous statuts confondus.",
+        "columns": {
+          "number": "Numéro",
+          "account": "Compte",
+          "amount": "Montant",
+          "slipRef": "Bordereau",
+          "status": "Statut"
+        },
+        "filters": {
+          "statusLabel": "Statut",
+          "accountLabel": "Compte",
+          "allStatuses": "Tous les statuts",
+          "allAccounts": "Tous les comptes",
+          "clearFilters": "Effacer les filtres"
+        },
+        "notYetPosted": "Pas encore comptabilisé"
+      },
+      "createDialog": {
+        "trigger": "Nouveau retrait",
+        "title": "Nouveau retrait bancaire",
+        "description": "Enregistrez des espèces retirées de l'un des comptes bancaires de cet établissement.",
+        "accountLabel": "Compte",
+        "selectAccountPlaceholder": "Sélectionner un compte",
+        "loadingAccounts": "Chargement des comptes…",
+        "searchAccounts": "Rechercher des comptes…",
+        "noAccountsFound": "Aucun compte trouvé.",
+        "amountLabel": "Montant",
+        "slipRefLabel": "Référence du bordereau",
+        "slipRefPlaceholder": "ex. numéro de bordereau",
+        "createButton": "Créer le retrait",
+        "creating": "Création…",
+        "genericError": "Impossible de créer le retrait. Veuillez réessayer."
+      },
+      "detail": {
+        "backToList": "Retour aux retraits",
+        "amountLabel": "Montant",
+        "slipRefLabel": "Référence du bordereau",
+        "sourceSessionLabel": "Session de caissier (source)",
+        "noSourceSession": "Aucune session liée",
+        "notYetPosted": "Pas encore comptabilisé",
+        "viewJournal": "Voir l'écriture comptable"
+      },
+      "statusActions": {
+        "submitTrigger": "Soumettre pour approbation",
+        "submitting": "Soumission…",
+        "approveTrigger": "Approuver",
+        "approving": "Approbation…",
+        "approveConfirmTitle": "Approuver ce retrait ?",
+        "approveConfirmDescription": "Le retrait {number} passera à Approuvé et sera prêt à être comptabilisé.",
+        "approveConfirmButton": "Approuver",
+        "rejectTrigger": "Rejeter",
+        "rejecting": "Rejet…",
+        "rejectConfirmTitle": "Rejeter ce retrait ?",
+        "rejectConfirmDescription": "Le retrait {number} reviendra à Brouillon afin de pouvoir être corrigé et soumis à nouveau.",
+        "rejectConfirmButton": "Rejeter",
+        "postTrigger": "Comptabiliser",
+        "posting": "Comptabilisation…",
+        "postConfirmTitle": "Comptabiliser ce retrait ?",
+        "postConfirmDescription": "Le retrait {number} sera comptabilisé et ne pourra plus être modifié.",
+        "postConfirmButton": "Comptabiliser",
+        "postJournalNote": "La comptabilisation diminue le solde du compte source et transfère le montant vers les Fonds non déposés. Cette action est irréversible depuis cet écran.",
+        "genericError": "Cette action n'a pas pu être effectuée. Veuillez réessayer.",
+        "ackSectionTitle": "Accusé de réception",
+        "ackSenderLabel": "Expéditeur",
+        "ackReceiverLabel": "Destinataire",
+        "ackSenderTrigger": "Accuser réception en tant qu'expéditeur",
+        "ackReceiverTrigger": "Accuser réception en tant que destinataire",
+        "acknowledging": "Confirmation…"
+      }
+    },
+    "statementImports": {
+      "list": {
+        "pageTitle": "Imports de relevés bancaires",
+        "pageSubtitle": "Importez les lignes d'un relevé bancaire depuis un export CSV, associées à l'un des comptes de cet établissement.",
+        "newImportTrigger": "Nouvel import",
+        "listTitle": "Historique des imports",
+        "listDescription": "Chaque import de relevé effectué, tous comptes confondus.",
+        "columns": {
+          "importedAt": "Importé le",
+          "account": "Compte",
+          "lineCount": "Lignes importées",
+          "duplicateCount": "Doublons ignorés"
+        },
+        "filters": {
+          "accountLabel": "Compte",
+          "allAccounts": "Tous les comptes",
+          "clearFilters": "Effacer les filtres"
+        }
+      },
+      "detail": {
+        "backToList": "Retour aux imports de relevés",
+        "accountLabel": "Compte",
+        "fileIdLabel": "Référence du fichier importé",
+        "duplicateCountLabel": "Doublons ignorés",
+        "mappingTitle": "Correspondance des colonnes utilisée",
+        "mappingDate": "Colonne de date : {column} (format {format})",
+        "mappingDescription": "Colonne de description : {column}",
+        "mappingSeparate": "Colonne débit : {debit} — Colonne crédit : {credit}",
+        "mappingSigned": "Colonne de montant (signé) : {column}",
+        "mappingRef": "Colonne de référence : {column}"
+      },
+      "new": {
+        "backToList": "Retour aux imports de relevés",
+        "pageTitle": "Nouvel import de relevé",
+        "pageSubtitle": "Importez un relevé bancaire CSV, faites correspondre ses colonnes, puis importez ses lignes sur l'un des comptes de cet établissement.",
+        "stepIndicator": "Étape {current} sur {total} — {label}",
+        "steps": {
+          "account": "Compte",
+          "upload": "Importer le fichier",
+          "preview": "Aperçu des lignes",
+          "mapping": "Correspondance des colonnes",
+          "confirm": "Confirmer",
+          "result": "Terminé"
+        },
+        "account": {
+          "title": "Choisir un compte",
+          "description": "Pour quel compte de cet établissement ce relevé est-il destiné ?",
+          "accountLabel": "Compte",
+          "selectAccountPlaceholder": "Sélectionner un compte",
+          "loadingAccounts": "Chargement des comptes…",
+          "searchAccounts": "Rechercher des comptes…",
+          "noAccountsFound": "Aucun compte trouvé."
+        },
+        "upload": {
+          "title": "Importer le fichier du relevé",
+          "description": "Choisissez un export CSV du relevé bancaire de ce compte.",
+          "fileLabel": "Fichier CSV",
+          "csvOnlyHint": "Seuls les fichiers CSV bruts sont pris en charge. Si votre banque n'exporte qu'en Excel (.xlsx), enregistrez-le d'abord en CSV.",
+          "emptyFileError": "Ce fichier n'a pas de ligne d'en-têtes ou de lignes de données.",
+          "parseError": "Impossible de lire ce fichier comme un CSV. Vérifiez qu'il s'agit bien d'un export CSV brut et réessayez.",
+          "uploadError": "Impossible d'importer ce fichier. Veuillez réessayer.",
+          "uploading": "Import du fichier…",
+          "parsedSummary": "{rows} lignes lues sur {columns} colonnes."
+        },
+        "preview": {
+          "title": "Aperçu des lignes lues",
+          "rowCount": "{count} lignes lues dans ce fichier.",
+          "truncatedNote": "Affichage des {shown} premières lignes sur {total} lues dans ce fichier."
+        },
+        "mapping": {
+          "title": "Faire correspondre les colonnes",
+          "description": "Indiquez au système quelle colonne de votre fichier correspond à quel champ.",
+          "dateColumnLabel": "Colonne de date",
+          "descriptionColumnLabel": "Colonne de description",
+          "conventionLabel": "Convention débit/crédit",
+          "conventionSeparate": "Colonnes débit et crédit séparées",
+          "conventionSigned": "Une seule colonne de montant signé",
+          "conventionSeparateHint": "Les entrées et sorties d'argent sont dans deux colonnes différentes.",
+          "conventionSignedHint": "Les entrées et sorties d'argent sont dans une seule colonne — positif pour une entrée, négatif pour une sortie.",
+          "debitColumnLabel": "Colonne débit",
+          "creditColumnLabel": "Colonne crédit",
+          "amountColumnLabel": "Colonne de montant",
+          "refColumnLabel": "Colonne de référence",
+          "refColumnNone": "Aucune colonne de référence",
+          "refColumnHint": "Facultatif — un numéro de référence externe, si votre fichier en contient un.",
+          "selectColumnPlaceholder": "Sélectionner une colonne",
+          "dateFormatLabel": "Format de date",
+          "dateFormatPlaceholder": "ex. YYYY-MM-DD",
+          "dateFormatHint": "Construit à partir de YYYY, MM et DD, dans l'ordre où ils apparaissent dans la colonne de date de votre fichier, ex. « DD/MM/YYYY ».",
+          "prefillButton": "Reprendre la correspondance du dernier import",
+          "prefillHint": "Le dernier import de relevé de ce compte (le {date}) utilisait une correspondance de colonnes — reprenez-la comme point de départ et ajustez si besoin."
+        },
+        "confirm": {
+          "title": "Confirmer et importer",
+          "description": "Vérifiez les détails ci-dessous, puis importez ces lignes.",
+          "accountLabel": "Compte",
+          "fileLabel": "Fichier",
+          "rowCountLabel": "Lignes à importer",
+          "mappingRecapTitle": "Correspondance des colonnes",
+          "mappingRecapDate": "Colonne de date : {column} (format {format})",
+          "mappingRecapDescription": "Colonne de description : {column}",
+          "mappingRecapSeparate": "Colonne débit : {debit} — Colonne crédit : {credit}",
+          "mappingRecapSigned": "Colonne de montant (signé) : {column}",
+          "mappingRecapRef": "Colonne de référence : {column}",
+          "dedupeNote": "Les lignes correspondant à une ligne déjà importée pour ce compte (même date, montant et référence) sont automatiquement ignorées comme doublons — c'est normal lors d'un réimport, pas une erreur.",
+          "uploadingFileHint": "Le fichier est encore en cours d'import — le bouton d'import s'activera une fois terminé.",
+          "importButton": "Importer le relevé",
+          "importing": "Import en cours…",
+          "genericError": "Impossible d'importer ce relevé. Vérifiez la correspondance des colonnes et réessayez."
+        },
+        "result": {
+          "title": "Import terminé",
+          "duplicateExplainer": "Les lignes en double sont des lignes déjà importées pour ce compte lors d'un import précédent — elles ont été ignorées automatiquement, sans être comptées comme des erreurs.",
+          "rowsSubmitted": "{count} lignes soumises",
+          "newImportButton": "Importer un autre relevé",
+          "backToListButton": "Retour aux imports de relevés",
+          "viewImportButton": "Voir cet import"
+        }
+      },
+      "dedupeSummary": "{inserted} lignes importées, {duplicates} doublons ignorés"
+    },
+    "reconciliations": {
+      "statuses": {
+        "IN_PROGRESS": "En cours",
+        "LOCKED": "Verrouillé",
+        "REOPENED": "Rouvert"
+      },
+      "list": {
+        "pageTitle": "Rapprochements bancaires",
+        "pageSubtitle": "Faites correspondre les lignes de relevé avec les écritures comptabilisées, puis verrouillez la période de chaque compte une fois rapproché.",
+        "listTitle": "Tous les rapprochements",
+        "listDescription": "Chaque rapprochement démarré, tous comptes et statuts confondus.",
+        "columns": {
+          "account": "Compte",
+          "period": "Période",
+          "bookBalance": "Solde comptable",
+          "bankBalance": "Solde bancaire",
+          "status": "Statut"
+        },
+        "filters": {
+          "statusLabel": "Statut",
+          "accountLabel": "Compte",
+          "allStatuses": "Tous les statuts",
+          "allAccounts": "Tous les comptes",
+          "clearFilters": "Effacer les filtres"
+        }
+      },
+      "startDialog": {
+        "trigger": "Démarrer un rapprochement",
+        "title": "Démarrer un rapprochement bancaire",
+        "description": "Choisissez un compte et la période comptable à rapprocher. Un seul rapprochement peut exister par compte et par période.",
+        "accountLabel": "Compte",
+        "selectAccountPlaceholder": "Sélectionner un compte",
+        "loadingAccounts": "Chargement des comptes…",
+        "searchAccounts": "Rechercher des comptes…",
+        "noAccountsFound": "Aucun compte trouvé.",
+        "fiscalYearLabel": "Exercice comptable",
+        "selectFiscalYearPlaceholder": "Sélectionner un exercice comptable",
+        "periodLabel": "Période",
+        "selectPeriodPlaceholder": "Sélectionner une période",
+        "chooseFiscalYearFirst": "Choisissez d'abord un exercice comptable",
+        "periodOptionLabel": "Période {seq} ({startsOn} — {endsOn})",
+        "periodHint": "Le solde comptable est calculé à la date de fin de cette période.",
+        "startButton": "Démarrer le rapprochement",
+        "starting": "Démarrage…",
+        "genericError": "Impossible de démarrer ce rapprochement. Il en existe peut-être déjà un pour ce compte et cette période."
+      },
+      "detail": {
+        "backToList": "Retour aux rapprochements",
+        "viewAccount": "Voir le compte",
+        "bookBalanceLabel": "Solde comptable",
+        "bankBalanceLabel": "Solde bancaire",
+        "differenceLabel": "Écart"
+      },
+      "autoMatch": {
+        "title": "Rapprochement automatique",
+        "description": "Exécute 3 passes sur les lignes de relevé non rapprochées et les lignes d'écriture non rapprochées de ce compte.",
+        "runButton": "Lancer le rapprochement automatique",
+        "running": "Exécution…",
+        "genericError": "Impossible de lancer le rapprochement automatique. Veuillez réessayer.",
+        "pass1Summary": "{count} rapprochées automatiquement par référence exacte (Passe 1)",
+        "pass2Summary": "{count} rapprochées automatiquement par montant et date à 3 jours près (Passe 2)",
+        "pass3Title": "Correspondances suggérées (Passe 3 — montant seul)",
+        "pass3Description": "Elles ne sont pas appliquées automatiquement. Vérifiez chaque suggestion et appliquez celles qui sont correctes.",
+        "noSuggestions": "Aucune suggestion par montant seul lors du dernier lancement.",
+        "suggestionAmount": "Montant : {amount}",
+        "suggestionStatementLine": "Ligne de relevé {id}…",
+        "suggestionJournalLine": "Ligne d'écriture {id}…",
+        "applyButton": "Appliquer cette correspondance",
+        "applying": "Application…",
+        "matchesTitle": "Correspondances jusqu'ici",
+        "matchesDescription": "Chaque correspondance et ajustement enregistré pour ce rapprochement jusqu'ici.",
+        "matchStatementLine": "Ligne de relevé {id}…",
+        "matchKindMatched": "Rapprochée",
+        "matchKindAdjustment": "Ajustement"
+      },
+      "adjustmentDialog": {
+        "trigger": "Nouvel ajustement",
+        "title": "Enregistrer des frais bancaires ou un ajustement d'intérêts",
+        "description": "Comptabilise une véritable écriture à deux lignes et marque la ligne de relevé indiquée comme ajustée (P-33).",
+        "statementLineIdLabel": "ID de la ligne de relevé",
+        "statementLineIdPlaceholder": "ex. l'ID d'une ligne de relevé suggérée en Passe 3",
+        "statementLineIdInvalid": "Cela ne ressemble pas à un ID valide.",
+        "statementLineIdHint": "Il n'existe aucune liste pour parcourir les lignes de relevé non rapprochées tant qu'un rapprochement est en cours — utilisez un ID apparu dans une suggestion de la Passe 3 ci-dessus, ou un ID que vous avez déjà dans vos propres registres.",
+        "kindLabel": "Type",
+        "kindCHARGE": "Frais bancaires",
+        "kindINTEREST": "Produit d'intérêts",
+        "amountLabel": "Montant",
+        "createButton": "Créer l'ajustement",
+        "creating": "Création…",
+        "genericError": "Impossible de créer cet ajustement. Vérifiez l'ID de la ligne de relevé et réessayez."
+      },
+      "lockPanel": {
+        "lockTitle": "Verrouiller ce rapprochement",
+        "lockDescription": "Recalcule les deux soldes, capture un instantané de chaque élément en suspens, et verrouille le rapprochement (BR-BANK-03). Il pourra être rouvert ensuite si nécessaire.",
+        "lockButton": "Verrouiller",
+        "lockConfirmTitle": "Verrouiller ce rapprochement ?",
+        "lockConfirmDescription": "Aucune correspondance ni ajustement supplémentaire ne pourra être enregistré une fois verrouillé, sauf s'il est rouvert.",
+        "lockConfirmButton": "Verrouiller",
+        "locking": "Verrouillage…",
+        "genericError": "Impossible de verrouiller ce rapprochement. Veuillez réessayer.",
+        "statementTitle": "Relevé de rapprochement",
+        "statementDescription": "Tout ce qui restait en suspens au moment où ce rapprochement a été verrouillé.",
+        "unmatchedStatementLinesTitle": "Lignes de relevé non rapprochées ({count})",
+        "unreconciledJournalLinesTitle": "Lignes d'écriture non rapprochées ({count})",
+        "noneOutstanding": "Aucun élément en suspens.",
+        "noDescription": "Aucune description",
+        "journalRef": "Écriture {id}…",
+        "reopenHistoryTitle": "Historique des réouvertures",
+        "reopenHistoryDescription": "Chaque réouverture de ce rapprochement, et sa raison.",
+        "reopenedBy": "Par {id}…",
+        "reopenedDeadEndNote": "Ce rapprochement a été rouvert et ne peut plus être verrouillé à nouveau via ce flux — un rapprochement rouvert n'a aucun chemin de retour vers En cours."
+      },
+      "reopenDialog": {
+        "trigger": "Rouvrir",
+        "title": "Rouvrir ce rapprochement",
+        "description": "Nécessite une raison, ainsi que la permission distincte de réouverture des rapprochements.",
+        "deadEndWarning": "Une fois rouvert, ce rapprochement ne pourra plus jamais être verrouillé à nouveau via ce flux — considérez ceci comme une étape réelle et définitive.",
+        "reasonLabel": "Raison",
+        "reasonPlaceholder": "Pourquoi ce rapprochement est-il rouvert ?",
+        "reopenButton": "Rouvrir",
+        "reopening": "Réouverture…",
+        "genericError": "Impossible de rouvrir ce rapprochement. Veuillez réessayer."
+      }
+    },
+    "chequeBooks": {
+      "createDialog": {
+        "trigger": "Nouveau Carnet de Chèques",
+        "title": "Enregistrer un carnet de chèques",
+        "description": "Enregistrer un carnet de chèques génère automatiquement chaque feuillet de sa plage comme Non utilisé — il n'y a pas d'étape séparée pour générer les feuillets.",
+        "accountLabel": "Compte",
+        "loadingAccounts": "Chargement des comptes…",
+        "selectAccountPlaceholder": "Sélectionner un compte",
+        "searchAccounts": "Rechercher des comptes…",
+        "noAccountsFound": "Aucun compte trouvé.",
+        "prefixLabel": "Préfixe",
+        "prefixPlaceholder": "ex. CHQ",
+        "startLeafLabel": "Premier feuillet",
+        "endLeafLabel": "Dernier feuillet",
+        "invalidRangeError": "Le dernier feuillet doit être un nombre supérieur ou égal au premier feuillet.",
+        "leafCountHint": "Cela générera {count} feuillets non utilisés.",
+        "createButton": "Enregistrer le carnet",
+        "creating": "Enregistrement…",
+        "genericError": "Impossible d'enregistrer le carnet de chèques. Veuillez vérifier le compte et la plage de feuillets, puis réessayer."
+      },
+      "list": {
+        "pageTitle": "Carnets de Chèques",
+        "pageSubtitle": "Carnets de chèques enregistrés et les plages de feuillets qu'ils couvrent.",
+        "listTitle": "Tous les carnets de chèques",
+        "listDescription": "Chaque carnet de chèques enregistré, sur tous les comptes.",
+        "columns": {
+          "prefix": "Préfixe",
+          "account": "Compte",
+          "range": "Plage de feuillets",
+          "leafCount": "Feuillets"
+        },
+        "filters": {
+          "accountLabel": "Compte",
+          "allAccounts": "Tous les comptes",
+          "clearFilters": "Effacer les filtres"
+        }
+      },
+      "detail": {
+        "backToList": "Retour aux carnets de chèques",
+        "rangeLabel": "Feuillets {start}–{end}",
+        "accountLabel": "Compte",
+        "leafCountLabel": "Total des feuillets",
+        "leavesTitle": "Feuillets de ce carnet",
+        "columns": {
+          "leafNo": "N° de feuillet",
+          "status": "Statut",
+          "payee": "Bénéficiaire",
+          "amount": "Montant",
+          "issuedOn": "Émis le",
+          "actions": "Actions"
+        }
+      }
+    },
+    "chequeLeaves": {
+      "statuses": {
+        "UNUSED": "Non utilisé",
+        "ISSUED": "Émis",
+        "PRESENTED": "Présenté",
+        "CLEARED": "Compensé",
+        "STOPPED": "Opposé",
+        "CANCELLED": "Annulé",
+        "STALE": "Périmé"
+      },
+      "list": {
+        "pageTitle": "Feuillets de Chèques",
+        "pageSubtitle": "Chaque feuillet de chèque de chaque carnet, et son statut actuel.",
+        "listTitle": "Tous les feuillets de chèques",
+        "listDescription": "Filtrer par carnet de chèques ou statut pour trouver un feuillet précis.",
+        "columns": {
+          "book": "Carnet de chèques",
+          "leafNo": "N° de feuillet",
+          "status": "Statut",
+          "payee": "Bénéficiaire",
+          "amount": "Montant",
+          "issuedOn": "Émis le",
+          "actions": "Actions"
+        },
+        "filters": {
+          "bookLabel": "Carnet de chèques",
+          "allBooks": "Tous les carnets de chèques",
+          "statusLabel": "Statut",
+          "allStatuses": "Tous les statuts",
+          "clearFilters": "Effacer les filtres"
+        }
+      },
+      "issueDialog": {
+        "trigger": "Émettre un Chèque",
+        "title": "Émettre le prochain feuillet",
+        "description": "Choisissez un carnet de chèques — le feuillet non utilisé au numéro le plus bas de ce carnet est émis automatiquement. Vous ne connaîtrez le numéro du feuillet qu'après l'avoir émis.",
+        "bookLabel": "Carnet de chèques",
+        "loadingBooks": "Chargement des carnets de chèques…",
+        "selectBookPlaceholder": "Sélectionner un carnet de chèques",
+        "searchBooks": "Rechercher des carnets de chèques…",
+        "noBooksFound": "Aucun carnet de chèques trouvé.",
+        "bookHint": "Le prochain feuillet disponible de ce carnet sera émis — vous ne pouvez pas choisir un numéro de feuillet précis.",
+        "payeeLabel": "Bénéficiaire",
+        "payeePlaceholder": "À l'ordre de qui ce chèque est-il émis ?",
+        "amountLabel": "Montant",
+        "voucherIdLabel": "Bon de paiement lié (facultatif)",
+        "voucherIdPlaceholder": "ID du bon de paiement, si ce chèque en règle un",
+        "voucherIdInvalid": "Cela ne ressemble pas à un ID valide.",
+        "voucherIdHint": "Utile uniquement si vous connaissez déjà le bon de paiement que ce chèque règle — laissez vide sinon.",
+        "issuedSummary": "Le feuillet n° {leafNo} a été émis.",
+        "resultPayeeLabel": "Bénéficiaire",
+        "resultAmountLabel": "Montant",
+        "viewLinkedVoucher": "Voir le bon de paiement lié",
+        "issuing": "Émission…",
+        "issueButton": "Émettre le chèque",
+        "genericError": "Impossible d'émettre un chèque à partir de ce carnet. Il se peut qu'il n'ait plus de feuillets non utilisés."
+      },
+      "statusActions": {
+        "markPresentedTrigger": "Marquer comme présenté",
+        "markingPresented": "Marquage comme présenté…",
+        "markClearedTrigger": "Marquer comme compensé",
+        "markingCleared": "Marquage comme compensé…",
+        "stopTrigger": "Faire opposition",
+        "stopConfirmTitle": "Faire opposition à ce chèque ?",
+        "stopConfirmDescription": "Le feuillet n° {leafNo} sera marqué Opposé. Un motif est requis et ne pourra pas être modifié ensuite.",
+        "stopping": "Opposition en cours…",
+        "stopConfirmButton": "Faire opposition",
+        "cancelTrigger": "Annuler",
+        "cancelConfirmTitle": "Annuler ce feuillet ?",
+        "cancelConfirmDescription": "Le feuillet n° {leafNo} sera marqué Annulé et définitivement ignoré. Un motif est requis et ne pourra pas être modifié ensuite.",
+        "cancelling": "Annulation…",
+        "cancelConfirmButton": "Annuler le feuillet",
+        "reasonLabel": "Motif",
+        "reasonPlaceholder": "Pourquoi cela se produit-il ?",
+        "genericError": "Cette action n'a pas pu être effectuée. Veuillez réessayer."
+      },
+      "flagStale": {
+        "trigger": "Signaler les Chèques Périmés",
+        "title": "Signaler les feuillets de chèques périmés",
+        "description": "Recherche chaque feuillet Émis resté non présenté depuis plus de 6 mois et le marque Périmé. Il n'y a pas de planification automatique pour cela — cela ne s'exécute que lorsque vous cliquez sur le bouton.",
+        "noneWereStale": "Aucun feuillet n'était éligible — tout ce qui est émis est soit déjà présenté, compensé, soit encore dans les 6 mois.",
+        "resultSummary": "{count} feuillet(s) marqué(s) Périmé.",
+        "leafRow": "Feuillet n° {leafNo}",
+        "running": "Vérification…",
+        "runButton": "Exécuter maintenant",
+        "genericError": "Impossible d'exécuter la vérification des chèques périmés. Veuillez réessayer."
       }
     }
   }

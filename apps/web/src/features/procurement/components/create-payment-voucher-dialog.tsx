@@ -16,6 +16,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { MoneyInput } from "@/components/patterns/money-input";
 import { formatMoney, normalizeMoneyInput, sumMoneyStrings } from "@/lib/money";
 import { ApiError } from "@/lib/api-error";
+import { useAccounts as useBankAccounts } from "@/features/banking/hooks/use-accounts";
+import { useChequeLeaves } from "@/features/banking/hooks/use-cheque-leaves";
 import { useSuppliers } from "../hooks/use-suppliers";
 import { useSupplierInvoices } from "../hooks/use-supplier-invoices";
 import { PAYMENT_VOUCHER_METHODS, useCreatePaymentVoucher, type PaymentVoucherMethod } from "../hooks/use-payment-vouchers";
@@ -64,11 +66,42 @@ function amountExceedsBalance(amount: string, balance: string): boolean {
  * again at `execute()` time against the CURRENT balance — see
  * `payment-voucher-status-actions.tsx`'s own doc comment).
  *
- * **`dto.bankAccountId`/`.chequeLeafId` are omitted entirely, always** — both
- * are forward references to `bank_account`/`bank_cheque_leaf` (Module
- * 16/Banking, not built yet anywhere in this codebase, confirmed by grepping
- * for it) — no picker exists for either, per the plan's own explicit
- * instruction.
+ * **Phase 6 Slice 21 Part 1 retrofit (Banking, Module 16) — `dto.bankAccountId`
+ * is now OPTIONALLY set.** Module 16 now has a real CRUD frontend
+ * (`features/banking/hooks/use-accounts.ts`), so a bank-account `<Combobox>`
+ * is offered, but ONLY rendered/wired when `method === "BANK"` — for every
+ * other method (`CHEQUE`/`MPESA`/`CASH`) `bankAccountId` stays absent from
+ * `dto`, an unset key, not `undefined` spliced in, preserving this dialog's
+ * exact pre-Slice-21 behavior for those 3 methods byte-for-byte. Picking a
+ * bank account is itself optional even when `method === "BANK"`
+ * (`CreatePaymentVoucherDto.bankAccountId` is a plain `@IsOptional()` field,
+ * not conditionally required by `method` — the server never enforces a
+ * BANK-method voucher to carry one, confirmed by reading
+ * `PaymentVouchersService.create()` directly).
+ *
+ * **Phase 6 Slice 21 Part 5 retrofit (the LAST part of this slice) —
+ * `dto.chequeLeafId` is now OPTIONALLY set too, closing the gap Part 1's own
+ * retrofit deliberately left open.** Cheque Leaves now has a real frontend
+ * (`features/banking/hooks/use-cheque-leaves.ts`), so a cheque-leaf
+ * `<Combobox>` is offered — same "only rendered/wired for its own method"
+ * shape as the bank-account picker above, this time gated on
+ * `method === "CHEQUE"` — filtered to `status: "UNUSED"` (a voucher should
+ * only ever reference a leaf that hasn't already been used for something
+ * else — issuing a leaf is a SEPARATE action on `issue-cheque-leaf-dialog.tsx`,
+ * this picker only lets an already-created voucher reference one of the
+ * leaves still sitting `UNUSED`, the reverse direction of that dialog's own
+ * optional `voucherId` field). Switching `method` away from `"CHEQUE"`
+ * clears any already-picked `chequeLeafId`, mirroring the bank-account
+ * picker's own switch-clears-the-other-shape's-state discipline exactly.
+ * `chequeLeafId` is spliced in conditionally
+ * (`...(method === "CHEQUE" && chequeLeafId ? { chequeLeafId } : {})`) — for
+ * every other method, or a `"CHEQUE"` voucher where no leaf was picked
+ * (picking one is genuinely optional here too — `CreatePaymentVoucherDto.chequeLeafId`
+ * is a plain `@IsOptional()` field, not conditionally required by `method`,
+ * confirmed by reading `PaymentVouchersService.create()` directly, same as
+ * `bankAccountId`), the key stays absent, preserving BANK/MPESA/CASH
+ * vouchers' exact request shape byte-for-byte and leaving this SAME dialog's
+ * own BANK-method picker from Part 1 completely undisturbed.
  *
  * **`voucher.total` is never a user-editable field anywhere in this
  * dialog** — it's server-derived as Σallocations
@@ -95,15 +128,29 @@ export function CreatePaymentVoucherDialog() {
   const [open, setOpen] = React.useState(false);
   const [supplierId, setSupplierId] = React.useState("");
   const [method, setMethod] = React.useState<PaymentVoucherMethod>("BANK");
+  const [bankAccountId, setBankAccountId] = React.useState("");
+  const [chequeLeafId, setChequeLeafId] = React.useState("");
   const [rows, setRows] = React.useState<AllocationFormRow[]>([]);
   const [rowsSeededFor, setRowsSeededFor] = React.useState<string | null>(null);
   const [error, setError] = React.useState<string | null>(null);
 
   const suppliersQuery = useSuppliers();
   const invoicesQuery = useSupplierInvoices(supplierId ? { supplierId } : {});
+  // Phase 6 Slice 21 Part 1 retrofit — only fetched/rendered when `method === "BANK"`, see this file's own doc comment above.
+  const bankAccountsQuery = useBankAccounts({ kind: "BANK", isActive: true });
+  // Phase 6 Slice 21 Part 5 retrofit — only fetched/rendered when `method === "CHEQUE"`, filtered to `status: "UNUSED"`, see this file's own doc comment above.
+  const chequeLeavesQuery = useChequeLeaves({ status: "UNUSED" });
   const createMutation = useCreatePaymentVoucher();
 
   const supplierItems = React.useMemo(() => (suppliersQuery.data ?? []).map((s) => ({ value: s.id, label: s.name })), [suppliersQuery.data]);
+  const bankAccountItems = React.useMemo(
+    () => (bankAccountsQuery.data ?? []).map((a) => ({ value: a.id, label: a.bankName ? `${a.name} — ${a.bankName}` : a.name })),
+    [bankAccountsQuery.data],
+  );
+  const chequeLeafItems = React.useMemo(
+    () => (chequeLeavesQuery.data ?? []).map((l) => ({ value: l.id, label: `#${l.leafNo}` })),
+    [chequeLeavesQuery.data],
+  );
   const openInvoices = React.useMemo(
     () => (invoicesQuery.data ?? []).filter((inv) => OPEN_INVOICE_STATUSES.has(inv.status)),
     [invoicesQuery.data],
@@ -112,6 +159,8 @@ export function CreatePaymentVoucherDialog() {
   function resetForm() {
     setSupplierId("");
     setMethod("BANK");
+    setBankAccountId("");
+    setChequeLeafId("");
     setRows([]);
     setRowsSeededFor(null);
     setError(null);
@@ -120,6 +169,13 @@ export function CreatePaymentVoucherDialog() {
   function handleOpenChange(next: boolean) {
     setOpen(next);
     if (next) resetForm();
+  }
+
+  /** Switching away from `"BANK"`/`"CHEQUE"` clears the respective already-picked id — a half-picked bank account or cheque leaf never rides along to a voucher of a different method, the same "switching clears the other shape's own field state" discipline `create-voucher-dialog.tsx` (Expenses, Slice 20 Part 1) already established for its own `payeeType` switch. */
+  function handleMethodChange(next: PaymentVoucherMethod) {
+    setMethod(next);
+    if (next !== "BANK") setBankAccountId("");
+    if (next !== "CHEQUE") setChequeLeafId("");
   }
 
   function handleSupplierChange(next: string) {
@@ -164,6 +220,8 @@ export function CreatePaymentVoucherDialog() {
     const dto: CreatePaymentVoucherDto = {
       supplierId,
       method,
+      ...(method === "BANK" && bankAccountId ? { bankAccountId } : {}),
+      ...(method === "CHEQUE" && chequeLeafId ? { chequeLeafId } : {}),
       allocations: selectedRows.map((row) => ({ supplierInvoiceId: row.invoiceId, amount: normalizeMoneyInput(row.amount) ?? "0" })),
     };
     try {
@@ -211,7 +269,7 @@ export function CreatePaymentVoucherDialog() {
             </div>
             <div className="space-y-1.5">
               <Label required>{t("methodLabel")}</Label>
-              <Select value={method} onValueChange={(v) => setMethod(v as PaymentVoucherMethod)}>
+              <Select value={method} onValueChange={(v) => handleMethodChange(v as PaymentVoucherMethod)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -225,6 +283,38 @@ export function CreatePaymentVoucherDialog() {
               </Select>
             </div>
           </div>
+
+          {method === "BANK" && (
+            <div className="space-y-1.5">
+              <Label>{t("bankAccountLabel")}</Label>
+              <Combobox
+                items={bankAccountItems}
+                value={bankAccountId}
+                onChange={setBankAccountId}
+                placeholder={bankAccountsQuery.isLoading ? t("loadingBankAccounts") : t("selectBankAccountPlaceholder")}
+                searchPlaceholder={t("searchBankAccounts")}
+                emptyText={t("noBankAccountsFound")}
+                disabled={bankAccountsQuery.isLoading}
+              />
+              <p className="text-xs text-muted-foreground">{t("bankAccountHint")}</p>
+            </div>
+          )}
+
+          {method === "CHEQUE" && (
+            <div className="space-y-1.5">
+              <Label>{t("chequeLeafLabel")}</Label>
+              <Combobox
+                items={chequeLeafItems}
+                value={chequeLeafId}
+                onChange={setChequeLeafId}
+                placeholder={chequeLeavesQuery.isLoading ? t("loadingChequeLeaves") : t("selectChequeLeafPlaceholder")}
+                searchPlaceholder={t("searchChequeLeaves")}
+                emptyText={t("noChequeLeavesFound")}
+                disabled={chequeLeavesQuery.isLoading}
+              />
+              <p className="text-xs text-muted-foreground">{t("chequeLeafHint")}</p>
+            </div>
+          )}
 
           {!supplierId ? (
             <p className="text-sm text-muted-foreground">{t("pickSupplierHint")}</p>
