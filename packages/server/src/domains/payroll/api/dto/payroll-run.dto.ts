@@ -1,5 +1,5 @@
 ﻿import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { IsIn, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsBoolean, IsIn, IsOptional, IsString, IsUUID } from "class-validator";
 import { PYRL_RUN_KINDS, PYRL_RUN_STATUSES, PyrlRunKind, PyrlRunStatus } from "../../domain/pyrl-run.entity";
 import { PYRL_RUN_LINE_PAID_VIA_VALUES, PyrlRunLinePaidVia } from "../../domain/pyrl-run-line.entity";
 
@@ -20,6 +20,7 @@ export class CreatePyrlRunDto {
 
 export class DecidePyrlRunDto {
   @ApiProperty()
+  @IsBoolean()
   approved!: boolean;
 }
 

@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ConflictException } from "../../../shared/exceptions/conflict.exception";
 import { PyrlComponentEntity, PyrlComponentKind } from "../domain/pyrl-component.entity";
 import { ListPyrlComponentsFilter, PyrlComponentRepository } from "../infrastructure/pyrl-component.repository";
 
@@ -24,16 +25,23 @@ export class ComponentsService {
   constructor(private readonly componentRepository: PyrlComponentRepository) {}
 
   async create(input: CreatePyrlComponentInput, actorId: string | null): Promise<PyrlComponentEntity> {
-    return this.componentRepository.create({
-      code: input.code,
-      name: input.name,
-      kind: input.kind,
-      isTaxable: input.isTaxable,
-      isStatutory: input.isStatutory ?? false,
-      glAccountId: input.glAccountId,
-      createdBy: actorId,
-      updatedBy: actorId,
-    });
+    try {
+      return await this.componentRepository.create({
+        code: input.code,
+        name: input.name,
+        kind: input.kind,
+        isTaxable: input.isTaxable,
+        isStatutory: input.isStatutory ?? false,
+        glAccountId: input.glAccountId,
+        createdBy: actorId,
+        updatedBy: actorId,
+      });
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new ConflictException(`pyrl_component: code "${input.code}" already exists`);
+      }
+      throw error;
+    }
   }
 
   async update(id: string, input: UpdatePyrlComponentInput, actorId: string | null): Promise<PyrlComponentEntity> {
@@ -57,4 +65,12 @@ export class ComponentsService {
   async list(filter: ListPyrlComponentsFilter = {}): Promise<PyrlComponentEntity[]> {
     return this.componentRepository.list(filter);
   }
+}
+
+/** Postgres unique_violation SQLSTATE — raised by `uq_pyrl_component_code` on a duplicate `code`. Same isolation/translation discipline `BankAccountsService`/`EmployeeAssignmentsService` already establish elsewhere in this codebase for their own unique/exclusion constraints. */
+function isUniqueViolation(error: unknown): boolean {
+  const code =
+    (error as { code?: string; driverError?: { code?: string } })?.code ??
+    (error as { driverError?: { code?: string } })?.driverError?.code;
+  return code === "23505";
 }

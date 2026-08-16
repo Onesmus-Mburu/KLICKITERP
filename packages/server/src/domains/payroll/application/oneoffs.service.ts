@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ConflictException } from "../../../shared/exceptions/conflict.exception";
 import { Money } from "../../../shared/money/money";
 import { PyrlOneoffEntity, PyrlOneoffKind } from "../domain/pyrl-oneoff.entity";
 import { PyrlOneoffRepository } from "../infrastructure/pyrl-oneoff.repository";
@@ -40,17 +41,26 @@ export class OneoffsService {
   constructor(private readonly oneoffRepository: PyrlOneoffRepository) {}
 
   async create(input: CreatePyrlOneoffInput, actorId: string | null): Promise<PyrlOneoffEntity> {
-    return this.oneoffRepository.create({
-      employeeId: input.employeeId,
-      periodKey: input.periodKey,
-      kind: input.kind,
-      componentId: input.componentId,
-      amount: input.amount,
-      reason: input.reason,
-      approvalRef: null,
-      createdBy: actorId,
-      updatedBy: actorId,
-    });
+    try {
+      return await this.oneoffRepository.create({
+        employeeId: input.employeeId,
+        periodKey: input.periodKey,
+        kind: input.kind,
+        componentId: input.componentId,
+        amount: input.amount,
+        reason: input.reason,
+        approvalRef: null,
+        createdBy: actorId,
+        updatedBy: actorId,
+      });
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new ConflictException(
+          `pyrl_oneoff: a one-off already exists for employee ${input.employeeId}, period ${input.periodKey}, component ${input.componentId}`,
+        );
+      }
+      throw error;
+    }
   }
 
   async update(id: string, input: UpdatePyrlOneoffInput, actorId: string | null): Promise<PyrlOneoffEntity> {
@@ -77,4 +87,12 @@ export class OneoffsService {
     const row = await this.oneoffRepository.findByIdOrFail(id);
     await this.oneoffRepository.delete(row.id);
   }
+}
+
+/** Postgres unique_violation SQLSTATE — raised by `uq_pyrl_oneoff_employee_period_component` (confirmed via `packages/server/src/migrations/0130-create-payroll-tables.ts:395`) on a duplicate `(employee_id, period_key, component_id)`. Same isolation/translation discipline `ComponentsService.create()` (Slice 22 Part 1)/`SalaryStructuresService.create()` (Slice 22 Part 2) already establish elsewhere in this codebase for their own unique constraints — this part's own opportunistic backend fix (Slice 22 Part 6). */
+function isUniqueViolation(error: unknown): boolean {
+  const code =
+    (error as { code?: string; driverError?: { code?: string } })?.code ??
+    (error as { driverError?: { code?: string } })?.driverError?.code;
+  return code === "23505";
 }

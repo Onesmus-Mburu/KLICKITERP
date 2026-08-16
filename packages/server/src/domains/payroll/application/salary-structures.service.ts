@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ConflictException } from "../../../shared/exceptions/conflict.exception";
 import { ValidationException } from "../../../shared/exceptions/validation.exception";
 import { Money } from "../../../shared/money/money";
 import { PyrlSalaryStructureEntity } from "../domain/pyrl-salary-structure.entity";
@@ -83,13 +84,20 @@ export class SalaryStructuresService {
   ) {}
 
   async create(input: CreatePyrlSalaryStructureInput, actorId: string | null): Promise<PyrlSalaryStructureEntity> {
-    return this.structureRepository.create({
-      name: input.name,
-      grade: input.grade ?? null,
-      effectiveFrom: input.effectiveFrom,
-      createdBy: actorId,
-      updatedBy: actorId,
-    });
+    try {
+      return await this.structureRepository.create({
+        name: input.name,
+        grade: input.grade ?? null,
+        effectiveFrom: input.effectiveFrom,
+        createdBy: actorId,
+        updatedBy: actorId,
+      });
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new ConflictException(`pyrl_salary_structure: name "${input.name}" already exists`);
+      }
+      throw error;
+    }
   }
 
   async update(
@@ -177,4 +185,12 @@ export class SalaryStructuresService {
       );
     }
   }
+}
+
+/** Postgres unique_violation SQLSTATE — raised by `uq_pyrl_salary_structure_name` (confirmed via `packages/server/src/migrations/0130-create-payroll-tables.ts:141`) on a duplicate `name`. Same isolation/translation discipline `ComponentsService.create()` (Slice 22 Part 1) already establishes for `uq_pyrl_component_code`. */
+function isUniqueViolation(error: unknown): boolean {
+  const code =
+    (error as { code?: string; driverError?: { code?: string } })?.code ??
+    (error as { driverError?: { code?: string } })?.driverError?.code;
+  return code === "23505";
 }

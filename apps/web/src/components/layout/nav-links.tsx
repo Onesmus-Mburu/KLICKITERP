@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Banknote, CheckSquare, ChevronDown, CreditCard, GraduationCap, Landmark, LayoutDashboard, Layers, Megaphone, Package, Palette, Receipt, Settings, Truck, UserCog, Wallet, WalletCards } from "lucide-react";
+import { Banknote, CheckSquare, ChevronDown, CreditCard, GraduationCap, HandCoins, Landmark, LayoutDashboard, Layers, Megaphone, Package, Palette, Receipt, Settings, Truck, UserCog, Wallet, WalletCards } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { hasAnyRole } from "@/lib/permissions";
@@ -575,6 +575,129 @@ const NAV_ITEMS: NavItem[] = [
       { href: "/banking/reconciliations", labelKey: "bankingReconciliations" },
       { href: "/banking/cheque-books", labelKey: "bankingChequeBooks" },
       { href: "/banking/cheque-leaves", labelKey: "bankingChequeLeaves" },
+    ],
+  },
+  // Phase 6 Slice 22 Part 1 (Payroll foundations, Module 15) — Payroll's
+  // first nav entry (`payroll` had NO home in the flat nav at all before this
+  // pass, despite `packages/server/src/domains/payroll/` already carrying a
+  // large real backend surface: employees, components, salary structures,
+  // assignments, loans, one-offs, statutory tables, runs). Positioned
+  // immediately after Banking (the last ERP-finance module before
+  // Communications) and before Communications, per this part's own plan —
+  // confirmed by reading this file's own actual current order directly:
+  // Billing, Wallet, Accounting, Procurement, Inventory, Expenses, Banking,
+  // Communications, Users, Settings. `HandCoins` (confirmed not already used
+  // elsewhere in this file via `lucide-react` — this package does export it)
+  // is a semantically fitting icon for a payroll module, distinct from
+  // `Wallet`/`Banknote`/`CreditCard` already used by other top-level entries.
+  //
+  // Styled as a `children`-bearing dropdown FROM THE START (the same
+  // mechanism every other multi-screen module in this file already
+  // establishes), but this is NOT this dropdown's final shape — only TWO
+  // children exist so far (Employees, Components); 5 more parts append the
+  // rest of Module 15's real backend surface (salary structures/assignments,
+  // loans, one-offs, statutory tables, runs) in later parts, the same
+  // incremental-append discipline Banking's/Communications' own nav history
+  // already established (a part ships real, working children only, never a
+  // stub route ahead of its own part's work).
+  //
+  // Same `allowedRoles: []`/`<QueryBoundary>`-is-the-real-gate reasoning as
+  // every other entry above: `payroll:employee:view`/`payroll:component:manage`
+  // are the real permissions gating these two children respectively, no
+  // permission-list endpoint exists to target either precisely from a coarse
+  // role-name check.
+  //
+  // Phase 6 Slice 22 Part 2 (Salary Structures) — 3rd child appended without
+  // touching the mechanism itself: Salary Structures
+  // (`/payroll/salary-structures`, `payroll:structure:manage` — the ONE
+  // shared permission gating ALL 8 routes on `SalaryStructuresController`,
+  // including both LIST routes, confirmed by reading it directly — same
+  // "no separate view code" shape `payrollComponents` above already
+  // established). Still NOT this dropdown's final shape — Employee
+  // Assignments (Part 3, next) + Employee Components, Loans, One-offs,
+  // Statutory Tables, and Payroll Runs (the rest of Module 15's real backend
+  // surface) will still append further children in future parts.
+  //
+  // Phase 6 Slice 22 Part 3 (Employee Assignments + Employee Components) —
+  // NO nav child appended: both `EmployeeAssignmentsController`/
+  // `EmployeeComponentsController` only ever list scoped to one
+  // `employeeId` (confirmed by reading both directly), so neither has a real
+  // "list every assignment/override across every employee" screen to back a
+  // top-level route — that part's work lives entirely on the existing
+  // employee detail page instead. Still NOT this dropdown's final shape —
+  // Loans, One-offs, and Payroll Runs (the rest of Module 15's real backend
+  // surface) will still append further children in future parts.
+  //
+  // Phase 6 Slice 22 Part 4 (Statutory Tables) — 4th child appended without
+  // touching the mechanism itself: Statutory Tables
+  // (`/payroll/statutory-tables`, `payroll:statutory-table:manage` — the ONE
+  // shared permission gating ALL 5 routes on `StatutoryTablesController`,
+  // including both LIST-shaped routes (`listByKind`/`findEffectiveFor`), no
+  // separate view code, no DELETE route at all — confirmed by reading it
+  // directly, 71 lines). Still NOT this dropdown's final shape — Loans,
+  // One-offs, and Payroll Runs (the rest of Module 15's real backend
+  // surface) will still append further children in future parts.
+  //
+  // Phase 6 Slice 22 Part 5 (Loans) — 5th child appended without touching
+  // the mechanism itself: Loans (`/payroll/loans`, `payroll:loan:create` —
+  // the SAME permission reused for every read route on `LoansController`,
+  // no dedicated `:view` code exists at all, confirmed by reading the
+  // controller's own doc comment directly: a deliberate "reuse the nearest
+  // one" precedent, the same shape `PurchaseOrdersController` already
+  // established; the narrower `payroll:loan:decide` gates the 3
+  // approve/reject/record-recovery/settle-early write actions WITHIN the
+  // detail page, not this nav entry itself — the same "coarse nav gate,
+  // granular in-screen gates" shape Expenses'/Banking's own dropdowns
+  // already establish for their own narrower action-level permissions).
+  // Still NOT this dropdown's final shape — One-offs and Payroll Runs (the
+  // rest of Module 15's real backend surface) will still append further
+  // children in future parts.
+  //
+  // Phase 6 Slice 22 Part 6 (Payroll Runs, setup through approval) — 6th
+  // child appended without touching the mechanism itself: Payroll Runs
+  // (`/payroll/runs`, `payroll:run:view` — a real, DEDICATED read
+  // permission, unlike Loans' own reused-create-permission shape, confirmed
+  // by reading `PayrollRunsController` directly). **One-offs deliberately do
+  // NOT get their own nav child** — per this part's own task brief, a
+  // one-off is period-scoped and most useful managed directly from a run's
+  // own detail page (`run-oneoffs-panel.tsx`), the same "no standalone route
+  // needed when properly scoped elsewhere" judgment call Part 3 already made
+  // for assignments/overrides.
+  //
+  // Phase 6 Slice 22 Part 7 (Payroll Runs, commit through file + payslip
+  // view — FINAL shape of this dropdown, and of Module 15's whole frontend)
+  // — NO nav child appended, confirmed as this part's own explicit call, not
+  // an oversight: `commit`/`pay`/`file` are new ACTIONS on the SAME
+  // `/payroll/runs/[id]` detail page Part 6 already built (own new buttons
+  // in `run-status-actions.tsx` + a real `<PayRunDialog>` for `pay()`'s own
+  // method selector), and the new payslip view
+  // (`/payroll/runs/[id]/lines/[lineId]`) is reached by clicking "View
+  // payslip" on a specific row of that same page's own `<RunLinesTable>`,
+  // never from the nav — a payslip is scoped to one specific run+employee
+  // line, exactly the same "no standalone top-level route when properly
+  // reached from its own parent screen" judgment call Part 3's own
+  // assignment/override panels and Part 6's own one-offs panel already
+  // established. **THIS IS THE PAYROLL DROPDOWN'S FINAL SHAPE — 6 children,
+  // no more planned** — Module 15 (Payroll)'s entire real backend surface
+  // (Employees, Components, Salary Structures, Employee Assignments +
+  // Component Overrides, Statutory Tables, Loans, and now the full Payroll
+  // Runs lifecycle create -> compute -> review -> submit -> decide -> commit
+  // -> pay -> file, plus the payslip view) now has a real, working, verified
+  // frontend screen reachable from this one completed dropdown, matching
+  // the same "FINAL shape, no more planned" closure Banking's own 8-child
+  // dropdown (Slice 21 Part 5) already declared for its own module.
+  {
+    href: "/payroll/employees",
+    labelKey: "payroll",
+    icon: HandCoins,
+    allowedRoles: [],
+    children: [
+      { href: "/payroll/employees", labelKey: "payrollEmployees" },
+      { href: "/payroll/components", labelKey: "payrollComponents" },
+      { href: "/payroll/salary-structures", labelKey: "payrollSalaryStructures" },
+      { href: "/payroll/statutory-tables", labelKey: "payrollStatutoryTables" },
+      { href: "/payroll/loans", labelKey: "payrollLoans" },
+      { href: "/payroll/runs", labelKey: "payrollRuns" },
     ],
   },
   // Phase 6 Slice 15 Part 1 (Communications Foundation + Templates, Module

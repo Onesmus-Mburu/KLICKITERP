@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { ConflictException } from "../../../shared/exceptions/conflict.exception";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
 import { PyrlStatutoryKind, PyrlStatutoryTableEntity } from "../domain/pyrl-statutory-table.entity";
 import { PyrlStatutoryTableRepository } from "../infrastructure/pyrl-statutory-table.repository";
@@ -30,14 +31,21 @@ export class StatutoryTablesService {
   constructor(private readonly statutoryTableRepository: PyrlStatutoryTableRepository) {}
 
   async create(input: CreatePyrlStatutoryTableInput, actorId: string | null): Promise<PyrlStatutoryTableEntity> {
-    return this.statutoryTableRepository.create({
-      kind: input.kind,
-      effectiveFrom: input.effectiveFrom,
-      params: input.params,
-      sourceNote: input.sourceNote,
-      createdBy: actorId,
-      updatedBy: actorId,
-    });
+    try {
+      return await this.statutoryTableRepository.create({
+        kind: input.kind,
+        effectiveFrom: input.effectiveFrom,
+        params: input.params,
+        sourceNote: input.sourceNote,
+        createdBy: actorId,
+        updatedBy: actorId,
+      });
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new ConflictException(`pyrl_statutory_table: a ${input.kind} table already exists effective ${input.effectiveFrom}`);
+      }
+      throw error;
+    }
   }
 
   async update(
@@ -71,4 +79,12 @@ export class StatutoryTablesService {
     }
     return row;
   }
+}
+
+/** Postgres unique_violation SQLSTATE — raised by `uq_pyrl_statutory_table_kind_effective_from` (`packages/server/src/migrations/0130-create-payroll-tables.ts:234`) on a duplicate `(kind, effective_from)`. Same isolation/translation discipline `ComponentsService`/`SalaryStructuresService` already establish elsewhere in this codebase (Slice 22 Parts 1-2) for their own unique constraints. */
+function isUniqueViolation(error: unknown): boolean {
+  const code =
+    (error as { code?: string; driverError?: { code?: string } })?.code ??
+    (error as { driverError?: { code?: string } })?.driverError?.code;
+  return code === "23505";
 }
