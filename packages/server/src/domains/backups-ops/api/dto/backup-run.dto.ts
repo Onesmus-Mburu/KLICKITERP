@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsIn, IsInt, IsOptional, Min, ValidateNested } from "class-validator";
+import { IsIn, IsInt, IsOptional, IsString, Min, ValidateNested } from "class-validator";
 import { BKP_BACKUP_RUN_KINDS, BKP_BACKUP_RUN_STATUSES, BkpBackupRunEntity } from "../../domain/bkp-backup-run.entity";
 
 export class RunBackupDto {
@@ -94,8 +94,24 @@ export class ListBackupRunsResponseDto {
   meta!: { total: number; page: number; pageSize: number; pageCount: number };
 }
 
+/**
+ * Phase 6 Slice 25 fix — `host`/`database`/`user`/`password` originally
+ * carried ONLY `@ApiProperty()` with zero `class-validator` decorators.
+ * `apps/api/src/app.module.ts`'s global `ValidationPipe` runs with
+ * `whitelist: true`, and since `VerifyRestoreDto.target` is validated via
+ * `@ValidateNested()` + `@Type(() => VerifyRestoreTargetDto)`,
+ * class-validator recurses into THIS class and silently STRIPS any property
+ * with zero decorators before the object ever reaches the service — only
+ * `port` (which already carried `@Type(() => Number)`/`@IsInt()`) survived.
+ * Live-confirmed effect: `RestoreVerificationService.verifyBackup()` called
+ * `pg_restore -h <host> ...` with `host`/`database`/`user`/`password` all
+ * `undefined`, making the restore-verify feature non-functional for any real
+ * HTTP caller. Adding `@IsString()` to the 4 stripped fields fixes this —
+ * matching `port`'s own already-correct validated shape.
+ */
 export class VerifyRestoreTargetDto {
   @ApiProperty()
+  @IsString()
   host!: string;
 
   @ApiProperty()
@@ -104,12 +120,15 @@ export class VerifyRestoreTargetDto {
   port!: number;
 
   @ApiProperty()
+  @IsString()
   database!: string;
 
   @ApiProperty()
+  @IsString()
   user!: string;
 
   @ApiProperty()
+  @IsString()
   password!: string;
 }
 

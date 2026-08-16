@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { EntityManager } from "typeorm";
+import { ConflictException } from "../../../shared/exceptions/conflict.exception";
 import { ValidationException } from "../../../shared/exceptions/validation.exception";
 import { Money } from "../../../shared/money/money";
 import { FaAssetEntity, FaAssetFundingSource } from "../domain/fa-asset.entity";
@@ -7,6 +8,9 @@ import { FaAssetRepository, ListFaAssetsFilter } from "../infrastructure/fa-asse
 import { FaCategoryRepository } from "../infrastructure/fa-category.repository";
 
 const DEFAULT_CONDITION = "GOOD";
+
+/** Postgres unique_violation SQLSTATE — see `DisposalService`/`BankAccountsService` for the same pattern. */
+const PG_UNIQUE_VIOLATION = "23505";
 
 export interface CreateFaAssetInput {
   code: string;
@@ -74,31 +78,52 @@ export class AssetsService {
       throw new ValidationException("fa_asset.residual_value cannot be negative");
     }
 
-    return this.assetRepository.create({
-      code: input.code,
-      name: input.name,
-      categoryId: input.categoryId,
-      serialNo: input.serialNo ?? null,
-      barcode: input.barcode ?? null,
-      location: input.location,
-      custodianUserId: input.custodianUserId ?? null,
-      acquisitionDate: input.acquisitionDate,
-      cost: input.cost,
-      fundingSource: input.fundingSource,
-      supplierId: input.supplierId ?? null,
-      poId: input.poId ?? null,
-      grnId: input.grnId ?? null,
-      inServiceFrom: input.inServiceFrom,
-      lifeMonthsOverride: input.lifeMonthsOverride ?? null,
-      residualValue,
-      accumDepreciation: Money.ZERO,
-      status: "ACTIVE",
-      insurance: input.insurance ?? null,
-      condition: input.condition ?? DEFAULT_CONDITION,
-      photos: input.photos ?? null,
-      createdBy: actorId,
-      updatedBy: actorId,
-    });
+    try {
+      return await this.assetRepository.create({
+        code: input.code,
+        name: input.name,
+        categoryId: input.categoryId,
+        serialNo: input.serialNo ?? null,
+        barcode: input.barcode ?? null,
+        location: input.location,
+        custodianUserId: input.custodianUserId ?? null,
+        acquisitionDate: input.acquisitionDate,
+        cost: input.cost,
+        fundingSource: input.fundingSource,
+        supplierId: input.supplierId ?? null,
+        poId: input.poId ?? null,
+        grnId: input.grnId ?? null,
+        inServiceFrom: input.inServiceFrom,
+        lifeMonthsOverride: input.lifeMonthsOverride ?? null,
+        residualValue,
+        accumDepreciation: Money.ZERO,
+        status: "ACTIVE",
+        insurance: input.insurance ?? null,
+        condition: input.condition ?? DEFAULT_CONDITION,
+        photos: input.photos ?? null,
+        createdBy: actorId,
+        updatedBy: actorId,
+      });
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        const constraint = uniqueViolationConstraint(error);
+        if (constraint === "uq_fa_asset_barcode") {
+          throw new ConflictException(`fa_asset: barcode "${input.barcode}" already exists`);
+        }
+        if (constraint === "uq_fa_asset_code") {
+          throw new ConflictException(`fa_asset: code "${input.code}" already exists`);
+        }
+        // Constraint name not inspectable on this driver error shape — two
+        // different constraints could fire from the same insert (code OR
+        // barcode), same "name both possible constraints" precedent
+        // `BankAccountsService.create()` already establishes for its own
+        // 2-constraint case.
+        throw new ConflictException(
+          `fa_asset: code "${input.code}" or barcode "${input.barcode}" already exists (uq_fa_asset_code / uq_fa_asset_barcode)`,
+        );
+      }
+      throw error;
+    }
   }
 
   async update(id: string, changes: UpdateFaAssetInput, actorId: string | null): Promise<FaAssetEntity> {
@@ -170,4 +195,29 @@ export class AssetsService {
     asset.updatedBy = actorId;
     return this.assetRepository.save(asset, em);
   }
+}
+
+function isUniqueViolation(error: unknown): boolean {
+  const code =
+    (error as { code?: string; driverError?: { code?: string } })?.code ??
+    (error as { driverError?: { code?: string } })?.driverError?.code;
+  return code === PG_UNIQUE_VIOLATION;
+}
+
+/**
+ * `code`/`barcode` share one insert, so a `23505` could come from either of
+ * 2 different constraints (`uq_fa_asset_code` / `uq_fa_asset_barcode`) — the
+ * node-postgres driver error carries the real constraint name at
+ * `.constraint`, which TypeORM's `QueryFailedError` re-exposes unchanged on
+ * `.driverError` (verified live during this part's own verification pass —
+ * see `docs/phase-6/PROGRESS.md`'s Slice 23 Part 1 write-up for the actual
+ * result). Falls back to `undefined` (triggering the combined
+ * both-constraints message above) if this shape ever isn't present, e.g. a
+ * different driver/error wrapper.
+ */
+function uniqueViolationConstraint(error: unknown): string | undefined {
+  return (
+    (error as { constraint?: string })?.constraint ??
+    (error as { driverError?: { constraint?: string } })?.driverError?.constraint
+  );
 }

@@ -34,8 +34,13 @@ import { DECIMAL_PATTERN } from "./decimal.util";
  * the minimal fix: it both stops the whitelist strip (any registered
  * decorator does) AND gives the field real validation instead of a crash.
  * The identical bug shape (`assetIds: string[] | "ALL"` with zero decorators)
- * also exists in `domains/fixed-assets/api/dto/verification.dto.ts`'s
- * `FaVerificationScopeDto` — left unfixed, out of this part's scope.
+ * also existed in `domains/fixed-assets/api/dto/verification.dto.ts`'s
+ * `FaVerificationScopeDto` — left unfixed at the time (out of this part's own
+ * scope), fixed later in Phase 6 Slice 23 Part 5 with a local duplicate of
+ * this same constraint (a distinct `@ValidatorConstraint` name,
+ * `"isAllOrUuidArrayFixedAssets"` — `fixed-assets` cannot import this class
+ * directly, both because it's unexported here and because this module isn't
+ * in `fixed-assets`'s own `mayImport` list).
  */
 @ValidatorConstraint({ name: "isAllOrUuidArray", async: false })
 class IsAllOrUuidArrayConstraint implements ValidatorConstraintInterface {

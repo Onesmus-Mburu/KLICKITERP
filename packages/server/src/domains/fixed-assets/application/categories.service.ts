@@ -1,10 +1,14 @@
 import { Injectable } from "@nestjs/common";
+import { ConflictException } from "../../../shared/exceptions/conflict.exception";
 import { ValidationException } from "../../../shared/exceptions/validation.exception";
 import { GlAccountRepository } from "../../../accounting";
 import { FaCategoryEntity, FaCategoryMethod } from "../domain/fa-category.entity";
 import { FaCategoryRepository } from "../infrastructure/fa-category.repository";
 
 const DEFAULT_RESIDUAL_PCT = "0.0000";
+
+/** Postgres unique_violation SQLSTATE — see `DisposalService`/`BankAccountsService` for the same pattern. */
+const PG_UNIQUE_VIOLATION = "23505";
 
 export interface CreateFaCategoryInput {
   name: string;
@@ -64,18 +68,25 @@ export class CategoriesService {
     await this.glAccountRepository.findByIdOrFail(input.glAccumDepAccountId);
     await this.glAccountRepository.findByIdOrFail(input.glDepExpenseAccountId);
 
-    return this.categoryRepository.create({
-      name: input.name,
-      method: input.method,
-      lifeMonths: input.lifeMonths,
-      rate: input.method === "RB" ? (input.rate ?? null) : null,
-      residualPct,
-      glCostAccountId: input.glCostAccountId,
-      glAccumDepAccountId: input.glAccumDepAccountId,
-      glDepExpenseAccountId: input.glDepExpenseAccountId,
-      createdBy: actorId,
-      updatedBy: actorId,
-    });
+    try {
+      return await this.categoryRepository.create({
+        name: input.name,
+        method: input.method,
+        lifeMonths: input.lifeMonths,
+        rate: input.method === "RB" ? (input.rate ?? null) : null,
+        residualPct,
+        glCostAccountId: input.glCostAccountId,
+        glAccumDepAccountId: input.glAccumDepAccountId,
+        glDepExpenseAccountId: input.glDepExpenseAccountId,
+        createdBy: actorId,
+        updatedBy: actorId,
+      });
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new ConflictException(`fa_category: name "${input.name}" already exists`);
+      }
+      throw error;
+    }
   }
 
   async update(id: string, changes: UpdateFaCategoryInput, actorId: string | null): Promise<FaCategoryEntity> {
@@ -112,7 +123,14 @@ export class CategoriesService {
     }
 
     category.updatedBy = actorId;
-    return this.categoryRepository.save(category);
+    try {
+      return await this.categoryRepository.save(category);
+    } catch (error) {
+      if (isUniqueViolation(error)) {
+        throw new ConflictException(`fa_category: name "${category.name}" already exists`);
+      }
+      throw error;
+    }
   }
 
   async findByIdOrFail(id: string): Promise<FaCategoryEntity> {
@@ -135,4 +153,11 @@ export class CategoriesService {
       throw new ValidationException("fa_category.rate is required and must be > 0 when method='RB'");
     }
   }
+}
+
+function isUniqueViolation(error: unknown): boolean {
+  const code =
+    (error as { code?: string; driverError?: { code?: string } })?.code ??
+    (error as { driverError?: { code?: string } })?.driverError?.code;
+  return code === PG_UNIQUE_VIOLATION;
 }

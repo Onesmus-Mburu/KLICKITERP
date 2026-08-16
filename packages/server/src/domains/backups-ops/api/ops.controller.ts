@@ -14,7 +14,7 @@ export class OpsController {
   @RequirePermission("ops:health:view")
   @ApiOperation({
     summary:
-      "Service healthchecks (DB/Redis/MinIO), disk %, DB size, last-backup badge, app version + license state (stub), log-level, queue depths (N/A — no queue infra exists yet)",
+      "Service healthchecks (DB/Redis/MinIO), disk %, DB size, last-backup badge, app version + real license state (via license.v_state), log-level, queue depths (N/A — no queue infra exists yet)",
   })
   @ApiResponse({ status: 200, type: OpsHealthResponseDto })
   async health(): Promise<OpsHealthResponseDto> {

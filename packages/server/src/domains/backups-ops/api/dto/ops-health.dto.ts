@@ -20,7 +20,7 @@ export class OpsHealthResponseDto {
   @ApiProperty()
   appVersion!: string;
 
-  @ApiProperty({ description: "STUB — Module 21 (Licensing) does not exist yet" })
+  @ApiProperty({ description: "Real license state read via raw SQL against license.v_state (Phase 6 Slice 25) — 'NOT_PROVISIONED' when no license row exists yet" })
   licenseState!: string;
 
   @ApiProperty({ type: Object, description: "N/A — no queue infrastructure wired up in this codebase yet" })

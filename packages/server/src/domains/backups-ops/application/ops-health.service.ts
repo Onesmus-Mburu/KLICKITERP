@@ -57,9 +57,19 @@ export interface OpsHealthSummary {
  * normally (the task's own "graceful degradation" requirement).
  *
  * **Honest scope boundaries** (documented per-field below, not fabricated):
- * - `licenseState` is a STUB (`'NOT_YET_AVAILABLE'`) — Module 21/Licensing
- *   doesn't exist yet in this codebase; a real forward-reference gap, same
- *   pattern every other module's forward dependency follows.
+ * - `licenseState` (Phase 6 Slice 25 fix — Licensing shipped in Slice 24,
+ *   this stub is now stale) reads the REAL state via a raw SQL query against
+ *   `license.v_state` — the exact same mechanism `shared/rbac/
+ *   license-state.guard.ts` itself already uses to read license state from
+ *   outside the `licensing` module. This is NOT a TypeScript import:
+ *   `packages/config/eslint/module-deps.json` defines `licensing` with
+ *   `"importableBy": []` — no module, including this one, is allowed to
+ *   import any symbol from `licensing/` (CI-enforced via ESLint
+ *   `import/no-restricted-paths`). `license.v_state` is a narrow read-only
+ *   view `kfe_app` already has real `SELECT` access to (migration `0190`,
+ *   confirmed live in Slice 24). A missing/zero-row result (this dev
+ *   environment currently has zero rows in `license.license`) falls back to
+ *   `"NOT_PROVISIONED"` — the correct, honest value, not an error.
  * - `queueDepths`/DLQ counts are reported as N/A — no BullMQ queue
  *   infrastructure is wired up anywhere in this codebase (the worker app was
  *   never built out as real infrastructure), so fabricating numbers here
@@ -86,12 +96,13 @@ export class OpsHealthService {
   ) {}
 
   async getHealthSummary(): Promise<OpsHealthSummary> {
-    const [database, redis, minio, disk, lastBackup] = await Promise.all([
+    const [database, redis, minio, disk, lastBackup, licenseState] = await Promise.all([
       this.checkDatabase(),
       this.checkRedis(),
       this.checkMinio(),
       this.checkDisk(),
       this.checkLastBackup(),
+      this.checkLicenseState(),
     ]);
 
     return {
@@ -101,7 +112,7 @@ export class OpsHealthService {
       disk,
       lastBackup,
       appVersion: this.readAppVersion(),
-      licenseState: "NOT_YET_AVAILABLE",
+      licenseState,
       queueDepths: { note: "N/A — no queue infrastructure (BullMQ) is wired up anywhere in this codebase yet" },
       logLevel: {
         current: process.env.LOG_LEVEL ?? "info",
@@ -155,6 +166,24 @@ export class OpsHealthService {
         available: false,
         note: `Disk usage probe failed (Windows dev environments can lack full fs.statfs support): ${(error as Error).message}`,
       };
+    }
+  }
+
+  /**
+   * Phase 6 Slice 25 fix — reads the real license state via raw SQL against
+   * `license.v_state` (never a TS import — see this class's own doc comment
+   * above for why). Mirrors `checkDatabase()`'s own raw-`this.dataSource.query()`
+   * pattern exactly. A zero-row result (no license ever provisioned) or any
+   * query failure both fall back to `"NOT_PROVISIONED"`/an `ERROR:` string
+   * respectively — this method never throws, keeping `getHealthSummary()`'s
+   * own "one bad check never crashes the whole summary" guarantee intact.
+   */
+  private async checkLicenseState(): Promise<string> {
+    try {
+      const rows: { state: string }[] = await this.dataSource.query("SELECT state FROM license.v_state");
+      return rows[0]?.state ?? "NOT_PROVISIONED";
+    } catch (error) {
+      return `ERROR: ${(error as Error).message}`;
     }
   }
 

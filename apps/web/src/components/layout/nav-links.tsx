@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Banknote, CheckSquare, ChevronDown, CreditCard, GraduationCap, HandCoins, Landmark, LayoutDashboard, Layers, Megaphone, Package, Palette, Receipt, Settings, Truck, UserCog, Wallet, WalletCards } from "lucide-react";
+import { Banknote, Boxes, CheckSquare, ChevronDown, CreditCard, GraduationCap, HandCoins, Landmark, LayoutDashboard, Layers, Megaphone, Package, Palette, Receipt, ServerCog, Settings, ShieldCheck, Truck, UserCog, Wallet, WalletCards } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { hasAnyRole } from "@/lib/permissions";
@@ -700,6 +700,89 @@ const NAV_ITEMS: NavItem[] = [
       { href: "/payroll/runs", labelKey: "payrollRuns" },
     ],
   },
+  // Phase 6 Slice 23 Part 1 (Fixed Assets foundations, Module 17) — a new
+  // Fixed Assets dropdown (`Boxes` icon — confirmed not already imported in
+  // this file, via `lucide-react`, this package does export it) inserted
+  // immediately after Payroll's own closing `},` above and before
+  // Communications' own comment below, per this part's own plan — confirmed
+  // against the file's real current top-level order (…Banking, Payroll,
+  // Communications, Users, Settings) before inserting, not assumed. 2
+  // children to start (Categories, Assets); explicitly NOT this dropdown's
+  // final shape — 4 more parts (Transfers, Maintenance, Depreciation Runs,
+  // Disposals, Verification — likely 5 more children total) will append the
+  // rest of Module 17's real backend surface. Same `allowedRoles: []`/
+  // `<QueryBoundary>`-is-the-real-gate reasoning as every other entry here:
+  // `fixed-assets:category:manage`/`fixed-assets:asset:view` are the real
+  // permissions gating these 2 children, no permission-list endpoint exists
+  // to target either precisely from a coarse role-name check.
+  //
+  // Phase 6 Slice 23 Part 2 (Transfers + Maintenance) — NO nav child
+  // appended, confirmed as this part's own explicit call, not an oversight:
+  // both `TransfersController`/`MaintenanceController` only ever list scoped
+  // to one `assetId` (confirmed by reading both directly — `GET
+  // .../asset/:assetId`, no global "list every transfer/maintenance event
+  // across every asset" route exists on either), so neither has a real
+  // "list every X across every asset" screen to back a top-level route —
+  // this part's work lives entirely on the existing asset detail page
+  // instead (`<TransferPanel>`/`<MaintenancePanel>`), the exact same
+  // judgment call Payroll Slice 22 Part 3 already made for its own two
+  // employee-scoped features (Employee Assignments + Employee Components).
+  // Still NOT this dropdown's final shape — Depreciation Runs, Disposals,
+  // and Verification (the rest of Module 17's real backend surface) will
+  // still append further children in future parts.
+  //
+  // Phase 6 Slice 23 Part 3 (Depreciation Runs) — 3rd child appended without
+  // touching the mechanism itself: Depreciation Runs
+  // (`/fixed-assets/depreciation-runs`, `fixed-assets:depreciation:run`
+  // gating list/detail/lines/create/submit — the SAME permission bundled
+  // across every read AND the create/submit writes, confirmed by reading
+  // `DepreciationRunsController` directly; `decide`/`post` each need their
+  // own genuinely separate, narrower permissions
+  // (`fixed-assets:depreciation:decide`/`:post`) gating those two specific
+  // actions WITHIN the detail page, not this nav entry itself — the same
+  // "coarse nav gate, granular in-screen gates" shape every other
+  // multi-permission dropdown child in this file already establishes). Still
+  // NOT this dropdown's final shape — Disposals and Verification (the rest
+  // of Module 17's real backend surface) will still append further children
+  // in future parts.
+  //
+  // Phase 6 Slice 23 Part 4 (Disposals) — 4th child appended, same mechanism
+  // again: Disposals (`/fixed-assets/disposals`,
+  // `fixed-assets:disposal:create` gating list/detail/create/submit — ONE
+  // shared permission across all 4, genuinely different from Depreciation
+  // Runs' 3-way split above, confirmed by reading `DisposalController`
+  // directly; `decide`/`post` each get their own separate, narrower
+  // permissions gating those two actions within the detail page, not this
+  // nav entry, same "coarse nav gate, granular in-screen gates" shape). Still
+  // NOT this dropdown's final shape — Verification (Part 5, the slice's last
+  // part) will append the 5th and final child.
+  //
+  // Phase 6 Slice 23 Part 5 (Verification) — 5th and FINAL child appended:
+  // Verification (`/fixed-assets/verifications`,
+  // `fixed-assets:verification:create` gating list/detail/lines/create/
+  // submit — 4 of this route's 6 real routes; `:count`/`:decide`/`:post`
+  // each get their own separate, narrower permissions gating those actions
+  // within the detail page, not this nav entry, the same "coarse nav gate,
+  // granular in-screen gates" shape every other multi-permission dropdown
+  // child in this file already establishes). **THIS IS THE FIXED ASSETS
+  // DROPDOWN'S FINAL SHAPE — 5 children total (Categories, Assets,
+  // Depreciation Runs, Disposals, Verification) — no more are planned**,
+  // the same "last part declares final shape" convention Banking's own
+  // 8-child dropdown and Payroll's own 6-child dropdown already used at the
+  // close of their respective slices.
+  {
+    href: "/fixed-assets/categories",
+    labelKey: "fixedAssets",
+    icon: Boxes,
+    allowedRoles: [],
+    children: [
+      { href: "/fixed-assets/categories", labelKey: "fixedAssetsCategories" },
+      { href: "/fixed-assets/assets", labelKey: "fixedAssetsAssets" },
+      { href: "/fixed-assets/depreciation-runs", labelKey: "fixedAssetsDepreciationRuns" },
+      { href: "/fixed-assets/disposals", labelKey: "fixedAssetsDisposals" },
+      { href: "/fixed-assets/verifications", labelKey: "fixedAssetsVerifications" },
+    ],
+  },
   // Phase 6 Slice 15 Part 1 (Communications Foundation + Templates, Module
   // 5) — Comms' first nav entry (`platform/comms` had NO home in the flat
   // nav at all before this pass). Positioned between Wallet and Users, per
@@ -855,6 +938,35 @@ const NAV_ITEMS: NavItem[] = [
       { href: "/settings/accounting-sync", labelKey: "settingsAccountingSync" },
     ],
   },
+  // Phase 6 Slice 24 (Licensing, Module 21) — a new top-level, single LEAF
+  // item, same shape as `branding` above (no `children` dropdown — this
+  // module has exactly one real screen: status + API call log + update
+  // notices, all one page). Same `allowedRoles: []`/`<QueryBoundary>`-is-
+  // the-real-gate reasoning as every other entry above: `license:status:view`
+  // is the real permission, no permission-list endpoint exists to target it
+  // precisely from a coarse role-name check. `ShieldCheck` (confirmed unused
+  // elsewhere in this file).
+  { href: "/license", labelKey: "license", icon: ShieldCheck, allowedRoles: [] },
+  // Phase 6 Slice 25 (Backups/Ops, Module 20) — a new top-level, single LEAF
+  // item, same shape as `license`/`branding` above (no `children` dropdown —
+  // this module's whole surface is 2 tightly-linked screens, health
+  // dashboard at `/ops` and the backups list/detail at `/ops/backups*`, each
+  // linking to the other via its own header — not 6 independent sub-areas
+  // the way Billing/Wallet/Accounting's own dropdowns needed). Inserted
+  // immediately after Slice 24's own License entry — a natural "system
+  // administration" pairing (License then Backups), per this slice's own
+  // brief. `href` points at `/ops/backups` (the higher-traffic of the two
+  // screens — filters/run/prune all live there) rather than `/ops` (the
+  // health dashboard) — the same "land on the busier screen, link onward"
+  // judgment call `billing`'s own dropdown made for its first child.
+  // Same `allowedRoles: []`/`<QueryBoundary>`-is-the-real-gate reasoning as
+  // every other entry above: `backups:run:view`/`ops:health:view` are the
+  // real permissions, no permission-list endpoint exists to target either
+  // precisely from a coarse role-name check. `ServerCog` (confirmed unused
+  // elsewhere in this file, and confirmed actually exported by
+  // `lucide-react` before adding it — a server/ops-administration glyph, a
+  // clear semantic fit distinct from every icon already claimed above).
+  { href: "/ops/backups", labelKey: "opsBackups", icon: ServerCog, allowedRoles: [] },
 ];
 
 /**
