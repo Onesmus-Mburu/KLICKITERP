@@ -3,9 +3,10 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Search } from "lucide-react";
+import { Eye, Search } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { RoleResponseDto } from "@klickit/contracts";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { QueryBoundary } from "@/components/patterns/query-boundary";
@@ -38,6 +39,7 @@ import { RoleBadges } from "@/features/roles/components/role-badges";
  */
 export default function RolesPage() {
   const t = useTranslations("roles.list");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const rolesQuery = useRoles();
   const [search, setSearch] = React.useState("");
@@ -65,13 +67,22 @@ export default function RolesPage() {
         // navigation — same "nested interactive element inside a clickable
         // row" guard `<DataTable>`'s own doc comment documents.
         cell: ({ row }) => (
-          <div onClick={(e) => e.stopPropagation()}>
+          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
+              onClick={() => router.push(`/roles/${row.original.id}`)}
+            >
+              <Eye className="size-4" />
+              {tCommon("view")}
+            </Button>
             <EditRoleDialog role={row.original} />
           </div>
         ),
       },
     ],
-    [t],
+    [t, tCommon, router],
   );
 
   return (

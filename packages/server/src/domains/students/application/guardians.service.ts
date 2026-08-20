@@ -111,8 +111,20 @@ export class GuardiansService {
     return this.guardianRepository.findByIdOrFail(id);
   }
 
-  async list(): Promise<StdGuardianEntity[]> {
-    return this.guardianRepository.list();
+  /**
+   * The Parents directory's own list — each guardian paired with its real
+   * linked-student count (`std_student_guardian` rows), computed via one
+   * bulk query (`countLinkedStudentsForGuardians()`), not N+1 per-guardian
+   * calls. Returned as `{guardian, studentCount}` pairs rather than mutating
+   * `studentCount` onto the entity itself — mirrors `create()`'s own
+   * `{guardian, wasExisting}` shape immediately above, letting the
+   * controller do the actual response-DTO flattening, same division of
+   * responsibility.
+   */
+  async list(): Promise<Array<{ guardian: StdGuardianEntity; studentCount: number }>> {
+    const guardians = await this.guardianRepository.list();
+    const counts = await this.guardianRepository.countLinkedStudentsForGuardians(guardians.map((g) => g.id));
+    return guardians.map((guardian) => ({ guardian, studentCount: counts.get(guardian.id) ?? 0 }));
   }
 
   async update(id: string, changes: UpdateStdGuardianInput, actorId: string | null): Promise<StdGuardianEntity> {
@@ -127,6 +139,17 @@ export class GuardiansService {
 
   async listForStudent(studentId: string): Promise<StdStudentGuardianEntity[]> {
     return this.studentGuardianRepository.listByStudent(studentId);
+  }
+
+  /**
+   * Phase 6 — the reverse of `listForStudent()`: which students a guardian is
+   * linked to. `StdStudentGuardianRepository.listByGuardian()` already
+   * existed (used internally nowhere before this) but had no controller
+   * route exposing it — added for the standalone Parents page, which needs
+   * to show a guardian's own children without a per-student round trip.
+   */
+  async listForGuardian(guardianId: string): Promise<StdStudentGuardianEntity[]> {
+    return this.studentGuardianRepository.listByGuardian(guardianId);
   }
 
   /**

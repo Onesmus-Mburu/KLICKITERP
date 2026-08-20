@@ -1,9 +1,20 @@
 "use client";
 
 import * as React from "react";
-import { useMutation, useQuery, useQueryClient, type QueryObserverResult } from "@tanstack/react-query";
-import type { CreateGuardianDto, GuardianResponseDto, LinkGuardianDto, StudentGuardianLinkResponseDto } from "@klickit/contracts";
-import { createGuardian, linkGuardianToStudent, listGuardianLinksForStudent, listGuardians, unlinkGuardianFromStudent } from "../api/guardians.api";
+import { useMutation, useQueries, useQuery, useQueryClient, type QueryObserverResult } from "@tanstack/react-query";
+import type { CreateGuardianDto, GuardianResponseDto, LinkGuardianDto, StudentGuardianLinkResponseDto, StudentResponseDto, UpdateGuardianDto } from "@klickit/contracts";
+import { getStudent } from "../api/students.api";
+import { STUDENTS_QUERY_KEY } from "./use-students";
+import {
+  createGuardian,
+  getGuardian,
+  linkGuardianToStudent,
+  listGuardianLinksForStudent,
+  listGuardians,
+  listStudentLinksForGuardian,
+  unlinkGuardianFromStudent,
+  updateGuardian,
+} from "../api/guardians.api";
 
 export interface GuardianWithLink {
   link: StudentGuardianLinkResponseDto;
@@ -71,6 +82,147 @@ export const GUARDIANS_QUERY_KEY = ["students", "guardians", "all"] as const;
 
 export function useGuardians() {
   return useQuery({ queryKey: GUARDIANS_QUERY_KEY, queryFn: listGuardians });
+}
+
+export function useGuardian(id: string | undefined) {
+  return useQuery({
+    queryKey: [...GUARDIANS_QUERY_KEY, "detail", id],
+    queryFn: () => getGuardian(id as string),
+    enabled: !!id,
+  });
+}
+
+/**
+ * Standalone Parents page — create a `std_guardian` with NO student link
+ * (unlike `useCreateAndLinkGuardian` below, which always creates-and-links in
+ * one step for the student-detail-page flow). Still goes through the same
+ * `POST /students/guardians` find-then-create-or-reuse dedup (see
+ * `GuardiansService.create()`'s own doc comment) — a phone/email match
+ * against an existing guardian returns that record instead of erroring, same
+ * as every other caller of this endpoint.
+ */
+export function useCreateGuardianStandalone() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: CreateGuardianDto) => createGuardian(dto),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: GUARDIANS_QUERY_KEY }),
+  });
+}
+
+export function useUpdateGuardian(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: UpdateGuardianDto) => updateGuardian(id, dto),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: GUARDIANS_QUERY_KEY });
+    },
+  });
+}
+
+export interface StudentWithGuardianLink {
+  link: StudentGuardianLinkResponseDto;
+  /** `undefined` only if this student was deleted (or the per-student fetch hasn't resolved yet) between the link-rows fetch and this join — see `guardian-section.tsx`'s own doc comment for the same defensive-fallback reasoning in reverse. */
+  student: StudentResponseDto | undefined;
+}
+
+function guardianStudentLinksKey(guardianId: string) {
+  return [...GUARDIANS_QUERY_KEY, "student-links", guardianId] as const;
+}
+
+/**
+ * The reverse of `useStudentGuardians()` — a guardian's own children.
+ * `GuardiansController_listForGuardian` (new route, see `guardians.api.ts`'s
+ * own doc comment) returns only link rows, no student name/admission-no, so
+ * this hook joins them against per-student detail fetches. Unlike
+ * `useStudentGuardians()` (which bulk-fetches ALL guardians in one call,
+ * since `GET /students/guardians` is a real unpaginated bare array),
+ * `GET /students` IS paginated (`ListStudentsResult`, confirmed by reading
+ * `listStudents()` directly) — a bulk fetch-and-join isn't safe here, so this
+ * uses `useQueries` instead, one `getStudent()` per DISTINCT linked student
+ * id, riding the exact same `[...STUDENTS_QUERY_KEY, "detail", id]` cache key
+ * `useStudent()` itself uses (same "compose queries, don't call a hook
+ * inside .map()" pattern `integrity-run-findings.tsx`'s own `usePeriodLabels`
+ * already established) — bounded by how many children this guardian
+ * actually has, never an unbounded scan.
+ */
+export function useGuardianStudentLinks(guardianId: string | undefined) {
+  const linksQuery = useQuery({
+    queryKey: guardianId ? guardianStudentLinksKey(guardianId) : guardianStudentLinksKey("__none__"),
+    queryFn: () => listStudentLinksForGuardian(guardianId as string),
+    enabled: !!guardianId,
+  });
+
+  const distinctStudentIds = React.useMemo(
+    () => Array.from(new Set((linksQuery.data ?? []).map((l) => l.studentId))),
+    [linksQuery.data],
+  );
+  const studentResults = useQueries({
+    queries: distinctStudentIds.map((id) => ({
+      queryKey: [...STUDENTS_QUERY_KEY, "detail", id] as const,
+      queryFn: () => getStudent(id),
+    })),
+  });
+  const studentById = React.useMemo(() => {
+    const map = new Map<string, StudentResponseDto>();
+    studentResults.forEach((result, index) => {
+      if (result.data) map.set(distinctStudentIds[index], result.data);
+    });
+    return map;
+  }, [studentResults, distinctStudentIds]);
+
+  const data = React.useMemo<StudentWithGuardianLink[] | undefined>(() => {
+    if (!linksQuery.data) return undefined;
+    return linksQuery.data.map((link) => ({ link, student: studentById.get(link.studentId) }));
+  }, [linksQuery.data, studentById]);
+
+  const refetch = React.useCallback(async (): Promise<QueryObserverResult<StudentWithGuardianLink[], unknown>> => {
+    const [linksResult] = await Promise.all([linksQuery.refetch(), ...studentResults.map((r) => r.refetch())]);
+    // Same cast-only-at-the-return-boundary reasoning as `useStudentGuardians()`'s
+    // own `refetch` above — `<QueryBoundary>` only calls this to trigger a
+    // re-fetch and discards the return value; both underlying query sets have
+    // already genuinely refetched above by the time this resolves.
+    return linksResult as unknown as QueryObserverResult<StudentWithGuardianLink[], unknown>;
+  }, [linksQuery, studentResults]);
+
+  return {
+    data,
+    isPending: linksQuery.isPending,
+    isError: linksQuery.isError,
+    error: linksQuery.error,
+    refetch,
+  };
+}
+
+export function useLinkStudentToGuardian(guardianId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      studentId,
+      relationship,
+      isPrimary,
+      receivesBilling,
+    }: {
+      studentId: string;
+      relationship: string;
+      isPrimary?: boolean;
+      receivesBilling?: boolean;
+    }) => linkGuardianToStudent(studentId, { guardianId, relationship, isPrimary, receivesBilling }),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: guardianStudentLinksKey(guardianId) });
+      queryClient.invalidateQueries({ queryKey: ["students", "guardian-links", variables.studentId] });
+    },
+  });
+}
+
+export function useUnlinkStudentFromGuardian(guardianId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (studentId: string) => unlinkGuardianFromStudent(studentId, guardianId),
+    onSuccess: (_data, studentId) => {
+      queryClient.invalidateQueries({ queryKey: guardianStudentLinksKey(guardianId) });
+      queryClient.invalidateQueries({ queryKey: ["students", "guardian-links", studentId] });
+    },
+  });
 }
 
 function invalidateStudentGuardians(queryClient: ReturnType<typeof useQueryClient>, studentId: string) {

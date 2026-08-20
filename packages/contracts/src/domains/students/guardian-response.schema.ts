@@ -25,6 +25,11 @@ export const CreateGuardianResponseDtoSchema = GuardianResponseDtoSchema.merge(z
 }));
 export type CreateGuardianResponseDto = z.infer<typeof CreateGuardianResponseDtoSchema>;
 
+export const GuardianListItemResponseDtoSchema = GuardianResponseDtoSchema.merge(z.object({
+    studentCount: z.number(),
+}));
+export type GuardianListItemResponseDto = z.infer<typeof GuardianListItemResponseDtoSchema>;
+
 export const StudentGuardianLinkResponseDtoSchema = z.object({
     id: z.string(),
     studentId: z.string(),

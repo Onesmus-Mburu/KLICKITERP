@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, Eye, X } from "lucide-react";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,6 +40,7 @@ const STATUS_BADGE_VARIANT: Record<BackupRunStatus, BadgeProps["variant"]> = {
  */
 export default function BackupsListPage() {
   const t = useTranslations("backupsOps.list");
+  const tCommon = useTranslations("common");
   const tKinds = useTranslations("backupsOps.kinds");
   const tStatuses = useTranslations("backupsOps.statuses");
   const router = useRouter();
@@ -75,8 +76,25 @@ export default function BackupsListPage() {
       { id: "startedAt", header: t("columns.startedAt"), cell: ({ row }) => new Date(row.original.startedAt).toLocaleString() },
       { id: "size", header: t("columns.size"), cell: ({ row }) => formatBytes(row.original.sizeBytes) },
       { id: "sha256", header: t("columns.sha256"), cell: ({ row }) => (row.original.sha256 ? `${row.original.sha256.slice(0, 12)}…` : "—") },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/ops/backups/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tKinds, tStatuses],
+    [t, tKinds, tStatuses, tCommon, router],
   );
 
   const hasActiveFilters = !!(kind || status);

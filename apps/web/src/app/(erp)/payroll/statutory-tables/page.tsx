@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { PyrlStatutoryTableResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueryBoundary } from "@/components/patterns/query-boundary";
@@ -32,6 +33,7 @@ import { PYRL_STATUTORY_KINDS, type PyrlStatutoryKind } from "@/features/payroll
 export default function StatutoryTablesPage() {
   const t = useTranslations("payroll.statutoryTables.list");
   const tKinds = useTranslations("payroll.statutoryTables.kinds");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [kind, setKind] = React.useState<PyrlStatutoryKind>("PAYE");
 
@@ -45,8 +47,25 @@ export default function StatutoryTablesPage() {
         header: t("columns.sourceNote"),
         cell: ({ row }) => <span className="line-clamp-1 max-w-md text-xs text-muted-foreground">{row.original.sourceNote}</span>,
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/payroll/statutory-tables/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t],
+    [t, tCommon, router],
   );
 
   return (

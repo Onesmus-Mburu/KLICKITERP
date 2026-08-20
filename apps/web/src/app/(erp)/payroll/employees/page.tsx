@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Search, X } from "lucide-react";
+import { Eye, Search, X } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { PyrlEmployeeResponseDto } from "@klickit/contracts";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
@@ -53,6 +53,7 @@ const ACTIVE_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
 export default function PayrollEmployeesPage() {
   const t = useTranslations("payroll.employees.list");
   const tEmploymentTypes = useTranslations("payroll.employmentTypes");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const departmentsQuery = useDepartments();
   const [isActive, setIsActive] = React.useState<"true" | "false" | "">("");
@@ -94,8 +95,25 @@ export default function PayrollEmployeesPage() {
           </Badge>
         ),
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/payroll/employees/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tEmploymentTypes, departmentNameById],
+    [t, tEmploymentTypes, departmentNameById, tCommon, router],
   );
 
   const hasFilters = isActive !== "" || departmentId !== "";

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { PyrlSalaryStructureResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueryBoundary } from "@/components/patterns/query-boundary";
 import { DataTable } from "@/components/patterns/data-table";
@@ -26,6 +28,7 @@ import { CreateSalaryStructureDialog } from "@/features/payroll/components/creat
  */
 export default function SalaryStructuresPage() {
   const t = useTranslations("payroll.salaryStructures.list");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const structuresQuery = useSalaryStructures();
 
@@ -34,8 +37,25 @@ export default function SalaryStructuresPage() {
       { accessorKey: "name", header: t("columns.name") },
       { id: "grade", header: t("columns.grade"), cell: ({ row }) => row.original.grade ?? "—" },
       { accessorKey: "effectiveFrom", header: t("columns.effectiveFrom") },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/payroll/salary-structures/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t],
+    [t, tCommon, router],
   );
 
   return (

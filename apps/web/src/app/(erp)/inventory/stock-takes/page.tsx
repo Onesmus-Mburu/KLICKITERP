@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { StockTakeResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -38,6 +40,7 @@ const STATUS_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
 export default function StockTakesPage() {
   const t = useTranslations("inventory.stockTakes.list");
   const tStatuses = useTranslations("inventory.stockTakes.statuses");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [statusFilter, setStatusFilter] = React.useState(ALL_VALUE);
   const [storeFilter, setStoreFilter] = React.useState(ALL_VALUE);
@@ -63,8 +66,25 @@ export default function StockTakesPage() {
         header: t("columns.status"),
         cell: ({ row }) => <Badge variant={STATUS_BADGE_VARIANT[row.original.status] ?? "outline"}>{tStatuses(row.original.status)}</Badge>,
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/inventory/stock-takes/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tStatuses, storeNameById],
+    [t, tStatuses, storeNameById, tCommon, router],
   );
 
   return (

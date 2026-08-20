@@ -3,10 +3,11 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Search } from "lucide-react";
+import { Eye, Search } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { ItemResponseDto } from "@klickit/contracts";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -38,6 +39,7 @@ const ITEM_TYPES: InvItemType[] = ["STOCK", "CONSUMABLE", "SERVICE", "RESALE"];
 export default function ItemsPage() {
   const t = useTranslations("inventory.items.list");
   const tItemTypes = useTranslations("inventory.items.itemTypes");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [categoryFilter, setCategoryFilter] = React.useState(ALL_VALUE);
   const [typeFilter, setTypeFilter] = React.useState<InvItemType | typeof ALL_VALUE>(ALL_VALUE);
@@ -87,8 +89,25 @@ export default function ItemsPage() {
           </Badge>
         ),
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/inventory/items/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tItemTypes, categoryNameById],
+    [t, tItemTypes, categoryNameById, tCommon, router],
   );
 
   return (

@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { RequisitionResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueryBoundary } from "@/components/patterns/query-boundary";
 import { DataTable } from "@/components/patterns/data-table";
@@ -48,6 +50,7 @@ const STATUS_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
 export default function RequisitionsPage() {
   const t = useTranslations("procurement.requisitions.list");
   const tStatuses = useTranslations("procurement.requisitions.statuses");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [filters, setFilters] = React.useState<RequisitionFiltersState>(EMPTY_REQUISITION_FILTERS);
   const requisitionsQuery = useRequisitions(requisitionFiltersToParams(filters));
@@ -74,8 +77,25 @@ export default function RequisitionsPage() {
           <Badge variant={STATUS_BADGE_VARIANT[row.original.status] ?? "outline"}>{tStatuses(row.original.status)}</Badge>
         ),
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/procurement/requisitions/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tStatuses, departmentNameById],
+    [t, tStatuses, departmentNameById, tCommon, router],
   );
 
   return (

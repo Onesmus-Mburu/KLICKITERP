@@ -4,7 +4,7 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
-import { X } from "lucide-react";
+import { Eye, X } from "lucide-react";
 import type { ContractResponseDto } from "@klickit/contracts";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,7 @@ const STATUS_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
 export default function ContractsPage() {
   const t = useTranslations("procurement.contracts.list");
   const tStatuses = useTranslations("procurement.contracts.statuses");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [status, setStatus] = React.useState<ContractStatus | "">("");
   const [supplierId, setSupplierId] = React.useState("");
@@ -63,8 +64,25 @@ export default function ContractsPage() {
         header: t("columns.status"),
         cell: ({ row }) => <Badge variant={STATUS_BADGE_VARIANT[row.original.status] ?? "outline"}>{tStatuses(row.original.status)}</Badge>,
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/procurement/contracts/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tStatuses, supplierNameById],
+    [t, tStatuses, supplierNameById, tCommon, router],
   );
 
   const hasActiveFilters = !!(status || supplierId);

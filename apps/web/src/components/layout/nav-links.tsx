@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Banknote, Boxes, CheckSquare, ChevronDown, CreditCard, GraduationCap, HandCoins, Landmark, LayoutDashboard, Layers, Megaphone, Package, Palette, Receipt, ServerCog, Settings, ShieldCheck, Truck, UserCog, Wallet, WalletCards } from "lucide-react";
+import { Banknote, Boxes, CheckSquare, ChevronDown, CreditCard, GraduationCap, HandCoins, Landmark, LayoutDashboard, Layers, Megaphone, Package, Palette, Receipt, ServerCog, Settings, ShieldCheck, Truck, UserCog, Users, Wallet, WalletCards } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { hasAnyRole } from "@/lib/permissions";
@@ -53,6 +53,14 @@ const NAV_ITEMS: NavItem[] = [
   // query — a `students:student:view`-missing role hits a real 403 there,
   // not a silently-hidden nav item pretending to be the security boundary).
   { href: "/students", labelKey: "students", icon: GraduationCap, allowedRoles: [] },
+  // Parents/Guardians directory — same `allowedRoles: []`/`<QueryBoundary>`-
+  // is-the-real-gate reasoning as `students` above (`students:guardian:manage`
+  // is the one real permission gating every guardian route — no separate
+  // `:view` exists, confirmed by reading `guardians.controller.ts` directly
+  // — no permission-list endpoint exists to target it precisely from a
+  // coarse role-name check either). Placed between `students` and `classes`
+  // per the explicit ask, not module-registration order.
+  { href: "/students/guardians", labelKey: "guardians", icon: Users, allowedRoles: [] },
   // Phase 6 Slice 2b item 6 (Classes & Streams management) — same
   // `allowedRoles: []`/`<QueryBoundary>`-is-the-real-gate reasoning as
   // `students` above (`students:class:view`/`:manage` are the real

@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { FaCategoryResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueryBoundary } from "@/components/patterns/query-boundary";
 import { DataTable } from "@/components/patterns/data-table";
@@ -35,6 +37,7 @@ import { CreateCategoryDialog } from "@/features/fixed-assets/components/create-
 export default function FixedAssetCategoriesPage() {
   const t = useTranslations("fixedAssets.categories.list");
   const tMethods = useTranslations("fixedAssets.categoryMethods");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const categoriesQuery = useCategories();
 
@@ -45,8 +48,25 @@ export default function FixedAssetCategoriesPage() {
       { id: "lifeMonths", header: t("columns.lifeMonths"), cell: ({ row }) => t("monthsValue", { count: row.original.lifeMonths }) },
       { id: "rate", header: t("columns.rate"), cell: ({ row }) => row.original.rate ?? "—" },
       { id: "residualPct", header: t("columns.residualPct"), cell: ({ row }) => row.original.residualPct },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/fixed-assets/categories/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tMethods],
+    [t, tMethods, tCommon, router],
   );
 
   return (

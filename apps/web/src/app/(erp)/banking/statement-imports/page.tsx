@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Plus, X } from "lucide-react";
+import { Eye, Plus, X } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,6 +39,7 @@ const ALL_SENTINEL = "__all__"; // `<Select>` can't represent "nothing selected"
  */
 export default function StatementImportsPage() {
   const t = useTranslations("banking.statementImports.list");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [accountId, setAccountId] = React.useState("");
 
@@ -62,8 +63,25 @@ export default function StatementImportsPage() {
             <span className="text-muted-foreground">0</span>
           ),
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/banking/statement-imports/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, accountNameById],
+    [t, accountNameById, tCommon, router],
   );
 
   return (

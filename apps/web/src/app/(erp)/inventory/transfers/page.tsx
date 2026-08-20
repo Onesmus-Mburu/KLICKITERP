@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Plus } from "lucide-react";
+import { Eye, Plus } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { TransferResponseDto } from "@klickit/contracts";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
@@ -41,6 +41,7 @@ const STATUS_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
 export default function TransfersPage() {
   const t = useTranslations("inventory.transfers.list");
   const tStatuses = useTranslations("inventory.transfers.statuses");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [statusFilter, setStatusFilter] = React.useState(ALL_VALUE);
   const [fromStoreFilter, setFromStoreFilter] = React.useState(ALL_VALUE);
@@ -69,8 +70,25 @@ export default function TransfersPage() {
         header: t("columns.status"),
         cell: ({ row }) => <Badge variant={STATUS_BADGE_VARIANT[row.original.status] ?? "outline"}>{tStatuses(row.original.status)}</Badge>,
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/inventory/transfers/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tStatuses, storeNameById],
+    [t, tStatuses, storeNameById, tCommon, router],
   );
 
   return (

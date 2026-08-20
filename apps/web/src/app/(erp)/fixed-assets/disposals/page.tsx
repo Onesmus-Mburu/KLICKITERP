@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { FaDisposalResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -37,6 +39,7 @@ type FaDisposalStatus = (typeof ALL_STATUSES)[number];
 export default function DisposalsPage() {
   const t = useTranslations("fixedAssets.disposals.list");
   const tMethods = useTranslations("fixedAssets.disposalMethods");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [status, setStatus] = React.useState<FaDisposalStatus | "">("");
 
@@ -58,8 +61,25 @@ export default function DisposalsPage() {
       { id: "proceeds", header: t("columns.proceeds"), cell: ({ row }) => formatMoney(row.original.proceeds) },
       { id: "gainLoss", header: t("columns.gainLoss"), cell: ({ row }) => (row.original.gainLoss ? formatMoney(row.original.gainLoss) : "—") },
       { id: "status", header: t("columns.status"), cell: ({ row }) => <DisposalStatusBadge status={row.original.status} /> },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/fixed-assets/disposals/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tMethods, assetById],
+    [t, tMethods, assetById, tCommon, router],
   );
 
   return (

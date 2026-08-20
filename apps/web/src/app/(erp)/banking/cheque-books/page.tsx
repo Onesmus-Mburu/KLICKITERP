@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { X } from "lucide-react";
+import { Eye, X } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -33,6 +33,7 @@ const ALL_SENTINEL = "__all__"; // `<Select>` can't represent "nothing selected"
  */
 export default function ChequeBooksPage() {
   const t = useTranslations("banking.chequeBooks.list");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [accountId, setAccountId] = React.useState("");
 
@@ -51,8 +52,25 @@ export default function ChequeBooksPage() {
         header: t("columns.leafCount"),
         cell: ({ row }) => row.original.endLeaf - row.original.startLeaf + 1,
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/banking/cheque-books/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, accountNameById],
+    [t, accountNameById, tCommon, router],
   );
 
   return (

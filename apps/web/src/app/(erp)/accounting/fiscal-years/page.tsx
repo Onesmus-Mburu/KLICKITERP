@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { FiscalYearResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueryBoundary } from "@/components/patterns/query-boundary";
 import { DataTable } from "@/components/patterns/data-table";
@@ -33,6 +35,7 @@ const STATUS_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
 export default function FiscalYearsPage() {
   const t = useTranslations("accounting.fiscalYears.list");
   const tStatuses = useTranslations("accounting.fiscalYearStatuses");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const fiscalYearsQuery = useFiscalYears();
 
@@ -46,8 +49,25 @@ export default function FiscalYearsPage() {
         header: t("columns.status"),
         cell: ({ row }) => <Badge variant={STATUS_BADGE_VARIANT[row.original.status] ?? "outline"}>{tStatuses(row.original.status)}</Badge>,
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/accounting/fiscal-years/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tStatuses],
+    [t, tStatuses, tCommon, router],
   );
 
   return (

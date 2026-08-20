@@ -4,7 +4,9 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
+import { Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueryBoundary } from "@/components/patterns/query-boundary";
 import { DataTable } from "@/components/patterns/data-table";
@@ -40,6 +42,7 @@ import { parseRecurringTemplate, useRecurringTemplates, type RecurringResponseDt
  */
 export default function RecurringTemplatesPage() {
   const t = useTranslations("expenses.recurring.list");
+  const tCommon = useTranslations("common");
   const tPayeeTypes = useTranslations("expenses.vouchers.payeeTypes");
   const router = useRouter();
 
@@ -117,8 +120,25 @@ export default function RecurringTemplatesPage() {
           );
         },
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/expenses/recurring/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tPayeeTypes, resolvePayee, categoryNameById, router],
+    [t, tPayeeTypes, resolvePayee, categoryNameById, router, tCommon],
   );
 
   return (

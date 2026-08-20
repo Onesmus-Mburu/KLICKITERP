@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { FaDepreciationRunResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -38,6 +40,7 @@ function PeriodLabel({ periodId }: { periodId: string }) {
  */
 export default function DepreciationRunsPage() {
   const t = useTranslations("fixedAssets.depreciationRuns.list");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [status, setStatus] = React.useState<FaDepreciationRunStatus | "">("");
 
@@ -47,8 +50,25 @@ export default function DepreciationRunsPage() {
     () => [
       { id: "period", header: t("columns.period"), cell: ({ row }) => <PeriodLabel periodId={row.original.periodId} /> },
       { id: "status", header: t("columns.status"), cell: ({ row }) => <DepreciationRunStatusBadge status={row.original.status} /> },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/fixed-assets/depreciation-runs/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t],
+    [t, tCommon, router],
   );
 
   return (

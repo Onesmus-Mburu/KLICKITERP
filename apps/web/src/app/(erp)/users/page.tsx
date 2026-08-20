@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Plus, Search } from "lucide-react";
+import { Eye, Plus, Search } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { UserResponseDto } from "@klickit/contracts";
 import { Button } from "@/components/ui/button";
@@ -46,6 +46,7 @@ const MIN_SEARCH_LENGTH = 2;
 export default function UsersPage() {
   const t = useTranslations("users.list");
   const tType = useTranslations("users.userType");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [page, setPage] = React.useState(1);
   const [pageSize, setPageSize] = React.useState(DEFAULT_PAGE_SIZE);
@@ -88,8 +89,25 @@ export default function UsersPage() {
       { id: "status", header: t("columns.status"), cell: ({ row }) => <UserStatusBadge status={row.original.status} /> },
       { id: "userType", header: t("columns.userType"), cell: ({ row }) => tType(row.original.userType) },
       { id: "departmentName", header: t("columns.departmentName"), cell: ({ row }) => row.original.departmentName ?? "—" },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/users/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tType],
+    [t, tType, tCommon, router],
   );
 
   return (

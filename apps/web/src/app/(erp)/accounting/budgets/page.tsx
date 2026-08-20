@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { BudgetResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -43,6 +45,7 @@ const STATUS_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
 export default function BudgetsPage() {
   const t = useTranslations("accounting.budgets.list");
   const tStatuses = useTranslations("accounting.budgetStatuses");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [fiscalYearId, setFiscalYearId] = React.useState("");
   const fiscalYearsQuery = useFiscalYears();
@@ -57,8 +60,25 @@ export default function BudgetsPage() {
         header: t("columns.status"),
         cell: ({ row }) => <Badge variant={STATUS_BADGE_VARIANT[row.original.status] ?? "outline"}>{tStatuses(row.original.status)}</Badge>,
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/accounting/budgets/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tStatuses],
+    [t, tStatuses, tCommon, router],
   );
 
   return (

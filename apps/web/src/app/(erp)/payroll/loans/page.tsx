@@ -4,8 +4,9 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
-import { UserSearch } from "lucide-react";
+import { Eye, UserSearch } from "lucide-react";
 import type { PyrlLoanResponseDto } from "@klickit/contracts";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { QueryBoundary } from "@/components/patterns/query-boundary";
@@ -39,6 +40,7 @@ import { useLoans } from "@/features/payroll/hooks/use-loans";
  */
 export default function LoansPage() {
   const t = useTranslations("payroll.loans.list");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [employeeId, setEmployeeId] = React.useState("");
 
@@ -51,8 +53,25 @@ export default function LoansPage() {
       { id: "rateKind", header: t("columns.rateKind"), cell: ({ row }) => <RateKindLabel rateKind={row.original.rateKind} /> },
       { id: "balance", header: t("columns.balance"), cell: ({ row }) => formatMoney(row.original.balance) },
       { id: "status", header: t("columns.status"), cell: ({ row }) => <LoanStatusBadge status={row.original.status} /> },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/payroll/loans/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t],
+    [t, tCommon, router],
   );
 
   return (

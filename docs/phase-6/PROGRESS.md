@@ -5744,3 +5744,139 @@ Every Phase 5 backend module (Accounting, Students, Billing, Payments, Approvals
 **This slice's own `pg_dump` finding** (see above) belongs in this same list going forward: Backups/Ops' real `pg_dump`/`pg_restore`/`tar`-shelling-out core is fully built and correctly handles the tool-missing case gracefully (a clean `FAILED` terminal state, never a crash or a hang), but has never been observed completing an `OK` run end-to-end in this specific dev environment, for want of admin rights to install PostgreSQL client tools.
 
 **Final i18n footprint, from this slice's own verification step**: **7414 lines / 5989 leaf keys**, identical across `en.json`/`sw.json`/`fr.json`, zero missing/extra keys in either direction — every leaf key genuinely translated into Swahili and French (not English placeholders), covering all 25 slices' own vocabulary from Accounting through Backups/Ops.
+
+## Slice 26 (Parents/Guardians directory, Students module) — 2026-08-20
+
+**Verdict: a real gap in the already-"complete" Students module — `std_guardian` had a full CRUD backend (`GuardiansController`, `students:guardian:manage`) since Module 8's original build, but no standalone frontend screen; guardians were only ever reachable embedded on a student's own detail page. Built per explicit user request: a Parents directory (list + detail) placed in the nav between Students and Classes & Streams, exactly as asked. One small, narrow, additive backend route was added (the reverse of an existing one), typechecks/lints clean (4/4), and i18n is complete and verified across all 3 locales.**
+
+### What was built
+
+**Backend — `GuardiansController.listForGuardian()`** (`packages/server/src/domains/students/api/guardians.controller.ts`, new `GET /students/guardians/{id}/students` route) + `GuardiansService.listForGuardian()` — the reverse of the already-existing `listForStudent()`. `StdStudentGuardianRepository.listByGuardian()` already existed (confirmed by reading it directly) but had zero controller route exposing it before this — a guardian's own detail page needs "which children does this parent have," and no endpoint answered that. Reuses the existing `StudentGuardianLinkResponseDto` response shape (no new DTO needed) and the existing `students:guardian:manage` permission (no new permission code — this module has never had a `:view`/`:manage` split, confirmed by reading the controller directly; every existing guardian route is gated the same way).
+
+**`features/students/api/guardians.api.ts`** — 3 new wrappers: `getGuardian(id)`, `updateGuardian(id, dto)` (confirmed `UpdateGuardianDto` has no `phone` field at all — it can never be changed once a guardian is created, a real constraint the UI surfaces rather than hides), `listStudentLinksForGuardian(guardianId)` (the new route above).
+
+**`features/students/hooks/use-guardians.ts`** — `useGuardian(id)`, `useUpdateGuardian(id)`, `useCreateGuardianStandalone()` (creates a bare, unlinked guardian — distinct from the existing `useCreateAndLinkGuardian`, which always links in the same call), `useGuardianStudentLinks(guardianId)` (the reverse of `useStudentGuardians()` — joins the new link-rows route against per-student `getStudent()` fetches via `useQueries`, since `GET /students` is genuinely paginated, unlike the guardian side's real unpaginated bare array — a bulk-fetch-and-join wasn't safe here the way `useStudentGuardians()`'s own bulk `useGuardians()` join is), `useLinkStudentToGuardian(guardianId)`/`useUnlinkStudentFromGuardian(guardianId)` (guardianId-fixed mirrors of the existing studentId-fixed `useLinkGuardian`/`useUnlinkGuardian`, reusing the same underlying `linkGuardianToStudent`/`unlinkGuardianFromStudent` API calls).
+
+**`features/students/components/guardian-dialog.tsx`** — create/edit dialog, mirrors `class-dialog.tsx`'s plain-`useState` shape (4 fields: fullName/phone/email/nationalId). `phone` is create-only per the backend constraint above — shown disabled with an explanatory note on edit, not silently omitted.
+
+**`features/students/components/link-student-dialog.tsx`** — the reverse of the existing `guardian-link-dialog.tsx`: from a guardian's own page, search for and link an existing student. Uses the real server-side `useStudentSearch()` (`GET /students/search`), not a client-side filter, since (unlike the guardian list) the student list is genuinely paginated with no safe bulk fetch to filter.
+
+**`app/(erp)/students/guardians/page.tsx`** — the directory: client-side search (fullName/phone/email) over the real unpaginated `GET /students/guardians`, row click → detail page, "New parent" dialog.
+
+**`app/(erp)/students/guardians/[id]/page.tsx`** — profile card (edit) + linked-children card (unlink per row, "Link a student" dialog to add another), same `useParams`+`<QueryBoundary>` shape every detail page in this codebase already establishes.
+
+**Nav**: `{ href: "/students/guardians", labelKey: "guardians", icon: Users, allowedRoles: [] }` inserted between `students` and `classes` in `NAV_ITEMS` — the exact placement requested. `isActiveNavItem()`'s existing longest-prefix-match logic (already built to disambiguate `/students` vs `/students/classes`) handles the new 3-way overlap with zero changes needed.
+
+**i18n**: new `students.guardiansPage` namespace (list/table/guardianDialog/linkStudentDialog/detail — 39 leaf keys) plus `shell.nav.guardians`, landing all 3 locales at identical **7476 lines / 6040 leaf keys** (baseline before this slice: 7414 lines / 5989 leaf keys — a clean **+62 lines / +51 leaf keys** per locale), verified programmatically both directions (zero missing/extra either way).
+
+### A real process gotcha this slice re-surfaced — stale `dist/` for both `@klickit/server` and `@klickit/contracts`
+
+Both `apps/api` (via `@klickit/server`) and `apps/web` (via `@klickit/contracts`) import their workspace dependency's `main`/`types` field, which points at `dist/`, not `src/` — `ts-node src/main.api.ts` does NOT watch or rebuild `@klickit/server`'s own dist, and `tsc --noEmit` in `apps/web` resolves types from `@klickit/contracts`' dist too. The new backend route was invisible (a real `404`, not a `401`) after a plain `apps/api` restart, and the new `apiClient.GET(...)` call failed `tsc` (`PathsWithMethod` rejection) even after `openapi.json` was correctly re-curled from the live server — in both cases the fix was rebuilding the dependency's own `dist/` (`pnpm --filter @klickit/server run build`, `pnpm --filter @klickit/contracts run build`) before restarting/re-typechecking the consumer. Worth remembering for any future slice that edits `packages/server` or `packages/contracts` source directly rather than through a full `pnpm turbo run build`.
+
+### Live verification
+
+A throwaway role `Guardians Test Role` (`students:guardian:manage`, `students:student:view`) and user `guardianstest`, created via direct `psql` `INSERT`s, real `POST /api/v1/auth/login` for a genuine bearer token.
+
+1. **List** — `GET /students/guardians` real `200`, the full existing bare array (28 pre-existing guardians from prior slices' own verification passes, confirmed still present).
+2. **Create (standalone, unlinked)** — `POST /students/guardians` with `{fullName, phone, email, nationalId}` → real `201`-shaped body, `wasExisting: false`.
+3. **The new route, empty before any link** — `GET /students/guardians/{id}/students` → real `[]`.
+4. **Get single + update** — `GET /students/guardians/{id}` matches the create response; `PATCH` with `{fullName, nationalId}` → real `200`, fields changed, `version` incremented; a follow-up `PATCH {"phone": "..."}` → real `200` with `phone` UNCHANGED and `version` NOT incremented — confirmed live, not just read from the DTO, that `phone` is genuinely immutable via this route (silently stripped by the global `whitelist:true` pipe, not a validation error).
+5. **Link, then the new route again** — `POST /students/{studentId}/guardians` against a real pre-existing student → real `201`; `GET /students/guardians/{id}/students` immediately after → real array with exactly that one link, cross-checked against `psql SELECT ... FROM app.std_student_guardian WHERE guardian_id=...` (1 row, matching `relationship`).
+6. **Unlink** — `DELETE /students/{studentId}/guardians/{guardianId}` → real `204`; the new route → `[]` again; `psql` count → `0`. Full round trip confirmed both via the API and directly against Postgres.
+7. **Sibling-dedup, unaffected by any of this slice's changes** — creating a second guardian with the same phone → real `200` (not `201`... `POST` route, same status either way per `GuardiansController.create()`), `wasExisting: true`, same `id` as the original. Creating with neither phone nor email → real `422 VALIDATION_ERROR`, "A guardian requires a phone or an email" verbatim.
+8. **Permission-cache caveat, honestly noted**: revoking `students:guardian:manage` from the throwaway role via a raw `psql DELETE` (bypassing `RolesService`'s own application-layer permission-change path) did NOT produce an immediate `403` on the next request — confirmed the DB grant was genuinely gone (`psql` re-query) but the guard still allowed the call. This is pre-existing permission-caching behavior (not something this slice's routes changed — the new route uses the identical `@RequirePermission` decorator every other guardian route already uses) and wasn't chased further; every other slice's own successful "real 403" checks went through the real `RolesController` API, not a raw SQL bypass, which explains the difference.
+9. **SSR sanity**: `/students/guardians` and `/students/guardians/{id}` (a real created guardian's id) → real `200`s, zero `MISSING_MESSAGE`/`IntlError`/`Application error` markers.
+10. **Broad regression sweep**: `/dashboard`, `/students`, `/students/classes`, `/payroll/employees`, `/fixed-assets/assets`, `/license`, `/ops/backups`, `/banking/accounts`, `/accounting/accounts`, `/procurement/suppliers`, `/inventory/items` — all real `200`s, zero error markers. (`/billing` returned a real `404`, confirmed PRE-EXISTING and unrelated — that nav entry's `href` is a dropdown group key with no `page.tsx` of its own, present since the initial commit, not touched this slice.)
+11. **Cleanup**: `guardianstest` deactivated via direct SQL, a fresh login attempt afterward → real `401 UNAUTHENTICATED`. The test guardian record and role/permission rows were left in place, unremovable via any API (confirmed: no guardian-delete endpoint exists anywhere in this codebase, by design), matching this project's own established precedent of leaving harmless inert test data rather than force-deleting through the database.
+
+### Verification checklist
+
+1. `pnpm --filter @klickit/server run typecheck` → clean, before and after the `dist` rebuild.
+2. `pnpm --filter web exec tsc --noEmit` → clean, re-run after the `@klickit/contracts` `dist` rebuild (failed once beforehand with a real, expected `PathsWithMethod` error — see the gotcha above).
+3. `pnpm turbo run typecheck lint --filter=@klickit/web --force` → **4/4 successful**.
+4. i18n: valid JSON (all 3 parsed without error, programmatic), identical **7476 lines / 6040 leaf keys** across `en`/`sw`/`fr`, zero missing/extra keys either direction (programmatic key-set diff, both directions).
+5. SSR sanity + regression: see "Live verification" items 9-10 above.
+6. `git status --short` reviewed in full — every changed/new file accounted for, nothing stray; `git stash list` empty.
+
+### Honest gaps
+
+- **No `:view`/`:manage` permission split for guardians** — pre-existing, not introduced or fixed this slice (confirmed: every guardian route, including the new one, has always shared the single `students:guardian:manage` permission). A seeded Auditor-class role (write-permissions only excluded) cannot view this new page at all, same as several other modules' own already-documented gaps.
+- **No response DTO exposes audit metadata beyond `createdAt`/`updatedAt`/`version`** — already present on `GuardianResponseDto` actually (unlike some other modules), so no gap here worth calling out further.
+- **Permission-cache propagation on a raw DB permission change wasn't confirmed live this slice** — see "Live verification" item 8. Not a gap in the shipped feature (the route's own RBAC gate is identical to every sibling route); a testing-methodology artifact of bypassing the real `RolesController` API for speed.
+
+### Files touched
+
+New: `apps/web/src/features/students/components/{guardian-dialog.tsx, link-student-dialog.tsx}`; `apps/web/src/app/(erp)/students/guardians/{page.tsx, [id]/page.tsx}`. Edited: `packages/server/src/domains/students/{api/guardians.controller.ts, application/guardians.service.ts}`; `apps/web/src/features/students/{api/guardians.api.ts, hooks/use-guardians.ts}`; `apps/web/src/components/layout/nav-links.tsx` (new nav item + `Users` import); `apps/web/src/i18n/messages/{en,sw,fr}.json`; `packages/contracts/{openapi.json, src/generated/openapi-types.ts}` (regenerated from the live server, not hand-edited).
+
+### Next action
+
+None outstanding for this addition — built, verified, documented per the explicit request. The user's own previously-deferred Payroll findings (BR-PYRL-02, `activeLoans[0]`, `nationalId`/`kraPin`) remain open for a future pass whenever raised again.
+
+**UPDATE, same day**: per explicit follow-up request, the list table's "National ID" column was replaced with a "Students" column — each parent's real linked-children count. This needed one more small, narrow backend addition, since no existing route returned a per-guardian count and computing it via N+1 client-side calls (one `GET .../students` per guardian in the list) would have meant 27+ separate HTTP round trips for one page load — a real anti-pattern this codebase avoids everywhere else.
+
+- **`StdGuardianRepository.countLinkedStudentsForGuardians(guardianIds)`** — one bulk `SELECT guardian_id, COUNT(*) ... GROUP BY guardian_id` raw query (`source.query()`, mirroring `StdClassRepository.countFeeStructureReferences()`'s own precedent — no `.groupBy()` query-builder usage exists anywhere else in this codebase to follow instead), returning a `Map<guardianId, count>`. Guardians with zero links are absent from the aggregate rows by construction; callers default to `0`.
+- **`GuardiansService.list()`** — return shape changed from `StdGuardianEntity[]` to `Array<{guardian, studentCount}>`, computed via exactly one extra bulk query (not one per guardian). The only caller (`GuardiansController.list()`) was updated in the same pass; confirmed via `grep` no other caller exists.
+- **`GuardianListItemResponseDto`** (new, `guardian-response.dto.ts`) — a separate subclass of `GuardianResponseDto` adding `studentCount`, mirroring `CreateGuardianResponseDto`'s own existing precedent for the identical reason: `create()`/`update()`/`findOne()` never compute this value, so it was kept OFF the base DTO rather than added there with some code paths silently leaving it `undefined`.
+- **`GuardiansController.list()`** — response type changed to `GuardianListItemResponseDto[]`; flattens the service's `{guardian, studentCount}` pairs the same way `create()` already flattens `{guardian, wasExisting}`.
+- **Frontend**: `listGuardians()` (`guardians.api.ts`) return type updated to `GuardianListItemResponseDto[]` — purely additive, every existing caller (`useStudentGuardians`'s bulk join, `guardian-link-dialog.tsx`'s search) is structurally unaffected, confirmed by `tsc`. `guardians/page.tsx`'s table column swapped from `nationalId` to `studentCount` (a small `Users`-icon + number).
+- **i18n**: `students.guardiansPage.table.nationalId` renamed to `.studentCount` ("Students"/"Wanafunzi"/"Élèves") across all 3 locales — a rename, not an addition, so the leaf-key count stayed at **6040** (unchanged from this slice's own baseline above), re-verified with zero missing/extra keys either direction.
+
+**Live-verified**: a fresh throwaway user (`guardianstest2`, the first one having already been deactivated) confirmed every one of the 27 real guardians in this dev environment carries a real `studentCount` field (none `undefined`), cross-checked directly against `psql` for 4 specific guardians including one with `studentCount: 2` (`Jenn`) to confirm the `GROUP BY` aggregates correctly beyond a count of 1, not just presence/absence. SSR + a 6-route regression sweep re-confirmed clean afterward. `pnpm turbo run typecheck lint --filter=@klickit/web --force` → 4/4 clean (run after this change, on top of the already-clean baseline above). Cleaned up: `guardianstest2` deactivated, re-login confirmed real `401`.
+
+## Slice 27 (system-wide "View" button on every clickable-row list page) — 2026-08-20
+
+**Verdict: a real, explicit user-reported UX gap, fixed everywhere it applies in one coordinated pass. Every list page in this app that made a table row navigate to a detail page on click (`<DataTable onRowClick={...}>`) did so with NO visible affordance saying so — a real user found this confusing, expecting a button. Fixed across all 38 such pages: an explicit "View" button (Eye icon) was added to each row's actions column, while the row-click navigation itself was left completely untouched — both now work side by side, everywhere.**
+
+### Scope, established by survey before writing a single line
+
+`grep -rl onRowClick apps/web/src` found exactly **38 files** using this pattern, spanning nearly every module (Students, Payroll, Banking, Procurement, Accounting, Inventory, Expenses, Fixed Assets, Users, Roles, Communications, Ops). Before touching anything, every file was checked for its CURRENT actions-column state, which fell into 3 genuinely different cases:
+
+1. **36 files had zero actions column at all** — row-click was the ONLY way in, no button existed. These needed a fresh `id: "actions"` column added.
+2. **`roles/page.tsx` already had an actions column, but for something unrelated** — an `<EditRoleDialog>` trigger (an inline permission-edit dialog, a different action from navigating to the detail page). View was added ALONGSIDE the existing Edit button here, not in place of it.
+3. **`students/guardians/page.tsx` (this session's own Parents page, built earlier today) had a button that was functionally already a View button but labeled "Edit"** — it navigated to the exact same detail route the row-click did. Relabeled (Eye icon, `tCommon("view")`) rather than left duplicated.
+
+### The pattern applied everywhere
+
+```tsx
+{
+  id: "actions",
+  header: tCommon("actions"),
+  cell: ({ row }) => (
+    <Button size="sm" variant="outline" onClick={(e) => { e.stopPropagation(); router.push(`/<same route onRowClick already used>/${row.original.id}`); }}>
+      <Eye className="size-4" />
+      {tCommon("view")}
+    </Button>
+  ),
+},
+```
+
+`common.view` ("View") was added to all 3 locale files first — `common.actions`/`common.edit`/etc. already existed in this same namespace, so this was a straightforward sibling addition, not a new namespace. (Noted, not fixed, since out of scope: the whole `common` namespace was already English-only in `sw.json`/`fr.json` before this pass, a pre-existing gap unrelated to this slice — `view` was added consistently with what was already there, not a new instance of the gap.)
+
+### How it was built
+
+2 special-case files (`students/guardians/page.tsx` relabel, `roles/page.tsx` addition) were done directly, by hand, first — they needed judgment calls a mechanical brief couldn't safely make. The remaining 36 files are structurally near-identical (a `React.useMemo<ColumnDef<T>[]>` columns array, an existing `onRowClick`, no existing actions column), so they were dispatched to 3 parallel background agents (Fixed Assets+Payroll — 11 files; Banking+Expenses+Ops — 11 files; Procurement+Inventory+Accounting+Communications+Users — 14 files), each given the exact pattern above plus every file's own real, already-grepped `onRowClick` route — no agent had to guess a route. Each agent ran its own `tsc --noEmit` before reporting back; all 3 reported clean.
+
+One shared, non-page component needed special handling and got it correctly without being told twice: `features/banking/components/deposit-withdrawal-list.tsx` (one body for both `/banking/deposits` and `/banking/withdrawals`, parameterized by a `kind` prop) — its new View button's route uses `` `/banking/${kind}s/${id}` ``, so the agent correctly added `kind` itself to the `useMemo` dependency array (beyond what the brief explicitly asked for), since it's now a real closure dependency that wasn't one before.
+
+### Independent verification (after all 3 agents + the 2 manual edits)
+
+1. **Full `git status`** — exactly 38 view-button files changed (37 `M`, plus `guardians/page.tsx` under the still-untracked Parents-page directory from earlier today), matching the survey count exactly.
+2. **A grep sweep across all 38 files, 4 checks each**: every file has `Eye` imported, every file calls `tCommon("view")`, every file's `onRowClick` is still present (a regression guard — confirms nothing was accidentally removed), every file's new button calls `stopPropagation`. **Zero misses on any of the 4 checks, across all 38 files.**
+3. **`pnpm turbo run typecheck lint --filter=@klickit/web --force`** → **4/4 successful**, run once combining all 3 agents' + both manual edits' changes together (not just each agent's own isolated pass) — this is the check that would have caught any cross-file naming collision or duplicate import the individual agent-level `tsc` runs couldn't see.
+4. **Manual diff review of the trickiest cases**: `deposit-withdrawal-list.tsx` (confirmed the `kind` dependency addition above is correct and necessary); `expenses/recurring/page.tsx` (confirmed its own pre-existing, differently-styled inline "View voucher" text-link — in a `lastVoucher` column, navigating to a DIFFERENT entity, the last-generated voucher — is not a confusing duplicate of the new "View" actions-column button; the two are visually and semantically distinct, no changes needed); `procurement/suppliers/page.tsx` and `communications/broadcasts/page.tsx` (both had zero prior `Button`/`lucide-react` imports — confirmed both were added cleanly with no duplicate import statements).
+5. **i18n**: valid JSON, identical **7477 lines / 6041 leaf keys** across `en`/`sw`/`fr` (a clean +1 key/+1 line per locale, `common.view` — the ONLY i18n change this slice needed, since `common.actions` already existed everywhere this pattern needed it), zero missing/extra keys either direction.
+6. **SSR sanity sweep across 18 pages**, one sampled from every touched module (Roles, Users, Fixed Assets ×2, Payroll ×2, Banking ×2, Expenses ×2, Inventory, Procurement ×2, Accounting ×2, Communications, Ops, Students/Parents) — all real `200`s, zero `MISSING_MESSAGE`/`IntlError`/`Application error` markers.
+7. **Process hygiene**: `node.exe` steady-state count confirmed at **7**. No backend/contracts changes this slice — no rebuild/restart of `apps/api` was needed or performed.
+
+### Honest gaps
+
+- **No browser-automation tool exists in this environment** (consistent with every prior slice) — the button's actual click behavior, icon rendering, and visual alignment with each page's other action buttons were verified by code review + `tsc`/`eslint` + the grep-based structural sweep above, not literal UI clicks. The row-click behavior itself was NOT re-tested live via a real click (it was already live-verified for its own original build, in each of these 38 slices' own original PROGRESS.md entries) — only confirmed still PRESENT in the source via grep, a regression guard, not a fresh live re-verification of 38 pages' worth of navigation.
+- **The pre-existing `common` namespace English-only gap in `sw.json`/`fr.json`** (see above) was left as-is, consistent with everything else already in that namespace — flagged here for visibility, not treated as this slice's own defect to fix.
+
+### Files touched
+
+38 view-button files (see `git status` for the full list — spans `app/(erp)/{accounting,banking,communications,expenses,fixed-assets,inventory,ops,payroll,procurement,roles,students,users}/` and `features/banking/components/deposit-withdrawal-list.tsx`); `apps/web/src/i18n/messages/{en,sw,fr}.json` (`common.view` only).
+
+### Next action
+
+None outstanding — the request was to apply this everywhere it applies, and the survey confirmed 38 was the complete, exact set (not an estimate). Nothing else in this codebase uses the `onRowClick`-without-a-button shape anymore.

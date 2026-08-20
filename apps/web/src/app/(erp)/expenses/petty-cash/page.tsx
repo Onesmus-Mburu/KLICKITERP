@@ -4,6 +4,8 @@ import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
+import { Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueryBoundary } from "@/components/patterns/query-boundary";
 import { DataTable } from "@/components/patterns/data-table";
@@ -26,6 +28,7 @@ import { useFloats, type FloatResponseDto } from "@/features/expenses/hooks/use-
  */
 export default function PettyCashFloatsPage() {
   const t = useTranslations("expenses.pettyCash.floats.list");
+  const tCommon = useTranslations("common");
   const router = useRouter();
 
   const floatsQuery = useFloats();
@@ -45,8 +48,25 @@ export default function PettyCashFloatsPage() {
       },
       { id: "ceiling", header: t("columns.ceiling"), cell: ({ row }) => formatMoney(row.original.ceiling) },
       { id: "balance", header: t("columns.balance"), cell: ({ row }) => formatMoney(row.original.balance) },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/expenses/petty-cash/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, custodianNameById],
+    [t, custodianNameById, tCommon, router],
   );
 
   return (

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { X } from "lucide-react";
+import { Eye, X } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { BankAccountResponseDto } from "@klickit/contracts";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
@@ -40,6 +40,7 @@ const ACTIVE_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
  */
 export default function BankAccountsPage() {
   const t = useTranslations("banking.accounts.list");
+  const tCommon = useTranslations("common");
   const tKinds = useTranslations("banking.kinds");
   const router = useRouter();
   const [kind, setKind] = React.useState<(typeof BANK_ACCOUNT_KINDS)[number] | "">("");
@@ -65,8 +66,25 @@ export default function BankAccountsPage() {
           </Badge>
         ),
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/banking/accounts/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tKinds],
+    [t, tKinds, tCommon, router],
   );
 
   const hasFilters = kind !== "" || isActive !== "";

@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { X } from "lucide-react";
+import { Eye, X } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -53,6 +53,7 @@ const STATUS_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
  */
 export default function ExpenseVouchersPage() {
   const t = useTranslations("expenses.vouchers.list");
+  const tCommon = useTranslations("common");
   const tPayeeTypes = useTranslations("expenses.vouchers.payeeTypes");
   const tMethods = useTranslations("expenses.vouchers.methods");
   const tStatuses = useTranslations("expenses.vouchers.statuses");
@@ -108,8 +109,25 @@ export default function ExpenseVouchersPage() {
         header: t("columns.status"),
         cell: ({ row }) => <Badge variant={STATUS_BADGE_VARIANT[row.original.status] ?? "outline"}>{tStatuses(row.original.status)}</Badge>,
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/expenses/vouchers/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tPayeeTypes, tMethods, tStatuses, resolvePayee, categoryNameById],
+    [t, tPayeeTypes, tMethods, tStatuses, resolvePayee, categoryNameById, tCommon, router],
   );
 
   return (

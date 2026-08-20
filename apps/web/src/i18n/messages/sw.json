@@ -16,6 +16,7 @@
     "previous": "Previous",
     "next": "Next",
     "edit": "Edit",
+    "view": "View",
     "delete": "Delete",
     "active": "Active",
     "inactive": "Inactive",
@@ -157,7 +158,8 @@
       "fixedAssetsDisposals": "Utupaji",
       "fixedAssetsVerifications": "Uthibitisho",
       "license": "Leseni",
-      "opsBackups": "Hifadhi Rudufu na Uendeshaji"
+      "opsBackups": "Hifadhi Rudufu na Uendeshaji",
+      "guardians": "Wazazi"
     },
     "topbar": {
       "searchPlaceholder": "Search…",
@@ -495,6 +497,68 @@
       "guardianContactRequired": "{relationship}: provide a phone number or an email address",
       "guardianImportFailed": "Student enrolled, but the {relationship} guardian couldn't be created/linked — add them from the student's detail page.",
       "scopeNote": "Each row is submitted one at a time (student first, then up to 4 guardians), not as a single atomic operation — for very large files this is slower, and a partial failure leaves earlier rows (and any guardians already linked for the current row) in place rather than rolling back."
+    },
+    "guardiansPage": {
+      "title": "Wazazi na Walezi",
+      "subtitle": "Vinjari, ongeza, na simamia rekodi za wazazi/walezi kwa wanafunzi wote.",
+      "newParent": "Mzazi mpya",
+      "listTitle": "Wazazi",
+      "searchPlaceholder": "Tafuta kwa jina, simu, au barua pepe…",
+      "table": {
+        "fullName": "Jina kamili",
+        "contact": "Mawasiliano",
+        "studentCount": "Wanafunzi"
+      },
+      "guardianDialog": {
+        "titleCreate": "Mzazi mpya",
+        "titleEdit": "Hariri mzazi",
+        "description": "Rekodi ya mzazi/mlezi — muunganishe na mwanafunzi kutoka hapa au kutoka sehemu ya Walezi ya mwanafunzi.",
+        "fullName": "Jina kamili",
+        "fullNameRequired": "Jina kamili linahitajika.",
+        "phone": "Simu",
+        "phoneImmutable": "Nambari ya simu haiwezi kubadilishwa baada ya mzazi kuundwa.",
+        "email": "Barua pepe",
+        "nationalId": "Kitambulisho cha Taifa",
+        "contactRequired": "Toa angalau nambari ya simu au anwani ya barua pepe.",
+        "submit": "Hifadhi",
+        "submitting": "Inahifadhi…",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "linkStudentDialog": {
+        "title": "Unganisha mwanafunzi",
+        "description": "Tafuta mwanafunzi aliyepo na umuunganishe na mzazi huyu.",
+        "searchPlaceholder": "Tafuta kwa jina au namba ya udahili…",
+        "typeToSearch": "Andika ili kutafuta mwanafunzi.",
+        "noResults": "Hakuna wanafunzi wanaolingana na utafutaji wako.",
+        "selectStudentFirst": "Chagua mwanafunzi wa kuunganisha kwanza.",
+        "relationship": "Uhusiano",
+        "selectRelationship": "Chagua uhusiano",
+        "relationshipOptions": {
+          "FATHER": "Baba",
+          "MOTHER": "Mama",
+          "GUARDIAN": "Mlezi",
+          "SPONSOR": "Mfadhili"
+        },
+        "relationshipRequired": "Uhusiano unahitajika.",
+        "isPrimary": "Mlezi mkuu",
+        "receivesBilling": "Anapokea ankara",
+        "submit": "Unganisha mwanafunzi",
+        "submitting": "Inaunganisha…",
+        "genericError": "Hitilafu imetokea. Tafadhali jaribu tena."
+      },
+      "detail": {
+        "backToList": "Rudi kwa wazazi",
+        "editButton": "Hariri",
+        "phoneLabel": "Simu",
+        "emailLabel": "Barua pepe",
+        "nationalIdLabel": "Kitambulisho cha Taifa",
+        "linkedStudentsTitle": "Watoto",
+        "linkStudent": "Unganisha mwanafunzi",
+        "primary": "Mkuu",
+        "receivesBilling": "Anapokea ankara",
+        "unlink": "Ondoa muunganiko",
+        "unlinkError": "Imeshindwa kuondoa muunganiko wa mwanafunzi huyu. Tafadhali jaribu tena."
+      }
     }
   },
   "billing": {

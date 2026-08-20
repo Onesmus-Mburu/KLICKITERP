@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { PyrlRunResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,6 +37,7 @@ export default function PayrollRunsPage() {
   const t = useTranslations("payroll.runs.list");
   const tStatuses = useTranslations("payroll.runs.statuses");
   const tKinds = useTranslations("payroll.runs.kinds");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [periodKey, setPeriodKey] = React.useState("");
   const [status, setStatus] = React.useState<PyrlRunStatus | "">("");
@@ -59,8 +62,25 @@ export default function PayrollRunsPage() {
           return totals ? formatMoney(totals.totalNetPay) : t("notComputedYet");
         },
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/payroll/runs/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tKinds],
+    [t, tKinds, tCommon, router],
   );
 
   return (

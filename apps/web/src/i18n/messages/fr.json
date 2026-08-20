@@ -16,6 +16,7 @@
     "previous": "Previous",
     "next": "Next",
     "edit": "Edit",
+    "view": "View",
     "delete": "Delete",
     "active": "Active",
     "inactive": "Inactive",
@@ -157,7 +158,8 @@
       "fixedAssetsDisposals": "Cessions",
       "fixedAssetsVerifications": "Vérifications",
       "license": "Licence",
-      "opsBackups": "Sauvegardes et Exploitation"
+      "opsBackups": "Sauvegardes et Exploitation",
+      "guardians": "Parents"
     },
     "topbar": {
       "searchPlaceholder": "Search…",
@@ -495,6 +497,68 @@
       "guardianContactRequired": "{relationship}: provide a phone number or an email address",
       "guardianImportFailed": "Student enrolled, but the {relationship} guardian couldn't be created/linked — add them from the student's detail page.",
       "scopeNote": "Each row is submitted one at a time (student first, then up to 4 guardians), not as a single atomic operation — for very large files this is slower, and a partial failure leaves earlier rows (and any guardians already linked for the current row) in place rather than rolling back."
+    },
+    "guardiansPage": {
+      "title": "Parents et tuteurs",
+      "subtitle": "Parcourez, ajoutez et gérez les dossiers des parents/tuteurs pour tous les élèves.",
+      "newParent": "Nouveau parent",
+      "listTitle": "Parents",
+      "searchPlaceholder": "Rechercher par nom, téléphone ou e-mail…",
+      "table": {
+        "fullName": "Nom complet",
+        "contact": "Contact",
+        "studentCount": "Élèves"
+      },
+      "guardianDialog": {
+        "titleCreate": "Nouveau parent",
+        "titleEdit": "Modifier le parent",
+        "description": "Un dossier parent/tuteur — associez-le à un élève ici ou depuis la section Tuteurs de l'élève.",
+        "fullName": "Nom complet",
+        "fullNameRequired": "Le nom complet est requis.",
+        "phone": "Téléphone",
+        "phoneImmutable": "Le téléphone ne peut pas être modifié après la création d'un parent.",
+        "email": "E-mail",
+        "nationalId": "Numéro d'identité nationale",
+        "contactRequired": "Indiquez au moins un numéro de téléphone ou une adresse e-mail.",
+        "submit": "Enregistrer",
+        "submitting": "Enregistrement…",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "linkStudentDialog": {
+        "title": "Associer un élève",
+        "description": "Recherchez un élève existant et associez-le à ce parent.",
+        "searchPlaceholder": "Rechercher par nom ou numéro d'admission…",
+        "typeToSearch": "Tapez pour rechercher un élève.",
+        "noResults": "Aucun élève ne correspond à votre recherche.",
+        "selectStudentFirst": "Sélectionnez d'abord un élève à associer.",
+        "relationship": "Relation",
+        "selectRelationship": "Sélectionner la relation",
+        "relationshipOptions": {
+          "FATHER": "Père",
+          "MOTHER": "Mère",
+          "GUARDIAN": "Tuteur",
+          "SPONSOR": "Parrain"
+        },
+        "relationshipRequired": "La relation est requise.",
+        "isPrimary": "Tuteur principal",
+        "receivesBilling": "Reçoit la facturation",
+        "submit": "Associer l'élève",
+        "submitting": "Association…",
+        "genericError": "Une erreur s'est produite. Veuillez réessayer."
+      },
+      "detail": {
+        "backToList": "Retour aux parents",
+        "editButton": "Modifier",
+        "phoneLabel": "Téléphone",
+        "emailLabel": "E-mail",
+        "nationalIdLabel": "Numéro d'identité nationale",
+        "linkedStudentsTitle": "Enfants",
+        "linkStudent": "Associer un élève",
+        "primary": "Principal",
+        "receivesBilling": "Reçoit la facturation",
+        "unlink": "Dissocier",
+        "unlinkError": "Impossible de dissocier cet élève. Veuillez réessayer."
+      }
     }
   },
   "billing": {

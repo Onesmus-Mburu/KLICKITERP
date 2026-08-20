@@ -37,6 +37,19 @@ export class CreateGuardianResponseDto extends GuardianResponseDto {
   wasExisting!: boolean;
 }
 
+/**
+ * The Parents directory's own list shape — additive on top of
+ * `GuardianResponseDto`, same pattern `CreateGuardianResponseDto` (above)
+ * already establishes for `wasExisting`: a SEPARATE subclass rather than
+ * adding `studentCount` to the base DTO, since `create()`/`findOne()`/
+ * `update()` never compute this value — only `GuardiansController.list()`
+ * does (see `GuardiansService.list()`'s own doc comment).
+ */
+export class GuardianListItemResponseDto extends GuardianResponseDto {
+  @ApiProperty({ description: "Count of students currently linked to this guardian (std_student_guardian rows)." })
+  studentCount!: number;
+}
+
 export class StudentGuardianLinkResponseDto {
   @ApiProperty({ format: "uuid" })
   id!: string;

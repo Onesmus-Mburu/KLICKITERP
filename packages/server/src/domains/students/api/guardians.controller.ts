@@ -3,7 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { RequirePermission } from "../../../shared/rbac/require-permission.decorator";
 import { GuardiansService } from "../application/guardians.service";
 import { CreateGuardianDto } from "./dto/create-guardian.dto";
-import { CreateGuardianResponseDto, GuardianResponseDto, StudentGuardianLinkResponseDto } from "./dto/guardian-response.dto";
+import { CreateGuardianResponseDto, GuardianListItemResponseDto, GuardianResponseDto, StudentGuardianLinkResponseDto } from "./dto/guardian-response.dto";
 import { LinkGuardianDto } from "./dto/link-guardian.dto";
 import { UpdateGuardianDto } from "./dto/update-guardian.dto";
 import { AuthenticatedRequest } from "./request-context";
@@ -37,10 +37,11 @@ export class GuardiansController {
 
   @Get("guardians")
   @RequirePermission("students:guardian:manage")
-  @ApiOperation({ summary: "List guardians" })
-  @ApiResponse({ status: 200, type: [GuardianResponseDto] })
-  async list(): Promise<GuardianResponseDto[]> {
-    return this.guardiansService.list();
+  @ApiOperation({ summary: "List guardians, each with its own linked-student count (the Parents directory's own list)" })
+  @ApiResponse({ status: 200, type: [GuardianListItemResponseDto] })
+  async list(): Promise<GuardianListItemResponseDto[]> {
+    const rows = await this.guardiansService.list();
+    return rows.map(({ guardian, studentCount }) => ({ ...guardian, studentCount }));
   }
 
   @Get("guardians/:id")
@@ -61,6 +62,14 @@ export class GuardiansController {
     @Req() req: AuthenticatedRequest,
   ): Promise<GuardianResponseDto> {
     return this.guardiansService.update(id, dto, req.user?.sub ?? null);
+  }
+
+  @Get("guardians/:id/students")
+  @RequirePermission("students:guardian:manage")
+  @ApiOperation({ summary: "List the student links for a guardian (the reverse of listForStudent)" })
+  @ApiResponse({ status: 200, type: [StudentGuardianLinkResponseDto] })
+  async listForGuardian(@Param("id") id: string): Promise<StudentGuardianLinkResponseDto[]> {
+    return this.guardiansService.listForGuardian(id);
   }
 
   @Get(":studentId/guardians")

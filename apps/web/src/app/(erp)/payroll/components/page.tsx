@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Info, X } from "lucide-react";
+import { Eye, Info, X } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { PyrlComponentResponseDto } from "@klickit/contracts";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -40,6 +40,7 @@ const COMPONENT_KINDS = ["EARNING", "DEDUCTION"] as const;
 export default function PayrollComponentsPage() {
   const t = useTranslations("payroll.components.list");
   const tKinds = useTranslations("payroll.components.kinds");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [kind, setKind] = React.useState<(typeof COMPONENT_KINDS)[number] | "">("");
   const [isStatutory, setIsStatutory] = React.useState<"true" | "false" | "">("");
@@ -66,8 +67,25 @@ export default function PayrollComponentsPage() {
           <Badge variant={row.original.isStatutory ? "soft-warning" : "soft-secondary"}>{row.original.isStatutory ? t("yes") : t("no")}</Badge>
         ),
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/payroll/components/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tKinds],
+    [t, tKinds, tCommon, router],
   );
 
   const hasFilters = kind !== "" || isStatutory !== "";

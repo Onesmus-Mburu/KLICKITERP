@@ -2154,7 +2154,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List guardians */
+        /** List guardians, each with its own linked-student count (the Parents directory's own list) */
         get: operations["GuardiansController_list"];
         put?: never;
         /** Create a std_guardian — reuses an existing guardian (matched by phone, then email) instead of creating a duplicate or erroring, for the sibling-guardian case (Phase 6 Slice 2c) */
@@ -2181,6 +2181,23 @@ export interface paths {
         head?: never;
         /** Update a guardian */
         patch: operations["GuardiansController_update"];
+        trace?: never;
+    };
+    "/api/v1/students/guardians/{id}/students": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List the student links for a guardian (the reverse of listForStudent) */
+        get: operations["GuardiansController_listForGuardian"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/api/v1/students/{studentId}/guardians": {
@@ -8907,7 +8924,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Service healthchecks (DB/Redis/MinIO), disk %, DB size, last-backup badge, app version + license state (stub), log-level, queue depths (N/A — no queue infra exists yet) */
+        /** Service healthchecks (DB/Redis/MinIO), disk %, DB size, last-backup badge, app version + real license state (via license.v_state), log-level, queue depths (N/A — no queue infra exists yet) */
         get: operations["OpsController_health"];
         put?: never;
         post?: never;
@@ -10294,6 +10311,18 @@ export interface components {
             userId?: Record<string, never> | null;
             /** @description True when an existing guardian (matched by phone, checked first, then email) was found and reused instead of creating a new record. */
             wasExisting: boolean;
+        };
+        GuardianListItemResponseDto: {
+            /** Format: uuid */
+            id: string;
+            fullName: string;
+            phone?: Record<string, never> | null;
+            email?: Record<string, never> | null;
+            nationalId?: Record<string, never> | null;
+            /** Format: uuid */
+            userId?: Record<string, never> | null;
+            /** @description Count of students currently linked to this guardian (std_student_guardian rows). */
+            studentCount: number;
         };
         GuardianResponseDto: {
             /** Format: uuid */
@@ -13957,7 +13986,7 @@ export interface components {
             /** @description Last successful (status=OK) bkp_backup_run */
             lastBackup: Record<string, never>;
             appVersion: string;
-            /** @description STUB — Module 21 (Licensing) does not exist yet */
+            /** @description Real license state read via raw SQL against license.v_state (Phase 6 Slice 25) — 'NOT_PROVISIONED' when no license row exists yet */
             licenseState: string;
             /** @description N/A — no queue infrastructure wired up in this codebase yet */
             queueDepths: Record<string, never>;
@@ -17726,7 +17755,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["GuardianResponseDto"][];
+                    "application/json": components["schemas"]["GuardianListItemResponseDto"][];
                 };
             };
         };
@@ -17796,6 +17825,27 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["GuardianResponseDto"];
+                };
+            };
+        };
+    };
+    GuardiansController_listForGuardian: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StudentGuardianLinkResponseDto"][];
                 };
             };
         };

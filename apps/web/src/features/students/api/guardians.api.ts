@@ -1,4 +1,4 @@
-import type { CreateGuardianResponseDto, GuardianResponseDto, CreateGuardianDto, LinkGuardianDto, StudentGuardianLinkResponseDto } from "@klickit/contracts";
+import type { CreateGuardianResponseDto, GuardianListItemResponseDto, GuardianResponseDto, CreateGuardianDto, LinkGuardianDto, StudentGuardianLinkResponseDto, UpdateGuardianDto } from "@klickit/contracts";
 import { apiClient } from "@/lib/api-client";
 import { unwrapApiResult } from "@/lib/api-error";
 
@@ -15,9 +15,16 @@ import { unwrapApiResult } from "@/lib/api-error";
  * unpaginated bare arrays (no pagination anywhere in Module 8, confirmed
  * against every controller in this domain) — this file exposes exactly what
  * the controllers expose, no invented pagination.
+ *
+ * Standalone Parents page — `GuardianListItemResponseDto` (a superset of
+ * `GuardianResponseDto`, additive `studentCount` field only
+ * `GuardiansController.list()` populates — see that controller's own doc
+ * comment) is used directly as this call's return type, matching every
+ * existing caller of `listGuardians()` unaffected (they only ever read the
+ * base `GuardianResponseDto` fields, ignoring the new one structurally).
  */
-export async function listGuardians(): Promise<GuardianResponseDto[]> {
-  return unwrapApiResult<GuardianResponseDto[]>(await apiClient.GET("/api/v1/students/guardians"));
+export async function listGuardians(): Promise<GuardianListItemResponseDto[]> {
+  return unwrapApiResult<GuardianListItemResponseDto[]>(await apiClient.GET("/api/v1/students/guardians"));
 }
 
 /**
@@ -34,6 +41,25 @@ export async function createGuardian(dto: CreateGuardianDto): Promise<CreateGuar
 export async function listGuardianLinksForStudent(studentId: string): Promise<StudentGuardianLinkResponseDto[]> {
   return unwrapApiResult<StudentGuardianLinkResponseDto[]>(
     await apiClient.GET("/api/v1/students/{studentId}/guardians", { params: { path: { studentId } } }),
+  );
+}
+
+/** Standalone Parents page — single guardian fetch, for the detail route. */
+export async function getGuardian(id: string): Promise<GuardianResponseDto> {
+  return unwrapApiResult<GuardianResponseDto>(await apiClient.GET("/api/v1/students/guardians/{id}", { params: { path: { id } } }));
+}
+
+/** `phone` is deliberately absent from `UpdateGuardianDto` — confirmed by reading it directly, not assumed — so it can never be changed via this call once a guardian is created; `fullName`/`email`/`nationalId`/`userId` are the only patchable fields. */
+export async function updateGuardian(id: string, dto: UpdateGuardianDto): Promise<GuardianResponseDto> {
+  return unwrapApiResult<GuardianResponseDto>(
+    await apiClient.PATCH("/api/v1/students/guardians/{id}", { params: { path: { id } }, body: dto }),
+  );
+}
+
+/** The reverse of `listGuardianLinksForStudent()` — which students this guardian is linked to. New route added alongside this Parents page (`GuardiansController.listForGuardian()`, `GET /students/guardians/{id}/students`) — `listByGuardian()` already existed on the repository but had no controller route exposing it before. */
+export async function listStudentLinksForGuardian(guardianId: string): Promise<StudentGuardianLinkResponseDto[]> {
+  return unwrapApiResult<StudentGuardianLinkResponseDto[]>(
+    await apiClient.GET("/api/v1/students/guardians/{id}/students", { params: { path: { id: guardianId } } }),
   );
 }
 

@@ -5,7 +5,9 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { SupplierResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -48,6 +50,7 @@ const SUPPLIER_STATUS_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
 export default function SuppliersPage() {
   const t = useTranslations("procurement.suppliers.list");
   const tStatuses = useTranslations("procurement.suppliers.statuses");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [statusFilter, setStatusFilter] = React.useState<SupplierStatus | typeof ALL_STATUSES_VALUE>(ALL_STATUSES_VALUE);
   const [searchQuery, setSearchQuery] = React.useState("");
@@ -88,8 +91,25 @@ export default function SuppliersPage() {
           <Badge variant={SUPPLIER_STATUS_BADGE_VARIANT[row.original.status] ?? "outline"}>{tStatuses(row.original.status)}</Badge>
         ),
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/procurement/suppliers/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tStatuses],
+    [t, tStatuses, tCommon, router],
   );
 
   return (

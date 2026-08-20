@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { BroadcastResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { QueryBoundary } from "@/components/patterns/query-boundary";
 import { DataTable } from "@/components/patterns/data-table";
@@ -32,6 +34,7 @@ import { ChannelBadge } from "@/features/comms/components/channel-badge";
  */
 export default function BroadcastsPage() {
   const t = useTranslations("communications.broadcasts.list");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const broadcastsQuery = useBroadcasts();
 
@@ -46,8 +49,25 @@ export default function BroadcastsPage() {
         header: t("columns.createdAt"),
         cell: ({ row }) => new Date(row.original.createdAt).toLocaleString(),
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/communications/broadcasts/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t],
+    [t, tCommon, router],
   );
 
   return (

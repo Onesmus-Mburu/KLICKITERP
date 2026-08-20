@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { FaVerificationResponseDto } from "@klickit/contracts";
+import { Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -43,6 +45,7 @@ function describeScope(scope: Record<string, unknown>, t: Translate): string {
  */
 export default function VerificationsPage() {
   const t = useTranslations("fixedAssets.verifications.list");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [status, setStatus] = React.useState<FaVerificationStatus | "">("");
 
@@ -54,8 +57,25 @@ export default function VerificationsPage() {
       { id: "scope", header: t("columns.scope"), cell: ({ row }) => describeScope(row.original.scope, t) },
       { id: "snapshotAt", header: t("columns.snapshotAt"), cell: ({ row }) => new Date(row.original.snapshotAt).toLocaleString() },
       { id: "status", header: t("columns.status"), cell: ({ row }) => <VerificationStatusBadge status={row.original.status} /> },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/fixed-assets/verifications/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t],
+    [t, tCommon, router],
   );
 
   return (

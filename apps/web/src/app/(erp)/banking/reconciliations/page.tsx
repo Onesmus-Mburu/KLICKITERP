@@ -3,7 +3,7 @@
 import * as React from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { X } from "lucide-react";
+import { Eye, X } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -50,6 +50,7 @@ const STATUS_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
  */
 export default function ReconciliationsPage() {
   const t = useTranslations("banking.reconciliations.list");
+  const tCommon = useTranslations("common");
   const tStatuses = useTranslations("banking.reconciliations.statuses");
   const router = useRouter();
   const [status, setStatus] = React.useState<BankReconciliationStatus | "">("");
@@ -71,8 +72,25 @@ export default function ReconciliationsPage() {
         header: t("columns.status"),
         cell: ({ row }) => <Badge variant={STATUS_BADGE_VARIANT[row.original.status] ?? "outline"}>{tStatuses(row.original.status)}</Badge>,
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/banking/reconciliations/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tStatuses, accountNameById],
+    [t, tStatuses, accountNameById, tCommon, router],
   );
 
   const hasActiveFilters = !!(status || accountId);

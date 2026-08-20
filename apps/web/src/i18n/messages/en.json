@@ -16,6 +16,7 @@
     "previous": "Previous",
     "next": "Next",
     "edit": "Edit",
+    "view": "View",
     "delete": "Delete",
     "active": "Active",
     "inactive": "Inactive",
@@ -157,7 +158,8 @@
       "fixedAssetsDisposals": "Disposals",
       "fixedAssetsVerifications": "Verifications",
       "license": "License",
-      "opsBackups": "Backups & Ops"
+      "opsBackups": "Backups & Ops",
+      "guardians": "Parents"
     },
     "topbar": {
       "searchPlaceholder": "Search…",
@@ -495,6 +497,68 @@
       "guardianContactRequired": "{relationship}: provide a phone number or an email address",
       "guardianImportFailed": "Student enrolled, but the {relationship} guardian couldn't be created/linked — add them from the student's detail page.",
       "scopeNote": "Each row is submitted one at a time (student first, then up to 4 guardians), not as a single atomic operation — for very large files this is slower, and a partial failure leaves earlier rows (and any guardians already linked for the current row) in place rather than rolling back."
+    },
+    "guardiansPage": {
+      "title": "Parents & Guardians",
+      "subtitle": "Browse, add, and manage parent/guardian records across all students.",
+      "newParent": "New parent",
+      "listTitle": "Parents",
+      "searchPlaceholder": "Search by name, phone, or email…",
+      "table": {
+        "fullName": "Full name",
+        "contact": "Contact",
+        "studentCount": "Students"
+      },
+      "guardianDialog": {
+        "titleCreate": "New parent",
+        "titleEdit": "Edit parent",
+        "description": "A parent/guardian record — link them to a student from here or from the student's own Guardians section.",
+        "fullName": "Full name",
+        "fullNameRequired": "Full name is required.",
+        "phone": "Phone",
+        "phoneImmutable": "Phone can't be changed after a parent is created.",
+        "email": "Email",
+        "nationalId": "National ID",
+        "contactRequired": "Provide at least a phone number or an email address.",
+        "submit": "Save",
+        "submitting": "Saving…",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "linkStudentDialog": {
+        "title": "Link a student",
+        "description": "Search for an existing student and link them to this parent.",
+        "searchPlaceholder": "Search by name or admission no…",
+        "typeToSearch": "Type to search for a student.",
+        "noResults": "No students match your search.",
+        "selectStudentFirst": "Select a student to link first.",
+        "relationship": "Relationship",
+        "selectRelationship": "Select relationship",
+        "relationshipOptions": {
+          "FATHER": "Father",
+          "MOTHER": "Mother",
+          "GUARDIAN": "Guardian",
+          "SPONSOR": "Sponsor"
+        },
+        "relationshipRequired": "Relationship is required.",
+        "isPrimary": "Primary guardian",
+        "receivesBilling": "Receives billing",
+        "submit": "Link student",
+        "submitting": "Linking…",
+        "genericError": "Something went wrong. Please try again."
+      },
+      "detail": {
+        "backToList": "Back to parents",
+        "editButton": "Edit",
+        "phoneLabel": "Phone",
+        "emailLabel": "Email",
+        "nationalIdLabel": "National ID",
+        "linkedStudentsTitle": "Children",
+        "linkStudent": "Link a student",
+        "primary": "Primary",
+        "receivesBilling": "Receives billing",
+        "unlink": "Unlink",
+        "unlinkError": "Couldn't unlink this student. Please try again."
+      }
     }
   },
   "billing": {

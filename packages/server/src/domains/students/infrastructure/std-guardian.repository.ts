@@ -42,6 +42,27 @@ export class StdGuardianRepository {
     return (manager?.getRepository(StdGuardianEntity) ?? this.repo).find({ order: { fullName: "ASC" } });
   }
 
+  /**
+   * The Parents directory's own "Students" column — one bulk, GROUP-BY query
+   * for every guardian on the page in a single round trip, not N+1 (mirrors
+   * `StdClassRepository.countFeeStructureReferences()`'s own raw-SQL-via-
+   * `source.query()` precedent for the identical reason: no `.groupBy()`
+   * query-builder usage exists anywhere else in this codebase to follow
+   * instead). Guardians with zero links are simply absent from the result
+   * rows (an aggregate `GROUP BY` never emits a zero-count row) — callers
+   * must default to `0` for any id missing from the returned map, same as
+   * `countFeeStructureReferences()`'s own `rows[0]?.count ?? 0` fallback.
+   */
+  async countLinkedStudentsForGuardians(guardianIds: string[], manager?: EntityManager): Promise<Map<string, number>> {
+    if (guardianIds.length === 0) return new Map();
+    const source = manager ?? this.repo.manager;
+    const rows: Array<{ guardian_id: string; count: string }> = await source.query(
+      `SELECT guardian_id, COUNT(*)::int AS count FROM app.std_student_guardian WHERE guardian_id = ANY($1::uuid[]) GROUP BY guardian_id`,
+      [guardianIds],
+    );
+    return new Map(rows.map((r) => [r.guardian_id, Number(r.count)]));
+  }
+
   async create(data: Partial<StdGuardianEntity>, manager?: EntityManager): Promise<StdGuardianEntity> {
     const repo = manager?.getRepository(StdGuardianEntity) ?? this.repo;
     return repo.save(repo.create(data));

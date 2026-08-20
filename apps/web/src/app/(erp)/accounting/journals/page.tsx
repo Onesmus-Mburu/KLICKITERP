@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { Plus } from "lucide-react";
+import { Eye, Plus } from "lucide-react";
 import type { ColumnDef } from "@tanstack/react-table";
 import type { JournalResponseDto } from "@klickit/contracts";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
@@ -42,6 +42,7 @@ const JOURNAL_TYPE_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
 export default function JournalsPage() {
   const t = useTranslations("accounting.journals.list");
   const tTypes = useTranslations("accounting.journalTypes");
+  const tCommon = useTranslations("common");
   const router = useRouter();
   const [filters, setFilters] = React.useState<JournalFiltersState>(EMPTY_JOURNAL_FILTERS);
   const journalsQuery = useJournals(journalFiltersToParams(filters));
@@ -59,8 +60,25 @@ export default function JournalsPage() {
           <Badge variant={JOURNAL_TYPE_BADGE_VARIANT[row.original.journalType] ?? "outline"}>{tTypes(row.original.journalType)}</Badge>
         ),
       },
+      {
+        id: "actions",
+        header: tCommon("actions"),
+        cell: ({ row }) => (
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/accounting/journals/${row.original.id}`);
+            }}
+          >
+            <Eye className="size-4" />
+            {tCommon("view")}
+          </Button>
+        ),
+      },
     ],
-    [t, tTypes],
+    [t, tTypes, tCommon, router],
   );
 
   return (
