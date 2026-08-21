@@ -49,12 +49,13 @@ const ACTIVE_BADGE_VARIANT: Record<string, BadgeProps["variant"]> = {
  * would have nothing real to back it. This is a deliberate omission, not an
  * oversight — no new Payroll nav child was added this part either.
  *
- * **`nationalId`/`kraPin` are shown as real, unmasked plaintext directly on
- * this card** — NOT redacted, confirmed live: `EmployeesService.redact()`
- * never touches either field (`employees.api.ts`'s own doc comment has the
- * full finding), unlike `payDetails`/`bankName`/`branch`/`account`, which
- * genuinely are `"***"`-masked here and only ever real via the separate
- * `<EmployeeBankDetailsPanel>` reveal action below.
+ * **UPDATE (migration `0240`) — `nationalId`/`kraPin` are now genuinely
+ * encrypted/redacted too**, the same way `payDetails`/`bankName`/`branch`/
+ * `account` already were (`employees.api.ts`'s own doc comment has the full
+ * fix). This card no longer shows them at all (they'd just be a redundant
+ * `"***"` — real values are already one section down, via
+ * `<EmployeeBankDetailsPanel>`'s reveal action, which has shown
+ * `nationalId`/`kraPin` since it was first built).
  */
 export default function PayrollEmployeeDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -118,14 +119,6 @@ function EmployeeDetailCard({ employee }: { employee: PyrlEmployeeResponseDto })
             <div>
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("exitDateLabel")}</p>
               <p className="text-sm text-foreground">{employee.exitDate ?? "—"}</p>
-            </div>
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("nationalIdLabel")}</p>
-              <p className="text-sm text-foreground">{employee.nationalId}</p>
-            </div>
-            <div>
-              <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("kraPinLabel")}</p>
-              <p className="text-sm text-foreground">{employee.kraPin}</p>
             </div>
             <div>
               <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("nssfNoLabel")}</p>

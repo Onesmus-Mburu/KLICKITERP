@@ -27,17 +27,14 @@ function renderOpaqueValue(value: unknown, emptyLabel: string): string {
  * placeholder.
  *
  * **Also shows `nationalId`/`kraPin` here, for a single consolidated
- * "sensitive details" view — but NOT because either is otherwise hidden**:
- * a real, live-confirmed finding contradicts this part's own task brief,
- * which claimed both are "ENCRYPTED at rest": `EmployeesService.redact()`
- * never touches `nationalId`/`kraPin` at all (`pyrl-employee.entity.ts`'s
- * own plain `varchar` columns, not the `jsonb` "(enc)" shape the 4 bank/pay
- * fields use), so BOTH are already visible as real plaintext directly on
- * `app/(erp)/payroll/employees/[id]/page.tsx`'s own main detail card, to
- * anyone with the broader `payroll:employee:view`. This panel's own
- * `sensitiveWarning` copy is written to reflect that real asymmetry, not to
- * imply `nationalId`/`kraPin` are gated the same way the 4 bank/pay fields
- * genuinely are.
+ * "sensitive details" view — this is now the ONLY place either is ever
+ * shown as real plaintext**, since migration `0240` closed a real gap: both
+ * used to be plain, unmasked `varchar` (contradicting this part's own
+ * original task brief, which claimed they were already "ENCRYPTED at
+ * rest") — `EmployeesService.redact()` now touches all 6 fields the same
+ * way, and the main detail card (`app/(erp)/payroll/employees/[id]/page.tsx`)
+ * no longer shows `nationalId`/`kraPin` at all, since they'd just be a
+ * redundant `"***"` there.
  *
  * **Deliberately NOT auto-fetched on page mount** — `useEmployeeDecrypted()`
  * defaults `enabled: false`; this component only fires the real request the

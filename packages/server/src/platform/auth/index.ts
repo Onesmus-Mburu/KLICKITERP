@@ -9,5 +9,5 @@ export { JwtAuthGuard } from "./infrastructure/guards/jwt-auth.guard";
 export type { RequestUser } from "./infrastructure/guards/jwt-auth.guard";
 export { PermissionsGuard } from "./infrastructure/guards/permissions.guard";
 export { AuthorityGuard } from "./infrastructure/guards/authority.guard";
-export { Public } from "./infrastructure/guards/public.decorator";
+export { Public } from "../../shared/rbac/public.decorator";
 export { resolveGrantedPermissions } from "./application/permission-check.util";

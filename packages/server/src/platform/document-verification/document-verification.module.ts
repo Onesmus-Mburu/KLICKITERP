@@ -11,8 +11,10 @@ import { DocvRecordRepository } from "./infrastructure/docv-record.repository";
  * `platform/document-verification.mayImport` is `["shared", "platform/auth"]`
  * — `platform/auth` is listed purely for `DocumentVerificationController`'s
  * use of the `@Public()` DECORATOR
- * (`platform/auth/infrastructure/guards/public.decorator.ts`, a pure
- * `SetMetadata` call with no DI), imported directly by that controller file
+ * (`shared/rbac/public.decorator.ts` as of 2026-08-21 — moved out of
+ * `platform/auth` so `licensing`'s own `mayImport: ["shared"]`-only rule
+ * could use it too; still just a pure `SetMetadata` call with no DI),
+ * imported directly by that controller file
  * (via `platform/auth`'s own index.ts barrel) only — same precedent
  * `domains/payments`' `MpesaController` and `platform/branding`'s
  * `ThemesController` already establish for their own public routes (see

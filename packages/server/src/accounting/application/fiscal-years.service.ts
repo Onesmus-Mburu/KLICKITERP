@@ -146,7 +146,11 @@ export class FiscalYearsService {
     });
   }
 
-  /** Requires the period to already be SOFT_CLOSED — see class doc comment "Sequential period-close enforcement". */
+  /**
+   * Requires the period to already be SOFT_CLOSED — see class doc comment
+   * "Sequential period-close enforcement". Also enforces BR-BANK-03 — see
+   * `assertBankReconciliationsLocked()`'s own doc comment.
+   */
   async hardClosePeriod(periodId: string, actorId: string | null): Promise<GlPeriodEntity> {
     return runInTransaction(this.dataSource, async (manager) => {
       const period = await this.periodRepository.findByIdOrFail(periodId, manager);
@@ -156,6 +160,7 @@ export class FiscalYearsService {
             "sequential close enforcement, cannot skip straight from OPEN",
         );
       }
+      await this.assertBankReconciliationsLocked(periodId, manager);
       period.status = "HARD_CLOSED";
       period.updatedBy = actorId;
       const saved = await this.periodRepository.save(period, manager);
@@ -168,6 +173,58 @@ export class FiscalYearsService {
 
       return saved;
     });
+  }
+
+  /**
+   * BR-BANK-03: "a period's bank reconciliation must be LOCKED before that
+   * period can be HARD_CLOSED" — a real, standard month-end close control
+   * (confirm every bank account's book balance genuinely matches the bank's
+   * own records before the books for that period are permanently frozen).
+   * Flagged since Module 16 (Banking)'s own foundation pass
+   * (`bank-reconciliation.entity.ts`'s own doc comment, restated in
+   * `module-deps.json`'s `domains/banking` entry) but never wired in until
+   * now.
+   *
+   * **Raw SQL against `app.bank_account`/`app.bank_reconciliation` directly,
+   * NOT a `domains/banking` repository/module import**: `accounting` is a
+   * lower-layer "accounting-core" module every domain module (including
+   * Banking) imports FROM, never the reverse — adding `domains/banking` to
+   * `accounting`'s own `mayImport` would create a genuine circular
+   * dependency (`domains/banking` already imports `accounting`). A raw
+   * query sidesteps this entirely, the same mechanism
+   * `StdClassRepository.countFeeStructureReferences()` already establishes
+   * for an analogous cross-module check.
+   *
+   * For every `bank_account` with `is_active=true`, a `bank_reconciliation`
+   * row for THIS period must exist with `status='LOCKED'` — missing
+   * entirely, or present but still `IN_PROGRESS`/`REOPENED`, both block the
+   * close. **Documented simplification**: `is_active` is `bank_account`'s
+   * CURRENT flag, not a point-in-time-during-this-period one — an account
+   * deactivated mid-period (whose own final reconciliation for this period
+   * still matters) would no longer be checked once deactivated. Judged an
+   * acceptable, honestly-documented v1 gap rather than tracking historical
+   * activity windows, the same class of "good enough, not exhaustive"
+   * scoping call this codebase makes elsewhere (e.g. `compute()`'s own
+   * `isActive`-at-compute-time employee scoping).
+   */
+  private async assertBankReconciliationsLocked(periodId: string, manager: EntityManager): Promise<void> {
+    const unreconciled: Array<{ id: string; name: string }> = await manager.query(
+      `SELECT ba.id, ba.name
+       FROM app.bank_account ba
+       WHERE ba.is_active = true
+         AND NOT EXISTS (
+           SELECT 1 FROM app.bank_reconciliation br
+           WHERE br.account_id = ba.id AND br.period_id = $1 AND br.status = 'LOCKED'
+         )
+       ORDER BY ba.name`,
+      [periodId],
+    );
+    if (unreconciled.length > 0) {
+      const names = unreconciled.map((row) => row.name).join(", ");
+      throw new ValidationException(
+        `BR-BANK-03: period ${periodId} cannot be HARD_CLOSED — the following active bank account(s) have no LOCKED reconciliation for this period yet: ${names}`,
+      );
+    }
   }
 
   private async recomputeFiscalYearStatus(

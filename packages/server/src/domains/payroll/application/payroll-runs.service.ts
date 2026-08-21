@@ -34,6 +34,7 @@ import { PyrlLoanRepository } from "../infrastructure/pyrl-loan.repository";
 import { PyrlLoanScheduleRepository } from "../infrastructure/pyrl-loan-schedule.repository";
 import { PyrlOneoffRepository } from "../infrastructure/pyrl-oneoff.repository";
 import { PyrlRunLineComponentRepository } from "../infrastructure/pyrl-run-line-component.repository";
+import { PyrlRunLineLoanRecoveryRepository } from "../infrastructure/pyrl-run-line-loan-recovery.repository";
 import { PyrlRunLineRepository } from "../infrastructure/pyrl-run-line.repository";
 import { PyrlRunRepository } from "../infrastructure/pyrl-run.repository";
 import { PyrlStructureComponentRepository } from "../infrastructure/pyrl-structure-component.repository";
@@ -236,35 +237,57 @@ function isUniqueViolation(error: unknown): boolean {
  * one-time figure the payroll admin already entered for this specific
  * period, not a recurring structure line to shrink.
  *
- * **BR-PYRL-03 protected-net-floor design**: for the employee's active
- * `pyrl_loan` (at most one is expected to be `ACTIVE` at a time in practice;
- * if more than one somehow is, the first returned by
- * `PyrlLoanRepository.findActiveForEmployee()`, oldest-created-first, is
- * used — documented judgement call, the schema does not forbid multiple
- * concurrent active loans) with an installment due this `period_key`, the
- * amount ATTEMPTED to be recovered is `scheduledAmount + carryover`, where
- * `scheduledAmount = principal_due + interest_due - recovered_amount`
- * (defends against a partially-recovered row) and `carryover` is read from
- * the immediately-prior period's `pyrl_run_line.deferred_recovery` for this
- * employee, via `PyrlRunRepository.findCommittedMainForPeriod(shiftPeriodKey(periodKey,
- * -1))` + `PyrlRunLineRepository.findByRunAndEmployee()` (zero if no
- * COMMITTED MAIN run exists for the immediately-prior period, or the
- * employee has no line in it). The protected floor is `basicPay ×
- * protected_net_floor_ratio` (Settings key
- * `payroll.protected_net_floor_ratio`, default `1/3`) — if `netBeforeLoan -
- * attemptAmount` would fall below this floor, only `netBeforeLoan - floor`
- * (floored at zero) is actually recovered, and the shortfall is written to
- * this run's own `pyrl_run_line.deferred_recovery`, to be picked up by the
- * SAME carryover lookup the next time a run is computed for the following
- * period. `recordRecovery()` itself is NOT called during `compute()` — that
+ * **BR-PYRL-03 protected-net-floor design, multi-loan (Option B, 2026-08-21
+ * user decision, closing a real gap live-confirmed in Slice 22 Part 6)**:
+ * every ACTIVE `pyrl_loan` an employee has — not just the first — is
+ * processed, in `PyrlLoanRepository.findActiveForEmployee()`'s own
+ * oldest-created-first order (the standard, simplest, most defensible
+ * priority absent a specific business rule saying otherwise — the same
+ * principle used for aging any other receivable). A SINGLE shared headroom
+ * pool (`netBeforeLoan - protectedFloor`, `protectedFloor = basicPay ×
+ * protected_net_floor_ratio`, Settings key `payroll.protected_net_floor_ratio`,
+ * default `1/3`) is allocated across loans in that order: for each loan
+ * with an installment due this `period_key`, the amount ATTEMPTED is
+ * `scheduledAmount + carryover` (`scheduledAmount = principal_due +
+ * interest_due - recovered_amount`, `carryover` THIS SPECIFIC loan's own
+ * deferred shortfall from the prior period — see below); if remaining
+ * headroom covers it, the loan is recovered in full and headroom shrinks by
+ * that amount before the next loan is considered; once headroom is
+ * exhausted, every remaining loan gets `0` recovered and its full attempted
+ * amount deferred. `pyrl_run_line.loan_recovered`/`.deferred_recovery`
+ * remain the real AGGREGATE (sum across every loan) — unchanged shape, same
+ * as `gross`/`net_pay` etc. are aggregates while `pyrl_run_line_component`
+ * carries their own itemized breakdown. The actual per-loan breakdown (this
+ * is the real fix — before this, a second loan's own recovery/deferral was
+ * invisible even in aggregate, since only loan[0] was ever considered) is
+ * written to `pyrl_run_line_loan_recovery` (migration `0242`), one row per
+ * (run_line, loan) that had an installment due.
+ *
+ * **Carryover, now genuinely per-loan**: read via
+ * `PyrlRunRepository.findFinalizedMainForPeriod(shiftPeriodKey(periodKey,
+ * -1))` + `PyrlRunLineRepository.findByRunAndEmployee()` +
+ * `PyrlRunLineLoanRecoveryRepository.findByRunLineAndLoan()` (zero if no
+ * finalized MAIN run exists for the immediately-prior period, the employee
+ * has no line in it, or that loan had no row in it) — the OLD single-scalar-
+ * per-EMPLOYEE carryover genuinely could not distinguish "loan A deferred
+ * $50, loan B deferred $30" from a blended $80, which would have
+ * misattributed a carryover the moment either loan was paid off while the
+ * other remained active; this is the concrete reason Option B (a schema
+ * change) was chosen over accumulating into the existing scalars alone.
+ *
+ * `recordRecovery()` itself is NOT called during `compute()` — that
  * would permanently mutate the loan/schedule on every (recomputable,
- * pre-commit) `compute()` call; it's deferred to `commit()`, the one point a
- * run's figures become truly final (BR-PYRL-06).
+ * pre-commit) `compute()` call; it's deferred to `commit()` (now iterating
+ * `pyrl_run_line_loan_recovery` per line, calling `recordRecovery()` once
+ * per loan with THAT loan's own `recovered_amount` — never the run-line's
+ * blended aggregate dumped onto a single loan), the one point a run's
+ * figures become truly final (BR-PYRL-06).
  *
  * **Recompute semantics**: `compute()` is idempotent-by-recomputation while
  * the run is still `DRAFT`/`COMPUTED` — every existing `pyrl_run_line` (and,
- * via `ON DELETE CASCADE`, every `pyrl_run_line_component`) is deleted and
- * rebuilt wholesale on each call, never incrementally patched.
+ * via `ON DELETE CASCADE`, every `pyrl_run_line_component` AND
+ * `pyrl_run_line_loan_recovery`) is deleted and rebuilt wholesale on each
+ * call, never incrementally patched.
  */
 @Injectable()
 export class PayrollRunsService {
@@ -272,6 +295,7 @@ export class PayrollRunsService {
     private readonly runRepository: PyrlRunRepository,
     private readonly runLineRepository: PyrlRunLineRepository,
     private readonly runLineComponentRepository: PyrlRunLineComponentRepository,
+    private readonly runLineLoanRecoveryRepository: PyrlRunLineLoanRecoveryRepository,
     private readonly employeeRepository: PyrlEmployeeRepository,
     private readonly assignmentRepository: PyrlEmployeeAssignmentRepository,
     private readonly structureComponentRepository: PyrlStructureComponentRepository,
@@ -291,6 +315,21 @@ export class PayrollRunsService {
   async createRun(em: EntityManager, input: CreatePyrlRunInput, initiatedBy: string): Promise<PyrlRunEntity> {
     if (input.runKind === "SUPPLEMENTARY" && !input.supplementsRunId) {
       throw new ValidationException("A SUPPLEMENTARY pyrl_run requires supplementsRunId (the MAIN run it corrects)");
+    }
+    // BR-PYRL-02 — reject a second MAIN run for a period that already has
+    // one at/beyond COMMITTED, immediately, rather than letting a caller
+    // walk an entire run through compute/review/submit/decide/commit before
+    // hitting the (correct, but far-too-late) uq_pyrl_main_run_p conflict
+    // at the very last step. `uq_pyrl_main_run_p` (migration `0241`) remains
+    // the real, unconditional backstop either way — this is purely an
+    // earlier, clearer application-level check ahead of it.
+    if (input.runKind === "MAIN") {
+      const existingFinalizedMain = await this.runRepository.findFinalizedMainForPeriod(input.periodKey, em);
+      if (existingFinalizedMain) {
+        throw new ConflictException(
+          `pyrl_run: period ${input.periodKey} already has a finalized MAIN run (${existingFinalizedMain.id}, status ${existingFinalizedMain.status}) — create a SUPPLEMENTARY run referencing it instead of a second MAIN run`,
+        );
+      }
     }
     return this.runRepository.create(
       {
@@ -412,34 +451,61 @@ export class PayrollRunsService {
 
       let loanRecovered = Money.ZERO;
       let deferredRecovery = Money.ZERO;
+      const loanRecoveryRows: Array<{
+        loanId: string;
+        scheduledAmount: Money;
+        carryover: Money;
+        recoveredAmount: Money;
+        deferredAmount: Money;
+      }> = [];
 
+      // Option B (2026-08-21 user decision) — every ACTIVE loan, not just the
+      // first, oldest-created-first (findActiveForEmployee()'s own real
+      // order). A single shared headroom pool is allocated across loans in
+      // that order — see class doc comment for the full design.
       const activeLoans = await this.loanRepository.findActiveForEmployee(employee.id, em);
       if (activeLoans.length > 0) {
-        const loan = activeLoans[0];
-        const scheduleRows = await this.loanScheduleRepository.findByLoanId(loan.id, em);
-        const dueRow = scheduleRows.find((row) => row.duePeriod === run.periodKey);
-        if (dueRow) {
+        const protectedFloor = assignment.basicPay.multiply(floorRatio);
+        let available = netBeforeLoan.subtract(protectedFloor);
+
+        for (const loan of activeLoans) {
+          const scheduleRows = await this.loanScheduleRepository.findByLoanId(loan.id, em);
+          const dueRow = scheduleRows.find((row) => row.duePeriod === run.periodKey);
+          if (!dueRow) continue;
           const scheduledAmount = dueRow.principalDue.add(dueRow.interestDue).subtract(dueRow.recoveredAmount);
-          if (scheduledAmount.isPositive()) {
-            const carryover = await this.priorPeriodDeferredRecovery(em, employee.id, run.periodKey);
-            const attempt = scheduledAmount.add(carryover);
-            const protectedFloor = assignment.basicPay.multiply(floorRatio);
-            const available = netBeforeLoan.subtract(protectedFloor);
-            if (available.compare(attempt) >= 0) {
-              loanRecovered = attempt;
-            } else {
-              loanRecovered = available.isPositive() ? available : Money.ZERO;
-              deferredRecovery = attempt.subtract(loanRecovered);
-            }
-            if (loanRecovered.isPositive()) {
-              componentLines.push({
-                componentId: loanRecoveryComponent.id,
-                amount: loanRecovered,
-                kind: "DEDUCTION",
-                isTaxable: false,
-              });
-            }
+          if (!scheduledAmount.isPositive()) continue;
+
+          const carryover = await this.priorPeriodDeferredRecoveryForLoan(em, employee.id, loan.id, run.periodKey);
+          const attempt = scheduledAmount.add(carryover);
+
+          let recoveredThisLoan: Money;
+          let deferredThisLoan = Money.ZERO;
+          if (available.compare(attempt) >= 0) {
+            recoveredThisLoan = attempt;
+          } else {
+            recoveredThisLoan = available.isPositive() ? available : Money.ZERO;
+            deferredThisLoan = attempt.subtract(recoveredThisLoan);
           }
+          available = available.subtract(recoveredThisLoan);
+
+          loanRecovered = loanRecovered.add(recoveredThisLoan);
+          deferredRecovery = deferredRecovery.add(deferredThisLoan);
+          loanRecoveryRows.push({
+            loanId: loan.id,
+            scheduledAmount,
+            carryover,
+            recoveredAmount: recoveredThisLoan,
+            deferredAmount: deferredThisLoan,
+          });
+        }
+
+        if (loanRecovered.isPositive()) {
+          componentLines.push({
+            componentId: loanRecoveryComponent.id,
+            amount: loanRecovered,
+            kind: "DEDUCTION",
+            isTaxable: false,
+          });
         }
       }
 
@@ -480,6 +546,24 @@ export class PayrollRunsService {
         );
       }
 
+      // Option B's own per-loan breakdown — one row per loan that had an
+      // installment due this period, even if headroom exhaustion left its
+      // own recoveredAmount at zero (that IS the real, useful record: "this
+      // loan owed X, none of it recoverable this period").
+      for (const row of loanRecoveryRows) {
+        await this.runLineLoanRecoveryRepository.create(
+          {
+            runLineId: runLine.id,
+            loanId: row.loanId,
+            scheduledAmount: row.scheduledAmount,
+            carryover: row.carryover,
+            recoveredAmount: row.recoveredAmount,
+            deferredAmount: row.deferredAmount,
+          },
+          em,
+        );
+      }
+
       totals.employeeCount += 1;
       totals.gross = totals.gross.add(gross);
       totals.taxable = totals.taxable.add(taxable);
@@ -501,9 +585,9 @@ export class PayrollRunsService {
 
   /**
    * FR-PYRL-006.1's variance report — compares this run's per-employee
-   * `gross`/`net_pay` against the most recent PRIOR period's COMMITTED MAIN
+   * `gross`/`net_pay` against the most recent PRIOR period's finalized MAIN
    * run (searched backward from `periodKey - 1 month`, up to 12 months, via
-   * `PyrlRunRepository.findCommittedMainForPeriod()` — NOT necessarily the
+   * `PyrlRunRepository.findFinalizedMainForPeriod()` — NOT necessarily the
    * literal immediately-preceding `pyrl_run` row, since a period can be
    * skipped entirely or its main run might not exist yet; documented
    * judgement call per the task brief's own "your call" instruction). An
@@ -781,16 +865,23 @@ export class PayrollRunsService {
       });
     }
 
+    // Option B (2026-08-21) — read back EXACTLY what compute() already
+    // decided per loan, never re-derive "the employee's active loans" at
+    // commit time (which could genuinely have drifted since compute() ran —
+    // reading the frozen, already-reviewed/approved breakdown is the
+    // correct thing to commit, not a possibly-different live state).
     for (const line of lines) {
       if (!line.loanRecovered.isPositive()) continue;
-      const activeLoans = await this.loanRepository.findActiveForEmployee(line.employeeId, em);
-      const loan = activeLoans[0];
-      if (!loan) {
+      const loanRecoveryRows = await this.runLineLoanRecoveryRepository.findByRunLineId(line.id, em);
+      if (loanRecoveryRows.length === 0) {
         throw new ValidationException(
-          `PayrollRunsService.commit: pyrl_run_line ${line.id} recorded a loan recovery but employee ${line.employeeId} has no ACTIVE pyrl_loan at commit time`,
+          `PayrollRunsService.commit: pyrl_run_line ${line.id} recorded a loan recovery but has no pyrl_run_line_loan_recovery breakdown rows`,
         );
       }
-      await this.loansService.recordRecovery(em, loan.id, run.periodKey, line.loanRecovered);
+      for (const row of loanRecoveryRows) {
+        if (!row.recoveredAmount.isPositive()) continue;
+        await this.loansService.recordRecovery(em, row.loanId, run.periodKey, row.recoveredAmount);
+      }
     }
 
     const journal = await this.postingService.post(em, {
@@ -933,20 +1024,27 @@ export class PayrollRunsService {
     return component;
   }
 
-  /** BR-PYRL-03's carryover lookup — see class doc comment. */
-  private async priorPeriodDeferredRecovery(em: EntityManager, employeeId: string, periodKey: string): Promise<Money> {
+  /** BR-PYRL-03's per-loan carryover lookup — see class doc comment (Option B, 2026-08-21). */
+  private async priorPeriodDeferredRecoveryForLoan(
+    em: EntityManager,
+    employeeId: string,
+    loanId: string,
+    periodKey: string,
+  ): Promise<Money> {
     const priorPeriodKey = shiftPeriodKey(periodKey, -1);
-    const priorRun = await this.runRepository.findCommittedMainForPeriod(priorPeriodKey, em);
+    const priorRun = await this.runRepository.findFinalizedMainForPeriod(priorPeriodKey, em);
     if (!priorRun) return Money.ZERO;
     const priorLine = await this.runLineRepository.findByRunAndEmployee(priorRun.id, employeeId, em);
-    return priorLine ? priorLine.deferredRecovery : Money.ZERO;
+    if (!priorLine) return Money.ZERO;
+    const priorLoanRecovery = await this.runLineLoanRecoveryRepository.findByRunLineAndLoan(priorLine.id, loanId, em);
+    return priorLoanRecovery ? priorLoanRecovery.deferredAmount : Money.ZERO;
   }
 
   /** `review()`'s prior-run resolution — see class doc comment. Searches up to 12 months back. */
   private async findMostRecentPriorCommittedMain(em: EntityManager, periodKey: string): Promise<PyrlRunEntity | null> {
     for (let monthsBack = 1; monthsBack <= 12; monthsBack++) {
       const candidatePeriodKey = shiftPeriodKey(periodKey, -monthsBack);
-      const candidate = await this.runRepository.findCommittedMainForPeriod(candidatePeriodKey, em);
+      const candidate = await this.runRepository.findFinalizedMainForPeriod(candidatePeriodKey, em);
       if (candidate) return candidate;
     }
     return null;

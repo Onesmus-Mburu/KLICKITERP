@@ -9,7 +9,7 @@ import { VerifyDocumentResponseDto } from "./dto/verify-document-response.dto";
  * Exactly one route — the public, unauthenticated verification lookup a
  * printed document's QR code links to (Part 2, frontend, not built yet).
  * Uses the already-established `@Public()` decorator
- * (`platform/auth/infrastructure/guards/public.decorator.ts`, imported via
+ * (`shared/rbac/public.decorator.ts`, imported via
  * `platform/auth`'s index.ts barrel — same precedent
  * `platform/branding`'s own `GET /branding/theme/current` route documents on
  * its `mayImport` entry) to opt out of the `JwtAuthGuard`/`PermissionsGuard`/

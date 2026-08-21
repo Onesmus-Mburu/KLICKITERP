@@ -24,12 +24,13 @@ import { GlAccountControlDomain, GlAccountEntity, GlAccountRepository } from "..
  *    (`packages/config/eslint/module-deps.json`) does not include
  *    `domains/billing`, and reaching into a sibling domain module for a
  *    generic accounting-core concern would be backwards regardless.
- *    **Currently unreachable in practice**: every `proc_po_line.item_id` in
- *    this codebase is NULL until Module 13 (Inventory) exists and populates
- *    it (the foundation pass's own documented gap) — `GrnService.post()`'s
- *    `if (poLine.itemId)` branch calling this resolver is therefore dead
- *    code today, kept correct and ready per the task brief's explicit
- *    instruction to build it anyway.
+ *    **Reachable as of 2026-08-21**: `proc_po_line.item_id` can be set by
+ *    any caller from requisition-creation onward (Module 13/Inventory's own
+ *    `item_id` FKs, migration `0111`), and `GrnService.post()`'s
+ *    `if (poLine.itemId)` branch now ALSO calls
+ *    `StockMovementsService.recordReceipt()` (migration `0244`,
+ *    `proc_grn_line.store_id`) — this was the missing piece that kept P-18
+ *    practically unreachable before, not the GL-account resolution itself.
  *  - `resolveGrnAccrualAccount()` — the credit side of BOTH P-18 and P-19: a
  *    liability account distinct from `AP_SUPPLIER` (`2010` in
  *    `COA_TEMPLATE`) — "goods received, not yet supplier-invoiced" is a
@@ -43,8 +44,7 @@ import { GlAccountControlDomain, GlAccountEntity, GlAccountRepository } from "..
  *    `code` instead, exactly like `resolveProcurementExpenseAccount()`
  *    below.
  *  - `resolveProcurementExpenseAccount()` — P-19's debit side (`item_id`
- *    NULL, the only branch actually exercised today, since every
- *    `proc_po_line.item_id` is currently NULL). The task brief invited
+ *    NULL — a non-stock GRN line, e.g. a service or asset). The task brief invited
  *    resolving this via `proc_requisition_line.budget_line_id ->
  *    gl_budget_line.account_id` if that gives "a natural per-line expense
  *    account" — checked, and it does NOT: `proc_po_line` (what `GrnService`

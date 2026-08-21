@@ -32,15 +32,16 @@ function toView(entity: PyrlEmployeeEntity): PyrlEmployeeResponseDto {
 /**
  * `pyrl_employee` CRUD. **Access-control split (FR-PYRL-012.1)**: every
  * endpoint here except one is gated by `payroll:employee:view` (redacted
- * `pay_details`/`bank_name`/`branch`/`account` — `"***"` or `null`, never
- * real ciphertext/plaintext, per `EmployeesService`'s own doc comment) OR
- * `payroll:employee:manage` (mutations). The ONE exception is
- * `GET /payroll/employees/:id/decrypted`, gated behind
+ * `national_id`/`kra_pin`/`pay_details`/`bank_name`/`branch`/`account` —
+ * `"***"` (always, for the first two — they're `NOT NULL`) or `"***"`/`null`
+ * for the rest, never real ciphertext/plaintext, per `EmployeesService`'s
+ * own doc comment) OR `payroll:employee:manage` (mutations). The ONE
+ * exception is `GET /payroll/employees/:id/decrypted`, gated behind
  * `payroll:employee:manage` SPECIFICALLY (not `:view`) — this is the
  * concrete implementation of PASS A's documented judgement call: ordinary
  * viewers get the redacted variant, only someone with the write-capable
- * `:manage` permission (payroll administrators) can ever see real bank/pay
- * plaintext.
+ * `:manage` permission (payroll administrators) can ever see real
+ * ID/bank/pay plaintext.
  */
 @ApiTags("payroll-employees")
 @Controller("payroll/employees")
@@ -128,7 +129,7 @@ export class EmployeesController {
 
   @Get(":id/decrypted")
   @RequirePermission("payroll:employee:manage")
-  @ApiOperation({ summary: "Get a pyrl_employee by id with REAL plaintext pay_details/bank_name/branch/account — gated behind payroll:employee:manage, not :view (FR-PYRL-012.1)" })
+  @ApiOperation({ summary: "Get a pyrl_employee by id with REAL plaintext national_id/kra_pin/pay_details/bank_name/branch/account — gated behind payroll:employee:manage, not :view (FR-PYRL-012.1)" })
   @ApiResponse({ status: 200, type: PyrlEmployeeResponseDto })
   async findOneDecrypted(@Param("id") id: string): Promise<PyrlEmployeeResponseDto> {
     return toView(await this.employeesService.getDecrypted(id));

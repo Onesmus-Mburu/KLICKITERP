@@ -34,22 +34,17 @@ const EMPLOYMENT_TYPES = ["PERMANENT", "CONTRACT", "CASUAL", "PART_TIME"] as con
  * them entirely, not disabled, matching this codebase's established
  * immutable-field precedent).
  *
- * **A real, live-verified finding, contradicting this part's own task
- * brief**: `nationalId`/`kraPin` are plain `varchar` columns on
- * `pyrl_employee` (`nationalId!: string`/`kraPin!: string`, confirmed by
- * reading `pyrl-employee.entity.ts` directly — NOT `jsonb`, unlike
- * `payDetails`/`bankName`/`branch`/`account`, the entity's own real "(enc)"
- * columns), and `EmployeesService.redact()` never touches either field —
- * confirmed live: `GET /payroll/employees/:id` returns REAL plaintext
- * `nationalId`/`kraPin` for every caller with `payroll:employee:view`, the
- * same as `/decrypted`. Neither field is ever masked or encrypted anywhere
- * in this backend, despite the task brief's own claim that both are
- * "ENCRYPTED at rest". This dialog's own `encryptedFieldHint` copy next to
- * these two inputs is written to reflect the REAL behavior (not masked, not
- * encrypted), not the brief's claim — see `docs/phase-6/PROGRESS.md`'s own
- * Slice 22 Part 1 write-up for the full live round trip that found this.
+ * **UPDATE (migration `0240`) — now genuinely encrypted, fixing a real gap
+ * live-verified when this dialog was first built.** `nationalId`/`kraPin`
+ * used to be plain `varchar` columns on `pyrl_employee`, never masked or
+ * encrypted, contradicting Part 1's own task brief. Migration `0240`
+ * widened both to the same `jsonb` "(enc)" shape `payDetails`/`bankName`/
+ * `branch`/`account` already used, and `EmployeesService.redact()` now
+ * redacts both the same way (`GET /payroll/employees/:id` returns `"***"`
+ * for a caller with only `payroll:employee:view`; real plaintext only via
+ * `/decrypted`, `payroll:employee:manage`-gated). This dialog's own
+ * `encryptedFieldHint` copy next to these two inputs now says exactly that.
  *
-
  * `payDetails`/`bankName`/`branch`/`account` are genuinely opaque `unknown`
  * server-side (no backend-defined shape at all, confirmed by reading
  * `CreatePyrlEmployeeDto` directly) — this form treats all 4 as plain

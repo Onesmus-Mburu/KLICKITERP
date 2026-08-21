@@ -202,6 +202,7 @@
       "walletLiability": "Wallet Liability",
       "defaultersCount": "Defaulters"
     },
+    "collectionRateOverLimitWarning": "Juu ya 100% — huenda inajumuisha malipo yaliyokusanywa dhidi ya salio la kipindi kilichopita",
     "charts": {
       "collectionTrend": "Collection Trend",
       "incomeVsExpense": "Income vs Expense"
@@ -5805,7 +5806,7 @@
         "nationalIdPlaceholder": "mfano: 12345678",
         "kraPinLabel": "PIN ya KRA",
         "kraPinPlaceholder": "mfano: A012345678B",
-        "encryptedFieldHint": "Inahifadhiwa na kuonyeshwa kwa maandishi wazi popote mfanyakazi huyu anapoonekana (kipengele hiki cha API hakiifichi) — si imesimbwa, tofauti na sehemu za benki na malipo hapa chini.",
+        "encryptedFieldHint": "Imesimbwa wakati imehifadhiwa na kufichwa kwenye kila skrini — inaonekana kama maandishi halisi tu kupitia kitendo cha kufichua maelezo nyeti kwenye ukurasa wa taarifa za mfanyakazi huyu.",
         "nssfNoLabel": "Namba ya NSSF",
         "nssfNoPlaceholder": "Si lazima",
         "shifNoLabel": "Namba ya SHIF",
@@ -5888,7 +5889,7 @@
         "revealTrigger": "Ona taarifa za benki na kitambulisho",
         "title": "Taarifa za benki na kitambulisho",
         "hideButton": "Ficha",
-        "sensitiveWarning": "Jina la benki, tawi, namba ya akaunti, na taarifa nyingine za malipo hapa ni thamani halisi zilizofunuliwa — zinaonekana tu kupitia kitendo hiki. Kitambulisho cha Taifa na PIN ya KRA vinaonyeshwa hapa pia kwa urahisi, lakini kumbuka hivi viwili HAVIFICHWI popote katika programu hii — tayari vinaonekana kwa maandishi wazi kwenye kadi kuu ya taarifa za mfanyakazi huyu hapo juu.",
+        "sensitiveWarning": "Jina la benki, tawi, namba ya akaunti, na taarifa nyingine za malipo hapa ni thamani halisi zilizofunuliwa — zinaonekana tu kupitia kitendo hiki. Kitambulisho cha Taifa na PIN ya KRA vinaonyeshwa hapa pia, kwa sababu ile ile: vyote viwili sasa vimesimbwa na kufichwa kila mahali pengine katika programu hii, na hapa ndipo pekee vinapoonekana kama maandishi halisi.",
         "nationalIdLabel": "Kitambulisho cha Taifa",
         "kraPinLabel": "PIN ya KRA",
         "bankNameLabel": "Jina la benki",
@@ -5905,14 +5906,12 @@
         "costCenterLabel": "Kituo cha gharama",
         "hireDateLabel": "Tarehe ya kuajiriwa",
         "exitDateLabel": "Tarehe ya kuondoka",
-        "nationalIdLabel": "Kitambulisho cha Taifa",
-        "kraPinLabel": "PIN ya KRA",
         "nssfNoLabel": "Namba ya NSSF",
         "shifNoLabel": "Namba ya SHIF",
         "userIdLabel": "Akaunti ya kuingia iliyounganishwa",
         "noLinkedUser": "Hakuna akaunti ya kuingia iliyounganishwa",
         "bankDetailsSectionTitle": "Taarifa za benki na kitambulisho",
-        "bankDetailsSectionHint": "Taarifa halisi za benki na malipo hapa chini huonyeshwa tu baada ya kufichuliwa waziwazi — haziwahi kupakuliwa kiotomatiki. (Kitambulisho cha Taifa na PIN ya KRA hapo juu vinaonyeshwa kama vile API inavyorejesha — mfumo huu wa nyuma haufichi sehemu hizo mbili kwenye kipengele chochote.)"
+        "bankDetailsSectionHint": "Taarifa halisi za benki na malipo hapa chini huonyeshwa tu baada ya kufichuliwa waziwazi — haziwahi kupakuliwa kiotomatiki. Kitambulisho cha Taifa na PIN ya KRA vinaonyeshwa hapo pia — vyote viwili vimesimbwa wakati wa kuhifadhiwa na kufichwa kila mahali pengine katika programu hii."
       },
       "assignmentPanel": {
         "sectionTitle": "Upangiaji wa muundo wa mishahara",

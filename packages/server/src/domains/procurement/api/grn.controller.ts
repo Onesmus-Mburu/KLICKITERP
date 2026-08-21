@@ -33,6 +33,7 @@ function toLineView(entity: ProcGrnLineEntity): GrnLineResponseDto {
     rejectedQty: entity.rejectedQty,
     rejectionReason: entity.rejectionReason,
     unitCost: entity.unitCost.toDecimalString(),
+    storeId: entity.storeId,
   };
 }
 
@@ -73,6 +74,7 @@ export class GrnController {
           rejectedQty: line.rejectedQty,
           rejectionReason: line.rejectionReason ?? null,
           unitCost: Money.fromDecimalString(line.unitCost),
+          storeId: line.storeId ?? null,
         })),
       }),
     );

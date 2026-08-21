@@ -8,7 +8,7 @@ import { AppConfigService } from "../../../../shared/config/app-config.service";
 import { JwtTokenService } from "../jwt-token.service";
 import { UsrApiKeyRepository } from "../usr-api-key.repository";
 import { RedisKeys } from "../redis-keys";
-import { IS_PUBLIC_METADATA_KEY } from "./public.decorator";
+import { IS_PUBLIC_METADATA_KEY } from "../../../../shared/rbac/public.decorator";
 
 export interface RequestUser {
   sub: string;

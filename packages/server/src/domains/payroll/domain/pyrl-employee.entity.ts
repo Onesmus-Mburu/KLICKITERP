@@ -40,6 +40,23 @@ export const PYRL_EMPLOYMENT_TYPES: readonly PyrlEmploymentType[] = [
  * this entity's point of view, populated by a future
  * `PayrollEmployeesService`.
  *
+ * **`national_id`/`kra_pin` — encrypted the same way, added later (migration
+ * `0240`)**: the DDL's own original spec typed these `varchar` (not `jsonb`
+ * "(enc)"), a real gap live-confirmed during Phase 6 (both held unmasked
+ * plaintext Kenyan national-ID/KRA-PIN numbers, visible to anyone with
+ * `payroll:employee:view`). Migration `0240` widened both to `jsonb` and
+ * re-encrypted every existing value in place, using the exact same
+ * `EmployeesService.encodeField()`/`.decodeField()` envelope the 4 fields
+ * above already use. Unlike those 4 (genuinely optional), these two stay
+ * `NOT NULL` — every employee has a real national ID and KRA PIN by
+ * construction. **Kept typed `string` here, not `unknown`, deliberately
+ * deviating from the 4 fields above**: `national_id`/`kra_pin` are always
+ * either a redacted `"***"` or a real decrypted string (never an arbitrary
+ * object, unlike `pay_details` etc.'s genuinely opaque shape), so typing
+ * them `string` avoids a cast at every read site (`toView()`,
+ * `PyrlEmployeeResponseDto`) while staying accurate to what these two
+ * columns can ever actually hold.
+ *
  * `user_id` is a nullable FK to `usr_user` (portal-account link, same shape
  * `std_guardian.user_id` established) — RESTRICT so a linked user account
  * can't be hard-deleted out from under a payroll employee record.
@@ -69,10 +86,12 @@ export class PyrlEmployeeEntity extends MutableBaseEntity {
   @Column({ type: "varchar", length: 120, name: "full_name" })
   fullName!: string;
 
-  @Column({ type: "varchar", length: 20, name: "national_id" })
+  /** Opaque encrypted jsonb — see class doc comment. Always a real string at runtime (redacted `"***"` or the decrypted value), never null. */
+  @Column({ type: "jsonb", name: "national_id" })
   nationalId!: string;
 
-  @Column({ type: "varchar", length: 15, name: "kra_pin" })
+  /** Opaque encrypted jsonb — see class doc comment. Always a real string at runtime (redacted `"***"` or the decrypted value), never null. */
+  @Column({ type: "jsonb", name: "kra_pin" })
   kraPin!: string;
 
   @Column({ type: "varchar", length: 20, name: "nssf_no", nullable: true })

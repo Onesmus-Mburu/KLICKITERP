@@ -5,6 +5,7 @@ import { generateUuidV7 } from "../../../shared/ids/uuid7";
 import { Money } from "../../../shared/money/money";
 import { GlAccountRepository, PostingService, PostJournalLineDraft } from "../../../accounting";
 import { NumberingService, SettingsService } from "../../../platform/settings";
+import { InvStoreRepository, StockMovementsService } from "../../inventory";
 import { ProcGrnEntity } from "../domain/proc-grn.entity";
 import { ProcGrnLineEntity } from "../domain/proc-grn-line.entity";
 import { ProcGrnLineRepository } from "../infrastructure/proc-grn-line.repository";
@@ -31,6 +32,8 @@ export interface ReceiveGrnLineInput {
   rejectedQty?: string;
   rejectionReason?: string | null;
   unitCost: Money;
+  /** Required when the underlying `proc_po_line.item_id` is set — see `receive()`'s own doc comment. */
+  storeId?: string | null;
 }
 
 export interface ReceiveGrnInput {
@@ -73,9 +76,11 @@ export interface ReceiveGrnInput {
  * (only the physically-accepted quantity carries GL value — a fully
  * rejected line contributes nothing); `lineValue = acceptedQty * unit_cost`.
  * If the underlying `proc_po_line.item_id` is set -> **P-18**, debit the
- * `INVENTORY` control account; if NULL (today's only reachable case, since
- * Module 13/Inventory doesn't exist yet and never populates `item_id`) ->
- * **P-19**, debit the documented "Procurement Expense / Asset WIP" account
+ * `INVENTORY` control account (and — as of 2026-08-21, migration `0244` —
+ * also calls `StockMovementsService.recordReceipt()` for that line's own
+ * `store_id`/`item_id`/accepted qty, idempotent by `refDocType`/`refDocId`
+ * so a retried `post()` never double-records stock); if NULL -> **P-19**,
+ * debit the documented "Procurement Expense / Asset WIP" account
  * (see `gl-grn-accounts.util.ts` for the full account-resolution writeup,
  * including why `proc_requisition_line.budget_line_id` could NOT be reached
  * from a GRN line). Every accepted line becomes its own debit journal line
@@ -100,6 +105,8 @@ export class GrnService {
     private readonly postingService: PostingService,
     private readonly numberingService: NumberingService,
     private readonly settingsService: SettingsService,
+    private readonly invStoreRepository: InvStoreRepository,
+    private readonly stockMovementsService: StockMovementsService,
   ) {}
 
   async receive(em: EntityManager, input: ReceiveGrnInput): Promise<ProcGrnEntity> {
@@ -157,6 +164,17 @@ export class GrnService {
         );
       }
 
+      let storeId: string | null = null;
+      if (poLine.itemId !== null) {
+        if (!lineInput.storeId) {
+          throw new ValidationException(
+            `GRN line for PO line ${lineInput.poLineId} is a stock item (item_id set) — storeId is required so the receipt can be recorded into Inventory`,
+          );
+        }
+        await this.invStoreRepository.findByIdOrFail(lineInput.storeId, em);
+        storeId = lineInput.storeId;
+      }
+
       await this.grnLineRepository.create(
         {
           grnId: grn.id,
@@ -165,6 +183,7 @@ export class GrnService {
           rejectedQty: lineInput.rejectedQty ?? "0",
           rejectionReason: lineInput.rejectionReason ?? null,
           unitCost: lineInput.unitCost,
+          storeId,
           createdBy: input.receivedBy,
           updatedBy: input.receivedBy,
         },
@@ -205,8 +224,20 @@ export class GrnService {
       const poLine = await this.poLineRepository.findByIdOrFail(line.poLineId, em);
       const isStockItem = poLine.itemId !== null;
       const debitAccount = isStockItem
-        ? await resolveInventoryControlAccount(this.glAccountRepository, em) // P-18 — currently unreachable, see gl-grn-accounts.util.ts
-        : await resolveProcurementExpenseAccount(this.glAccountRepository, em); // P-19 — today's only reachable branch
+        ? await resolveInventoryControlAccount(this.glAccountRepository, em) // P-18
+        : await resolveProcurementExpenseAccount(this.glAccountRepository, em); // P-19
+
+      if (isStockItem) {
+        // `receive()` already required+validated `line.storeId` whenever `poLine.itemId` is set.
+        await this.stockMovementsService.recordReceipt(em, {
+          itemId: poLine.itemId as string,
+          storeId: line.storeId as string,
+          qty: acceptedQty.toDecimalString(),
+          unitCost: line.unitCost.toDecimalString(),
+          refDocType: "proc_grn_line",
+          refDocId: line.id,
+        });
+      }
 
       journalLines.push({
         accountId: debitAccount.id,

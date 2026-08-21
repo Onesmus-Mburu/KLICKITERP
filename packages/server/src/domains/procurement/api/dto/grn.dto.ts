@@ -26,6 +26,11 @@ export class ReceiveGrnLineDto {
   @ApiProperty({ type: String, description: "Decimal string" })
   @Matches(DECIMAL_PATTERN)
   unitCost!: string;
+
+  @ApiPropertyOptional({ format: "uuid", description: "Required when the underlying PO line's item_id is set (a stock item) — which inv_store the goods land in" })
+  @IsOptional()
+  @IsUUID()
+  storeId?: string;
 }
 
 export class ReceiveGrnDto {
@@ -93,4 +98,7 @@ export class GrnLineResponseDto {
 
   @ApiProperty({ type: String, description: "Decimal string" })
   unitCost!: string;
+
+  @ApiProperty({ format: "uuid", nullable: true })
+  storeId!: string | null;
 }

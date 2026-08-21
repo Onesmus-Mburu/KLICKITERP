@@ -50,9 +50,11 @@ export interface UpdatePyrlEmployeeInput {
 /**
  * CRUD for `pyrl_employee` — the payroll employee master (Module 15 PASS A).
  *
- * **Encrypted columns** (`pay_details`/`bank_name`/`branch`/`account`,
- * `pyrl_employee.entity.ts`'s own "(enc)" markers): encrypted on write,
- * decrypted only by `getDecrypted()`. Follows `SettingsService.encode()`/
+ * **Encrypted columns** (`pay_details`/`bank_name`/`branch`/`account`, plus
+ * `national_id`/`kra_pin` since migration `0240` closed a real gap — both
+ * were plain unmasked `varchar` before then, see `pyrl-employee.entity.ts`'s
+ * own doc comment): encrypted on write, decrypted only by `getDecrypted()`.
+ * Follows `SettingsService.encode()`/
  * `.decode()`'s exact precedent (the ONLY other envelope-encryption consumer
  * of `shared/crypto/aes-gcm.util.ts` in this codebase) bit-for-bit: `encode`
  * = `encryptToBuffer(JSON.stringify(value), key).toString("base64")` (the
@@ -89,8 +91,9 @@ export class EmployeesService {
       staffNo: input.staffNo,
       userId: input.userId ?? null,
       fullName: input.fullName,
-      nationalId: input.nationalId,
-      kraPin: input.kraPin,
+      // Migration `0240` — encrypted the same way `payDetails` etc. below are; `encodeField()` never returns null for a required, always-supplied string.
+      nationalId: this.encodeField(input.nationalId) as string,
+      kraPin: this.encodeField(input.kraPin) as string,
       nssfNo: input.nssfNo ?? null,
       shifNo: input.shifNo ?? null,
       employmentType: input.employmentType,
@@ -139,6 +142,8 @@ export class EmployeesService {
     const row = await this.employeeRepository.findByIdOrFail(id);
     return {
       ...row,
+      nationalId: this.decodeField(row.nationalId) as string,
+      kraPin: this.decodeField(row.kraPin) as string,
       payDetails: this.decodeField(row.payDetails),
       bankName: this.decodeField(row.bankName),
       branch: this.decodeField(row.branch),
@@ -182,6 +187,9 @@ export class EmployeesService {
   private redact(row: PyrlEmployeeEntity): PyrlEmployeeEntity {
     return {
       ...row,
+      // NOT NULL columns (unlike the 4 below) — always genuinely set, so always redacted, no null branch needed.
+      nationalId: REDACTED_VALUE,
+      kraPin: REDACTED_VALUE,
       payDetails: row.payDetails ? REDACTED_VALUE : null,
       bankName: row.bankName ? REDACTED_VALUE : null,
       branch: row.branch ? REDACTED_VALUE : null,

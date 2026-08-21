@@ -202,6 +202,7 @@
       "walletLiability": "Wallet Liability",
       "defaultersCount": "Defaulters"
     },
+    "collectionRateOverLimitWarning": "Supérieur à 100 % — inclut probablement des recouvrements sur le solde d'une période précédente",
     "charts": {
       "collectionTrend": "Collection Trend",
       "incomeVsExpense": "Income vs Expense"
@@ -5805,7 +5806,7 @@
         "nationalIdPlaceholder": "ex. 12345678",
         "kraPinLabel": "PIN KRA",
         "kraPinPlaceholder": "ex. A012345678B",
-        "encryptedFieldHint": "Stocké et affiché en texte brut partout où cet employé apparaît (ce point de terminaison de l'API ne le masque pas) — non chiffré, contrairement aux champs bancaires et de paie ci-dessous.",
+        "encryptedFieldHint": "Chiffré au repos et masqué sur chaque écran — visible en texte brut réel uniquement via l'action de révélation des détails sensibles sur la page de détail de cet employé.",
         "nssfNoLabel": "Numéro NSSF",
         "nssfNoPlaceholder": "Facultatif",
         "shifNoLabel": "Numéro SHIF",
@@ -5888,7 +5889,7 @@
         "revealTrigger": "Voir les détails bancaires et d'identité",
         "title": "Détails bancaires et d'identité",
         "hideButton": "Masquer",
-        "sensitiveWarning": "Le nom de la banque, l'agence, le numéro de compte et les autres détails de paie ici sont les valeurs réelles déchiffrées — visibles uniquement via cette action. La carte d'identité nationale et le PIN KRA sont également affichés ici par commodité, mais notez que ces deux éléments ne sont masqués nulle part ailleurs dans cette application — ils sont déjà visibles en texte brut sur la fiche principale de cet employé ci-dessus.",
+        "sensitiveWarning": "Le nom de la banque, l'agence, le numéro de compte et les autres détails de paie ici sont les valeurs réelles déchiffrées — visibles uniquement via cette action. La carte d'identité nationale et le PIN KRA sont également affichés ici, pour la même raison : les deux sont désormais chiffrés et masqués partout ailleurs dans cette application, et c'est le seul endroit où l'un ou l'autre est affiché en texte brut réel.",
         "nationalIdLabel": "Carte d'identité nationale",
         "kraPinLabel": "PIN KRA",
         "bankNameLabel": "Nom de la banque",
@@ -5905,14 +5906,12 @@
         "costCenterLabel": "Centre de coût",
         "hireDateLabel": "Date d'embauche",
         "exitDateLabel": "Date de sortie",
-        "nationalIdLabel": "Carte d'identité nationale",
-        "kraPinLabel": "PIN KRA",
         "nssfNoLabel": "Numéro NSSF",
         "shifNoLabel": "Numéro SHIF",
         "userIdLabel": "Compte de connexion lié",
         "noLinkedUser": "Aucun compte de connexion lié",
         "bankDetailsSectionTitle": "Détails bancaires et d'identité",
-        "bankDetailsSectionHint": "Les données bancaires et de paie réelles ci-dessous ne sont affichées qu'après cette révélation explicite — jamais récupérées automatiquement. (La carte d'identité nationale et le PIN KRA ci-dessus sont affichés exactement comme l'API les renvoie — ce backend ne masque pas ces deux champs sur aucun point de terminaison.)"
+        "bankDetailsSectionHint": "Les données bancaires et de paie réelles ci-dessous ne sont affichées qu'après cette révélation explicite — jamais récupérées automatiquement. La carte d'identité nationale et le PIN KRA y sont également affichés — les deux sont chiffrés au repos et masqués partout ailleurs dans cette application."
       },
       "assignmentPanel": {
         "sectionTitle": "Affectation à une structure salariale",

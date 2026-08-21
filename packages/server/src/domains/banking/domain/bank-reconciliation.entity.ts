@@ -17,18 +17,15 @@ export const BANK_RECONCILIATION_STATUSES: readonly BankReconciliationStatus[] =
  * one period's bank-reconciliation workspace/snapshot for one account
  * (FR-BANK-004.1). Module 16 (Banking) **foundation pass only**.
  *
- * **BR-BANK-03 cross-module flag — IMPORTANT, NOT YET WIRED**: "a period's
- * bank reconciliation must be locked before that period can be
- * HARD_CLOSED." `uq_bank_reconciliation_account_period` (`account_id`,
- * `period_id`) is the exact row a future check against
- * `accounting`'s `FiscalYearsService.hardClosePeriod()` should read
- * (`status='LOCKED'` for every `bank_account` before allowing that period's
- * HARD_CLOSED transition) — this foundation pass does **not** wire that
- * check into `accounting` (out of this pass's own file-touch boundary;
- * `accounting` is not edited here). This is a real, documented cross-module
- * invariant gap — flagged prominently in `docs/phase-5/PROGRESS.md` so a
- * future pass (Banking's own application layer, or a small dedicated
- * `accounting` follow-up) does not lose track of it.
+ * **BR-BANK-03 — wired as of 2026-08-21**: "a period's bank reconciliation
+ * must be locked before that period can be HARD_CLOSED." `accounting`'s
+ * `FiscalYearsService.hardClosePeriod()` now enforces this via a raw SQL
+ * check against `bank_account`/`bank_reconciliation` directly (a normal
+ * TS import would create a circular dependency between `accounting` and
+ * `domains/banking` — see `hardClosePeriod()`'s own doc comment). The
+ * reverse loophole is closed too: `ReconciliationService.reopen()` now
+ * refuses to reopen a `LOCKED` reconciliation once its own period has
+ * already reached `HARD_CLOSED`.
  *
  * `MutableBaseEntity` — real status progression `IN_PROGRESS -> LOCKED ->
  * REOPENED`, `locked_by`/`locked_at` populated only at lock time.

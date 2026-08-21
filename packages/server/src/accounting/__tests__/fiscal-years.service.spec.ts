@@ -45,8 +45,11 @@ describe("FiscalYearsService", () => {
   let dataSource: DataSource;
   let outboxWriter: { write: jest.Mock };
   let service: FiscalYearsService;
+  /** BR-BANK-03's own raw `manager.query()` check — defaults to "no unreconciled active bank accounts", the happy path every pre-existing test expects unchanged. */
+  let managerQuery: jest.Mock;
 
   beforeEach(() => {
+    managerQuery = jest.fn(async () => []);
     fiscalYearRepository = {
       findByName: jest.fn(async () => null),
       findByIdOrFail: jest.fn(async () => makeFiscalYear({})),
@@ -62,7 +65,7 @@ describe("FiscalYearsService", () => {
     };
     dataSource = {
       transaction: jest.fn(async (_isolation: string, work: (manager: EntityManager) => Promise<unknown>) =>
-        work({} as EntityManager),
+        work({ query: managerQuery } as unknown as EntityManager),
       ),
     } as unknown as DataSource;
     outboxWriter = { write: jest.fn(async () => undefined) };
@@ -120,6 +123,21 @@ describe("FiscalYearsService", () => {
       expect(outboxWriter.write).toHaveBeenCalled();
     });
 
+    it("BR-BANK-03: hardClosePeriod rejects when an active bank account has no LOCKED reconciliation for this period", async () => {
+      periodRepository.findByIdOrFail.mockResolvedValue(makePeriod({ status: "SOFT_CLOSED" }));
+      managerQuery.mockResolvedValue([{ id: "acc-1", name: "Main Operating Account" }]);
+      await expect(service.hardClosePeriod("period-1", "actor-1")).rejects.toBeInstanceOf(ValidationException);
+      expect(periodRepository.save).not.toHaveBeenCalled();
+    });
+
+    it("BR-BANK-03: hardClosePeriod succeeds when every active bank account already has a LOCKED reconciliation", async () => {
+      periodRepository.findByIdOrFail.mockResolvedValue(makePeriod({ status: "SOFT_CLOSED" }));
+      managerQuery.mockResolvedValue([]);
+      const result = await service.hardClosePeriod("period-1", "actor-1");
+      expect(result.status).toBe("HARD_CLOSED");
+      expect(managerQuery).toHaveBeenCalledWith(expect.stringContaining("bank_reconciliation"), ["period-1"]);
+    });
+
     it("softClosePeriod rejects an already HARD_CLOSED period", async () => {
       periodRepository.findByIdOrFail.mockResolvedValue(makePeriod({ status: "HARD_CLOSED" }));
       await expect(service.softClosePeriod("period-1", "actor-1")).rejects.toBeInstanceOf(ValidationException);
@@ -154,7 +172,7 @@ describe("FiscalYearsService", () => {
 
       await service.hardClosePeriod("period-1", "actor-1");
 
-      expect(fiscalYearRepository.save).toHaveBeenCalledWith(expect.objectContaining({ status: "CLOSING" }), {});
+      expect(fiscalYearRepository.save).toHaveBeenCalledWith(expect.objectContaining({ status: "CLOSING" }), expect.objectContaining({ query: managerQuery }));
     });
 
     it("moves to LOCKED when every period is HARD_CLOSED", async () => {
@@ -164,7 +182,7 @@ describe("FiscalYearsService", () => {
 
       await service.hardClosePeriod("period-1", "actor-1");
 
-      expect(fiscalYearRepository.save).toHaveBeenCalledWith(expect.objectContaining({ status: "LOCKED" }), {});
+      expect(fiscalYearRepository.save).toHaveBeenCalledWith(expect.objectContaining({ status: "LOCKED" }), expect.objectContaining({ query: managerQuery }));
     });
   });
 });

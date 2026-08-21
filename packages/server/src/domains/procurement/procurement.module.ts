@@ -4,6 +4,7 @@ import { AccountingModule } from "../../accounting";
 import { ApprovalsModule } from "../../platform/approvals";
 import { CommsModule } from "../../platform/comms";
 import { SettingsModule } from "../../platform/settings";
+import { InventoryModule } from "../inventory";
 import { ProcSupplierEntity } from "./domain/proc-supplier.entity";
 import { ProcRequisitionEntity } from "./domain/proc-requisition.entity";
 import { ProcRequisitionLineEntity } from "./domain/proc-requisition-line.entity";
@@ -92,6 +93,7 @@ import { ContractsController } from "./api/contracts.controller";
     SettingsModule,
     ApprovalsModule,
     CommsModule,
+    InventoryModule,
   ],
   controllers: [
     SuppliersController,

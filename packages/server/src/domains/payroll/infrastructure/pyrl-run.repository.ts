@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { EntityManager, Repository } from "typeorm";
+import { EntityManager, In, Repository } from "typeorm";
 import { NotFoundException } from "../../../shared/exceptions/not-found.exception";
-import { PyrlRunEntity, PyrlRunStatus } from "../domain/pyrl-run.entity";
+import { PYRL_RUN_COMMITTED_STATUSES, PyrlRunEntity, PyrlRunStatus } from "../domain/pyrl-run.entity";
 
 export interface ListPyrlRunsFilter {
   periodKey?: string;
@@ -11,7 +11,7 @@ export interface ListPyrlRunsFilter {
 
 /**
  * Plain repository wrapper for `pyrl_run`, plus
- * `findCommittedMainForPeriod()` — BR-PYRL-02's exact lookup (mirrors
+ * `findFinalizedMainForPeriod()` — BR-PYRL-02's exact lookup (mirrors
  * `uq_pyrl_main_run_p`'s partial-unique invariant: at most one row can ever
  * match).
  */
@@ -39,13 +39,27 @@ export class PyrlRunRepository {
     return (manager?.getRepository(PyrlRunEntity) ?? this.repo).find({ where, order: { periodKey: "DESC" } });
   }
 
-  /** BR-PYRL-02: the COMMITTED MAIN run for a period, if any (at most one, by `uq_pyrl_main_run_p`). */
-  async findCommittedMainForPeriod(
+  /**
+   * BR-PYRL-02: the finalized (COMMITTED/PAID/FILED) MAIN run for a period,
+   * if any — at most one, by `uq_pyrl_main_run_p` (migration `0241` widened
+   * both this query and that index from a `status='COMMITTED'`-only match,
+   * a real bug: a run stays "the finalized one" for a period for its whole
+   * remaining lifetime, not just the single instant its status literally
+   * equals `COMMITTED` — the old narrow match silently stopped finding a
+   * period's own run the moment it normally progressed to `PAID`/`FILED`,
+   * which broke 3 real call sites: `createRun()`'s own duplicate-MAIN-run
+   * guard, BR-PYRL-03's prior-period deferred-loan-recovery carryover
+   * lookup, and `review()`'s prior-period variance-report comparison —
+   * every one of them was silently finding "no prior run" for any REAL
+   * historical period, which by the time you're computing the NEXT period
+   * has almost always already moved past `COMMITTED`).
+   */
+  async findFinalizedMainForPeriod(
     periodKey: string,
     manager?: EntityManager,
   ): Promise<PyrlRunEntity | null> {
     return (manager?.getRepository(PyrlRunEntity) ?? this.repo).findOne({
-      where: { periodKey, runKind: "MAIN", status: "COMMITTED" },
+      where: { periodKey, runKind: "MAIN", status: In(PYRL_RUN_COMMITTED_STATUSES) },
     });
   }
 

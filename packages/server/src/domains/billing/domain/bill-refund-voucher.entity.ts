@@ -7,6 +7,13 @@ import { GlJournalEntity } from "../../../accounting";
 // see `BillFeeStructureEntity`'s import comment for why (avoids a real
 // circular-require crash via `students.module.ts`'s controllers/services).
 import { StdStudentEntity } from "../../students/domain/std-student.entity";
+// Same direct-entity-file-import discipline as StdStudentEntity above (and
+// every domains/billing entity that references it) — never `domains/payments`'
+// barrel, which would eagerly pull in `PaymentsModule`/its controllers and
+// create a genuine circular-require crash, since `PaymentsModule` already
+// imports `BillingModule` at the full module level (`payments.module.ts`).
+// See module-deps.json's `domains/billing` entry for the full rationale.
+import { PayMpesaTransactionEntity } from "../../payments/domain/pay-mpesa-transaction.entity";
 
 export type BillRefundMethod = "CASH" | "BANK" | "MPESA_B2C";
 export const BILL_REFUND_METHODS: readonly BillRefundMethod[] = ["CASH", "BANK", "MPESA_B2C"];
@@ -36,12 +43,11 @@ export const BILL_REFUND_VOUCHER_STATUSES: readonly BillRefundVoucherStatus[] = 
  * PAID) -> CANCELLED`, with `journal_id`/`b2c_transaction_id` populated only
  * once posted/paid.
  *
- * `b2c_transaction_id` is a **forward reference to `pay_mpesa_transaction`
- * (Module 10/Payments, doesn't exist yet)** — deliberately a bare `uuid`
- * column with no FK and no `@ManyToOne`, same "forward reference, no FK yet"
- * treatment `std_student.sponsor_id`/`.transport_route_id` received in
- * Module 8 before this pass closed that gap; Module 10 should add the real
- * FK constraint via its own migration once `pay_mpesa_transaction` exists.
+ * `b2c_transaction_id` is now a real FK to `pay_mpesa_transaction`
+ * (migration `0243`, closing the forward-reference gap this doc comment
+ * used to describe — `pay_mpesa_transaction` didn't exist when `bill_*` was
+ * first built, same situation `std_student.sponsor_id`/`.transport_route_id`
+ * were in before Module 9 closed that gap, migration `0071`).
  * `payee` (jsonb) is an opaque payee-details bag (name/account/phone,
  * method-dependent shape) interpreted by the next pass's refund service.
  */
@@ -93,7 +99,10 @@ export class BillRefundVoucherEntity extends MutableBaseEntity {
   @JoinColumn({ name: "journal_id" })
   journal?: GlJournalEntity | null;
 
-  /** Forward reference to `pay_mpesa_transaction` (Module 10/Payments) — bare uuid, no FK. See class doc comment. */
   @Column({ type: "uuid", name: "b2c_transaction_id", nullable: true })
   b2cTransactionId!: string | null;
+
+  @ManyToOne(() => PayMpesaTransactionEntity, { nullable: true, onDelete: "RESTRICT" })
+  @JoinColumn({ name: "b2c_transaction_id" })
+  b2cTransaction?: PayMpesaTransactionEntity | null;
 }

@@ -108,7 +108,7 @@ export { SharedInfraModule } from "./shared/infra/shared-infra.module";
 export { AppConfigService } from "./shared/config/app-config.service";
 export { REDIS_CLIENT, redisClientProvider } from "./shared/cache/redis.provider";
 export { AllExceptionsFilter } from "./shared/exceptions/all-exceptions.filter";
-export { Public } from "./platform/auth/infrastructure/guards/public.decorator";
+export { Public } from "./shared/rbac/public.decorator";
 export { ExemptFromLicenseGuard } from "./shared/rbac/exempt-from-license-guard.decorator";
 
 // Outbox dispatcher (2026-07-28, "apps/worker" pass) — `apps/worker`'s

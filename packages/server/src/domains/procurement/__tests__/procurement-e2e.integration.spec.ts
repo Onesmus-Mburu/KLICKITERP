@@ -44,6 +44,8 @@ import { GlBudgetRepository } from "../../../accounting/infrastructure/gl-budget
 
 import { NotificationsService } from "../../../platform/comms";
 
+import { InvStoreRepository, StockMovementsService } from "../../inventory";
+
 import { ProcSupplierEntity } from "../domain/proc-supplier.entity";
 import { ProcRequisitionEntity } from "../domain/proc-requisition.entity";
 import { ProcRequisitionLineEntity } from "../domain/proc-requisition-line.entity";
@@ -265,6 +267,8 @@ describe("procurement module — end-to-end capstone (real DataSource)", () => {
         postingService,
         numberingService,
         settingsServiceStub,
+        {} as unknown as InvStoreRepository, // never touched — this test's GRN line has item_id null (P-19), see the "3. GRN" step below.
+        {} as unknown as StockMovementsService,
       );
       const supplierInvoicesService = new SupplierInvoicesService(
         supplierInvoiceRepository,

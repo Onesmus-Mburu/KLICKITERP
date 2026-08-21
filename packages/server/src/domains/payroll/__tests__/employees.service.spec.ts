@@ -1,6 +1,14 @@
 import { AppConfigService } from "../../../shared/config/app-config.service";
+import { encryptToBuffer } from "../../../shared/crypto/aes-gcm.util";
 import { EmployeesService } from "../application/employees.service";
 import { PyrlEmployeeEntity } from "../domain/pyrl-employee.entity";
+
+const testConfig = new AppConfigService();
+
+/** Migration 0240 — `nationalId`/`kraPin` are NOT NULL and always genuinely encrypted now, so `makeEmployee()`'s defaults must be real, valid ciphertext (not a bare literal) — any test that reaches `getDecrypted()` on an un-overridden fixture would otherwise crash trying to AES-decrypt a non-ciphertext string. Encrypts the same "12345678"/"A123456789Z" values the old plain-string defaults used, so any test asserting on the DECRYPTED value unchanged still gets those exact strings back. */
+function encryptedFixtureField(plaintext: string): string {
+  return encryptToBuffer(JSON.stringify(plaintext), testConfig.appEncryptionKeyBase64).toString("base64");
+}
 
 function makeEmployee(overrides: Partial<PyrlEmployeeEntity>): PyrlEmployeeEntity {
   return {
@@ -8,8 +16,8 @@ function makeEmployee(overrides: Partial<PyrlEmployeeEntity>): PyrlEmployeeEntit
     staffNo: "EMP-001",
     userId: null,
     fullName: "Jane Doe",
-    nationalId: "12345678",
-    kraPin: "A123456789Z",
+    nationalId: encryptedFixtureField("12345678"),
+    kraPin: encryptedFixtureField("A123456789Z"),
     nssfNo: null,
     shifNo: null,
     employmentType: "PERMANENT",
@@ -85,12 +93,19 @@ describe("EmployeesService", () => {
       expect(createCallArg.payDetails).not.toContain("50000");
       expect(typeof createCallArg.bankName).toBe("string");
       expect(createCallArg.bankName).not.toContain("Equity Bank");
+      // Migration 0240 — nationalId/kraPin are encrypted the same way.
+      expect(typeof createCallArg.nationalId).toBe("string");
+      expect(createCallArg.nationalId).not.toContain("87654321");
+      expect(typeof createCallArg.kraPin).toBe("string");
+      expect(createCallArg.kraPin).not.toContain("B987654321Z");
 
       // get()/create() return a redacted view — never ciphertext, never plaintext.
       expect(created.payDetails).toBe("***");
       expect(created.bankName).toBe("***");
       expect(created.branch).toBe("***");
       expect(created.account).toBe("***");
+      expect(created.nationalId).toBe("***");
+      expect(created.kraPin).toBe("***");
     });
 
     it("leaves encrypted fields NULL when omitted", async () => {
@@ -145,6 +160,9 @@ describe("EmployeesService", () => {
       expect(decrypted.bankName).toBe("KCB");
       expect(decrypted.branch).toBe("Westlands");
       expect(decrypted.account).toBe("9988776655");
+      // Migration 0240 — nationalId/kraPin round-trip through the exact same envelope.
+      expect(decrypted.nationalId).toBe("33334444");
+      expect(decrypted.kraPin).toBe("D333444555Z");
     });
 
     it("returns null for unset encrypted fields", async () => {
@@ -160,6 +178,13 @@ describe("EmployeesService", () => {
       repo.findByIdOrFail.mockResolvedValue(makeEmployee({ payDetails: "ciphertext-blob" }));
       const row = await service.get("emp-1");
       expect(row.payDetails).toBe("***");
+    });
+
+    it("get() always redacts nationalId/kraPin — they're NOT NULL, never null like the optional 4", async () => {
+      repo.findByIdOrFail.mockResolvedValue(makeEmployee({}));
+      const row = await service.get("emp-1");
+      expect(row.nationalId).toBe("***");
+      expect(row.kraPin).toBe("***");
     });
 
     it("list() redacts every row", async () => {

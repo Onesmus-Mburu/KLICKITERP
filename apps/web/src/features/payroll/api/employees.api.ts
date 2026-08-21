@@ -12,25 +12,21 @@ import { unwrapApiResult } from "@/lib/api-error";
  * needs `payroll:employee:manage` too (not `:view` — a stricter permission
  * than the plain detail read, FR-PYRL-012.1's own access-control split).
  *
- * **A real, live-verified finding that contradicts this part's own task
- * brief**: `nationalId`/`kraPin` are NEVER redacted or encrypted anywhere on
- * this controller, despite the brief's own claim that both are "ENCRYPTED at
- * rest". Confirmed directly: `pyrl-employee.entity.ts` types both as plain
- * `varchar` columns (NOT the `jsonb` "(enc)" shape `payDetails`/`bankName`/
- * `branch`/`account` genuinely use), and `EmployeesService.redact()` only
- * ever touches those 4 — `nationalId`/`kraPin` pass through as real
- * plaintext on EVERY read, including the plain (non-`/decrypted`) `GET`,
- * `list()`, and `search()`. A real round trip during this part's own live
- * verification created an employee with `nationalId: "23456789"` and
- * re-fetched it via the plain `GET` — the response echoed the real value
- * back, not `"***"`; `psql` independently confirmed the DB column itself
- * stores it unencrypted. This is a genuine backend gap, not a frontend
- * concern — this file's response type is written to reflect the REAL
- * behavior (`nationalId`/`kraPin` always real plaintext), not the brief's
- * claim, and the UI (`create-employee-dialog.tsx`'s `encryptedFieldHint`
- * copy, `employee-bank-details-panel.tsx`) is written to not repeat the
- * false "encrypted/masked" claim either. See `docs/phase-6/PROGRESS.md`'s
- * own Slice 22 Part 1 write-up for the full finding.
+ * **UPDATE (migration `0240`) — the gap below is now fixed.** `nationalId`/
+ * `kraPin` used to be NEVER redacted or encrypted anywhere on this
+ * controller, contradicting Part 1's own task brief, which claimed both
+ * were "ENCRYPTED at rest" — a real, live-verified finding at the time
+ * (`pyrl-employee.entity.ts` typed both as plain `varchar`, not the `jsonb`
+ * "(enc)" shape `payDetails`/`bankName`/`branch`/`account` genuinely used,
+ * and `EmployeesService.redact()` never touched either). `nationalId`/
+ * `kraPin` are now encrypted at rest and redacted (`"***"`) on every read
+ * except `/decrypted`, the exact same way the other 4 fields already work —
+ * confirmed by reading `pyrl-employee.entity.ts`/`employees.service.ts`
+ * directly, not assumed. This file's response type never needed to change
+ * (`nationalId`/`kraPin` were always `string`-typed here, same before and
+ * after — only the VALUE they hold on a redacted read changed, from real
+ * plaintext to `"***"`), so no type-level edit was needed in this file for
+ * the fix itself.
  *
  * **The zod-inferred `PyrlEmployeeResponseDto` (`@klickit/contracts`) is the
  * CORRECT wire shape and is used directly as this file's read-return type —

@@ -119,12 +119,15 @@ export interface CreateAdjustmentInput {
  * `outstanding` jsonb blob, a real, persisted audit trail rather than an
  * invented column.
  *
- * **BR-BANK-03 cross-module flag, still open** (restated from the
- * foundation pass's own entity doc comment and `module-deps.json`): a
- * period's bank reconciliation must be `LOCKED` before that period can be
- * `HARD_CLOSED` — `accounting`'s `FiscalYearsService.hardClosePeriod()`
- * does not check this yet; wiring it is out of THIS pass's own scope too
- * (would require editing `accounting`), still flagged forward.
+ * **UPDATE (2026-08-21) — BR-BANK-03 is now wired, both directions.**
+ * `accounting`'s `FiscalYearsService.hardClosePeriod()` now requires every
+ * active `bank_account` to have a `LOCKED` reconciliation for that period
+ * (via a raw SQL check — `accounting` cannot import `domains/banking`
+ * without creating a real circular dependency, see that method's own doc
+ * comment). `reopen()` below now ALSO refuses to reopen a reconciliation
+ * whose period is already `HARD_CLOSED` — the necessary reverse-direction
+ * complement, closing a loophole that would otherwise let someone silently
+ * defeat the forward check right after satisfying it.
  */
 @Injectable()
 export class ReconciliationService {
@@ -422,7 +425,21 @@ export class ReconciliationService {
     return this.reconciliationRepository.save(reconciliation, em);
   }
 
-  /** See class doc comment "reopen()" for the `outstanding.reopenHistory` persistence mechanism. */
+  /**
+   * See class doc comment "reopen()" for the `outstanding.reopenHistory`
+   * persistence mechanism.
+   *
+   * **BR-BANK-03's own reverse loophole, closed alongside the forward
+   * direction (`FiscalYearsService.hardClosePeriod()`)**: without this
+   * check, a reconciliation could be locked, its period hard-closed (now
+   * that hard-close genuinely requires a LOCKED reconciliation), and then
+   * STILL reopened afterward — silently defeating the very guarantee
+   * BR-BANK-03 exists to provide, since the reconciliation would claim
+   * `REOPENED`/not-finalized while its own period is permanently frozen at
+   * the GL level. `periodRepository` was already a real, existing
+   * dependency of this service (used by `lock()`), so this needed no new
+   * cross-module wiring.
+   */
   async reopen(em: EntityManager, reconciliationId: string, reason: string, actorId: string): Promise<BankReconciliationEntity> {
     if (!reason || reason.trim().length === 0) {
       throw new ValidationException("ReconciliationService.reopen: a non-empty reason is required (banking:reconciliation:reopen)");
@@ -431,6 +448,12 @@ export class ReconciliationService {
     if (reconciliation.status !== "LOCKED") {
       throw new ValidationException(
         `Only a LOCKED bank_reconciliation can be reopened (reconciliation ${reconciliationId} status=${reconciliation.status})`,
+      );
+    }
+    const period = await this.periodRepository.findByIdOrFail(reconciliation.periodId, em);
+    if (period.status === "HARD_CLOSED") {
+      throw new ValidationException(
+        `Cannot reopen bank_reconciliation ${reconciliationId} — its period ${period.id} is already HARD_CLOSED (BR-BANK-03: reopening would defeat the reconciliation guarantee hard-close already relied on)`,
       );
     }
 

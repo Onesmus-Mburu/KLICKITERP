@@ -202,6 +202,7 @@
       "walletLiability": "Wallet Liability",
       "defaultersCount": "Defaulters"
     },
+    "collectionRateOverLimitWarning": "Above 100% — likely includes receipts collected against a prior period's balance",
     "charts": {
       "collectionTrend": "Collection Trend",
       "incomeVsExpense": "Income vs Expense"
@@ -5805,7 +5806,7 @@
         "nationalIdPlaceholder": "e.g. 12345678",
         "kraPinLabel": "KRA PIN",
         "kraPinPlaceholder": "e.g. A012345678B",
-        "encryptedFieldHint": "Stored and shown in plain text everywhere this employee appears (this API endpoint does not mask it) — not encrypted, unlike the bank & pay fields below.",
+        "encryptedFieldHint": "Encrypted at rest and redacted on every screen — only visible as real plaintext via the sensitive-details reveal action on this employee's detail page.",
         "nssfNoLabel": "NSSF number",
         "nssfNoPlaceholder": "Optional",
         "shifNoLabel": "SHIF number",
@@ -5888,7 +5889,7 @@
         "revealTrigger": "View bank & ID details",
         "title": "Bank & ID details",
         "hideButton": "Hide",
-        "sensitiveWarning": "Bank name, branch, account number, and other pay details here are the real, decrypted values — only ever visible via this action. National ID and KRA PIN are shown here too for convenience, but note these two are NOT masked anywhere in this app — they're already visible in plain text on this employee's main detail card above.",
+        "sensitiveWarning": "Bank name, branch, account number, and other pay details here are the real, decrypted values — only ever visible via this action. National ID and KRA PIN are shown here too, for the same reason: both are now encrypted and redacted everywhere else in this app, and this is the only place either is ever shown as real plaintext.",
         "nationalIdLabel": "National ID",
         "kraPinLabel": "KRA PIN",
         "bankNameLabel": "Bank name",
@@ -5905,14 +5906,12 @@
         "costCenterLabel": "Cost center",
         "hireDateLabel": "Hire date",
         "exitDateLabel": "Exit date",
-        "nationalIdLabel": "National ID",
-        "kraPinLabel": "KRA PIN",
         "nssfNoLabel": "NSSF number",
         "shifNoLabel": "SHIF number",
         "userIdLabel": "Linked login account",
         "noLinkedUser": "No linked login account",
         "bankDetailsSectionTitle": "Bank & ID details",
-        "bankDetailsSectionHint": "Bank and pay plaintext below is only ever shown after this explicit reveal — never fetched automatically. (National ID and KRA PIN above are shown exactly as the API returns them — this backend does not mask those two fields on any endpoint.)"
+        "bankDetailsSectionHint": "Bank and pay plaintext below is only ever shown after this explicit reveal — never fetched automatically. National ID and KRA PIN are shown there too — both are encrypted at rest and redacted everywhere else in this app."
       },
       "assignmentPanel": {
         "sectionTitle": "Salary structure assignment",

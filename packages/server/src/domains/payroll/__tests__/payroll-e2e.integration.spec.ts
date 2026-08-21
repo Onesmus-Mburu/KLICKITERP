@@ -57,6 +57,8 @@ import { PyrlRunLineEntity } from "../domain/pyrl-run-line.entity";
 import { PyrlRunLineRepository } from "../infrastructure/pyrl-run-line.repository";
 import { PyrlRunLineComponentEntity } from "../domain/pyrl-run-line-component.entity";
 import { PyrlRunLineComponentRepository } from "../infrastructure/pyrl-run-line-component.repository";
+import { PyrlRunLineLoanRecoveryEntity } from "../domain/pyrl-run-line-loan-recovery.entity";
+import { PyrlRunLineLoanRecoveryRepository } from "../infrastructure/pyrl-run-line-loan-recovery.repository";
 import { PyrlStatutoryTableEntity } from "../domain/pyrl-statutory-table.entity";
 import { PyrlStatutoryTableRepository } from "../infrastructure/pyrl-statutory-table.repository";
 import { StatutoryTablesService } from "../application/statutory-tables.service";
@@ -213,6 +215,7 @@ describe("payroll module — end-to-end capstone against the REAL 0900 statutory
       const runRepository = new PyrlRunRepository(source.getRepository(PyrlRunEntity));
       const runLineRepository = new PyrlRunLineRepository(source.getRepository(PyrlRunLineEntity));
       const runLineComponentRepository = new PyrlRunLineComponentRepository(source.getRepository(PyrlRunLineComponentEntity));
+      const runLineLoanRecoveryRepository = new PyrlRunLineLoanRecoveryRepository(source.getRepository(PyrlRunLineLoanRecoveryEntity));
       const statutoryTableRepository = new PyrlStatutoryTableRepository(source.getRepository(PyrlStatutoryTableEntity));
       const statutoryTablesService = new StatutoryTablesService(statutoryTableRepository);
       const statutoryCalculationService = new StatutoryCalculationService(statutoryTablesService);
@@ -223,6 +226,7 @@ describe("payroll module — end-to-end capstone against the REAL 0900 statutory
         runRepository,
         runLineRepository,
         runLineComponentRepository,
+        runLineLoanRecoveryRepository,
         employeeRepository,
         assignmentRepository,
         structureComponentRepository,

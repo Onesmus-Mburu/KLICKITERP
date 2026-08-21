@@ -132,11 +132,41 @@ export function useIncomeVsExpense(fromPeriodId: string | undefined, toPeriodId:
   });
 }
 
-/** `POST /dashboard/refresh-mvs` — a real mutation invalidating every `["dashboard", ...]` query key on success, per docs/phase-6/PROGRESS.md scope item 8's "Refresh data" button. */
+const REFRESH_MVS_TIMEOUT_MS = 20_000;
+
+/**
+ * `dashboard/page.tsx`'s mount effect fires this once and gates 6 KPI tiles
+ * (`outstandingFees`/`defaultersCount`/`revenueExpenseSurplus`×3/
+ * `walletLiability`) behind it via `mvKpisReady = isSuccess || isError` — a
+ * real, reproducible bug found live: if the underlying `apiClient.POST(...)`
+ * promise never settles (a dropped connection mid-request, e.g. a backend
+ * restart landing exactly during this call, or any network blip), `fetch()`
+ * can leave the promise neither resolved nor rejected, so this mutation
+ * never reaches `isSuccess`/`isError` — `mvKpisReady` then stays `false`
+ * forever, permanently stranding those 6 tiles in their loading skeleton.
+ * Worse, the page's own manual "Refresh data" button is disabled by this
+ * SAME `refreshMutation.isPending` flag, so a stuck mount-refresh also takes
+ * away the one manual escape hatch — the only recovery was a full page
+ * reload. `Promise.race()` against a plain `setTimeout` rejection bounds
+ * this call to `REFRESH_MVS_TIMEOUT_MS`: a timeout rejects the mutation the
+ * same way a real HTTP error would, which flips `isError` true, which
+ * unblocks the gate (falling back to whatever the MVs already hold, same
+ * graceful-degrade the plan already intended for a genuine server error) and
+ * re-enables the Refresh button for a manual retry — no more permanent
+ * stuck state from a single bad request.
+ */
 export function useRefreshDashboard() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async () => unwrapApiResult<RefreshMvsResponse>(await apiClient.POST("/api/v1/dashboard/refresh-mvs")),
+    mutationFn: async () => {
+      const result = await Promise.race([
+        apiClient.POST("/api/v1/dashboard/refresh-mvs"),
+        new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Dashboard refresh timed out — the server may be temporarily unavailable.")), REFRESH_MVS_TIMEOUT_MS),
+        ),
+      ]);
+      return unwrapApiResult<RefreshMvsResponse>(result);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: DASHBOARD_QUERY_KEY });
     },

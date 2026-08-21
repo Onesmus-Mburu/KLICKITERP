@@ -4,6 +4,10 @@ import { Money } from "../../../shared/money/money";
 import { RequiredMoneyTransformer } from "../../../shared/money/money.transformer";
 import { ProcGrnEntity } from "./proc-grn.entity";
 import { ProcPoLineEntity } from "./proc-po-line.entity";
+// Direct entity-file import, never `domains/inventory`'s barrel — same
+// circular-require-avoidance discipline `proc-po-line.entity.ts`'s own
+// `InvItemEntity` import already establishes for this exact module pair.
+import { InvStoreEntity } from "../../inventory/domain/inv-store.entity";
 
 /**
  * Maps to `proc_grn_line` (docs/phase-4/04-schema-operations.md §2) — one
@@ -25,6 +29,11 @@ import { ProcPoLineEntity } from "./proc-po-line.entity";
  * tolerance percentage, read from Settings, belongs in the next pass's
  * GRN-posting service — the DB trigger is the non-configurable hard ceiling
  * only, never the primary enforcement point).
+ *
+ * **`store_id` added 2026-08-21 (migration `0244`)** — closes the
+ * GRN->Inventory wiring gap: `GrnService.post()`'s P-18 branch now calls
+ * `StockMovementsService.recordReceipt()` for stock items, which requires
+ * knowing which `inv_store` the goods land in.
  */
 @Entity("proc_grn_line")
 @Check("ck_proc_grn_line_received_qty_positive", `"received_qty" > 0`)
@@ -63,4 +72,17 @@ export class ProcGrnLineEntity extends MutableBaseEntity {
     transformer: RequiredMoneyTransformer,
   })
   unitCost!: Money;
+
+  /**
+   * Which `inv_store` the goods land in (migration `0244`) — nullable at the
+   * schema level (a P-19/non-stock line has no meaningful store), but
+   * `GrnService.receive()` requires it whenever `poLine.itemId` is set, so
+   * `post()`'s P-18 branch can call `StockMovementsService.recordReceipt()`.
+   */
+  @Column({ type: "uuid", name: "store_id", nullable: true })
+  storeId!: string | null;
+
+  @ManyToOne(() => InvStoreEntity, { nullable: true, onDelete: "RESTRICT" })
+  @JoinColumn({ name: "store_id" })
+  store?: InvStoreEntity | null;
 }

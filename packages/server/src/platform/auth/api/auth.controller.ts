@@ -5,7 +5,7 @@ import { AuthService } from "../application/auth.service";
 import { TwoFactorService } from "../application/two-factor.service";
 import { OtpService } from "../application/otp.service";
 import { PasswordService } from "../application/password.service";
-import { Public } from "../infrastructure/guards/public.decorator";
+import { Public } from "../../../shared/rbac/public.decorator";
 import { ExemptFromLicenseGuard } from "../../../shared/rbac/exempt-from-license-guard.decorator";
 import { LoginDto } from "./dto/login.dto";
 import { TwoFactorVerifyDto } from "./dto/two-factor-verify.dto";

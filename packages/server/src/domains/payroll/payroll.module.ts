@@ -15,6 +15,7 @@ import { PyrlLoanScheduleEntity } from "./domain/pyrl-loan-schedule.entity";
 import { PyrlRunEntity } from "./domain/pyrl-run.entity";
 import { PyrlRunLineEntity } from "./domain/pyrl-run-line.entity";
 import { PyrlRunLineComponentEntity } from "./domain/pyrl-run-line-component.entity";
+import { PyrlRunLineLoanRecoveryEntity } from "./domain/pyrl-run-line-loan-recovery.entity";
 import { PyrlOneoffEntity } from "./domain/pyrl-oneoff.entity";
 import { PyrlEmployeeRepository } from "./infrastructure/pyrl-employee.repository";
 import { PyrlComponentRepository } from "./infrastructure/pyrl-component.repository";
@@ -28,6 +29,7 @@ import { PyrlLoanScheduleRepository } from "./infrastructure/pyrl-loan-schedule.
 import { PyrlRunRepository } from "./infrastructure/pyrl-run.repository";
 import { PyrlRunLineRepository } from "./infrastructure/pyrl-run-line.repository";
 import { PyrlRunLineComponentRepository } from "./infrastructure/pyrl-run-line-component.repository";
+import { PyrlRunLineLoanRecoveryRepository } from "./infrastructure/pyrl-run-line-loan-recovery.repository";
 import { PyrlOneoffRepository } from "./infrastructure/pyrl-oneoff.repository";
 import { EmployeesService } from "./application/employees.service";
 import { ComponentsService } from "./application/components.service";
@@ -86,6 +88,7 @@ import { OneoffsController } from "./api/oneoffs.controller";
       PyrlRunEntity,
       PyrlRunLineEntity,
       PyrlRunLineComponentEntity,
+      PyrlRunLineLoanRecoveryEntity,
       PyrlOneoffEntity,
     ]),
     SettingsModule,
@@ -116,6 +119,7 @@ import { OneoffsController } from "./api/oneoffs.controller";
     PyrlRunRepository,
     PyrlRunLineRepository,
     PyrlRunLineComponentRepository,
+    PyrlRunLineLoanRecoveryRepository,
     PyrlOneoffRepository,
     EmployeesService,
     ComponentsService,
@@ -141,6 +145,7 @@ import { OneoffsController } from "./api/oneoffs.controller";
     PyrlRunRepository,
     PyrlRunLineRepository,
     PyrlRunLineComponentRepository,
+    PyrlRunLineLoanRecoveryRepository,
     PyrlOneoffRepository,
     EmployeesService,
     ComponentsService,

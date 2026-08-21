@@ -309,5 +309,12 @@ describe("ReconciliationService", () => {
       expect(outstanding.reopenHistory).toHaveLength(1);
       expect(outstanding.reopenHistory[0]).toEqual(expect.objectContaining({ reason: "correcting an error", actorId: "actor-1" }));
     });
+
+    it("BR-BANK-03: rejects reopening once the reconciliation's own period is HARD_CLOSED", async () => {
+      reconciliationRepository.findByIdOrFail.mockResolvedValue(makeReconciliation({ status: "LOCKED" }));
+      periodRepository.findByIdOrFail.mockResolvedValue({ id: "period-1", fiscalYearId: "fy-1", seq: 1, endsOn: "2026-01-31", status: "HARD_CLOSED" } as GlPeriodEntity);
+      await expect(service.reopen(makeEm(), "recon-1", "correcting an error", "actor-1")).rejects.toBeInstanceOf(ValidationException);
+      expect(reconciliationRepository.save).not.toHaveBeenCalled();
+    });
   });
 });

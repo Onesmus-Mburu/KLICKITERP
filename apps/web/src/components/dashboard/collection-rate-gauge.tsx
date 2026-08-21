@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { PolarAngleAxis, RadialBar, RadialBarChart, ResponsiveContainer } from "recharts";
 
 /**
@@ -16,10 +17,22 @@ import { PolarAngleAxis, RadialBar, RadialBarChart, ResponsiveContainer } from "
  * Null handling mirrors `dashboard/page.tsx`'s original inline
  * `data.collectionRate === null ? "—" : ...` exactly — same check, same "—"
  * fallback, just relocated into this component.
+ *
+ * **Over-100% handling (2026-08-21)**: the raw ratio can legitimately exceed
+ * 100% (e.g. late/backdated receipts collected against a small opening AR
+ * balance — confirmed arithmetically correct, not a bug, see
+ * `docs/phase-6/PROGRESS.md` Slice 28's "Honest gaps"). The gauge's own fill
+ * stays visually clamped at 100% (a ring can't overflow itself), but the
+ * NUMBER shown is always the true, uncapped rate — never hidden or
+ * distorted, consistent with this component's own "no invented thresholds"
+ * design decision above. A small advisory note appears only when the true
+ * rate exceeds 100%, so the common case stays unchanged.
  */
 export function CollectionRateGauge({ rate, subtitle }: { rate: number | null; subtitle?: string }) {
+  const t = useTranslations("dashboard");
   const pct = rate === null ? 0 : Math.max(0, Math.min(1, rate)) * 100;
   const data = [{ value: pct }];
+  const isOverLimit = rate !== null && rate > 1;
 
   return (
     <div className="flex h-64 w-full flex-col items-center justify-center">
@@ -35,6 +48,7 @@ export function CollectionRateGauge({ rate, subtitle }: { rate: number | null; s
         </div>
       </div>
       {subtitle && <p className="mt-2 text-xs text-muted-foreground">{subtitle}</p>}
+      {isOverLimit && <p className="mt-1 text-xs text-warning">{t("collectionRateOverLimitWarning")}</p>}
     </div>
   );
 }

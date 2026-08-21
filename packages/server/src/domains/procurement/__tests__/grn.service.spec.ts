@@ -32,6 +32,7 @@ function makeGrnLine(overrides: Partial<ProcGrnLineEntity>): ProcGrnLineEntity {
     rejectedQty: "0.0000",
     rejectionReason: null,
     unitCost: Money.fromInt(20),
+    storeId: null,
     ...overrides,
   } as ProcGrnLineEntity;
 }
@@ -73,6 +74,8 @@ describe("GrnService", () => {
   let postingService: { post: jest.Mock };
   let numberingService: { allocate: jest.Mock };
   let settingsService: { getTyped: jest.Mock };
+  let invStoreRepository: { findByIdOrFail: jest.Mock };
+  let stockMovementsService: { recordReceipt: jest.Mock };
   let service: GrnService;
 
   const em = {} as EntityManager;
@@ -106,6 +109,8 @@ describe("GrnService", () => {
     postingService = { post: jest.fn(async () => ({ id: "journal-1", lines: [] })) };
     numberingService = { allocate: jest.fn(async () => "GRN-000001") };
     settingsService = { getTyped: jest.fn(async (_key: string, def: number) => def) };
+    invStoreRepository = { findByIdOrFail: jest.fn(async () => ({ id: "store-1", name: "Main Store" })) };
+    stockMovementsService = { recordReceipt: jest.fn(async () => ({ id: "movement-1" })) };
 
     service = new GrnService(
       grnRepository as never,
@@ -117,6 +122,8 @@ describe("GrnService", () => {
       postingService as never,
       numberingService as never,
       settingsService as never,
+      invStoreRepository as never,
+      stockMovementsService as never,
     );
   });
 
@@ -200,6 +207,32 @@ describe("GrnService", () => {
       expect(grn.status).toBe("DRAFT");
       expect(grn.number).toMatch(/^DRAFT-/);
     });
+
+    it("stock item (item_id set): requires storeId, rejects when missing", async () => {
+      poLineRepository.findByIdOrFail.mockResolvedValue(makePoLine({ qty: "10", itemId: "item-1" }));
+      await expect(
+        service.receive(em, { poId: "po-1", receivedBy: "user-1", lines: oneLine }),
+      ).rejects.toBeInstanceOf(ValidationException);
+      expect(invStoreRepository.findByIdOrFail).not.toHaveBeenCalled();
+    });
+
+    it("stock item (item_id set): validates the store exists and persists storeId on the line", async () => {
+      poLineRepository.findByIdOrFail.mockResolvedValue(makePoLine({ qty: "10", itemId: "item-1" }));
+      await service.receive(em, {
+        poId: "po-1",
+        receivedBy: "user-1",
+        lines: [{ poLineId: "poline-1", receivedQty: "5", unitCost: Money.fromInt(20), storeId: "store-1" }],
+      });
+      expect(invStoreRepository.findByIdOrFail).toHaveBeenCalledWith("store-1", em);
+      expect(grnLineRepository.create).toHaveBeenCalledWith(expect.objectContaining({ storeId: "store-1" }), em);
+    });
+
+    it("non-stock item (item_id null): storeId is ignored, never validated, line persists storeId=null", async () => {
+      poLineRepository.findByIdOrFail.mockResolvedValue(makePoLine({ qty: "10", itemId: null }));
+      await service.receive(em, { poId: "po-1", receivedBy: "user-1", lines: oneLine });
+      expect(invStoreRepository.findByIdOrFail).not.toHaveBeenCalled();
+      expect(grnLineRepository.create).toHaveBeenCalledWith(expect.objectContaining({ storeId: null }), em);
+    });
   });
 
   describe("post", () => {
@@ -220,7 +253,7 @@ describe("GrnService", () => {
       await expect(service.post(em, "grn-1", "poster-1")).rejects.toBeInstanceOf(ValidationException);
     });
 
-    it("P-19 (item_id null, today's only reachable branch): debits the Procurement Expense/WIP account, credits GRN Accrual, for acceptedQty * unit_cost", async () => {
+    it("P-19 (item_id null): debits the Procurement Expense/WIP account, credits GRN Accrual, for acceptedQty * unit_cost", async () => {
       grnLineRepository.findByGrnId.mockResolvedValue([
         makeGrnLine({ receivedQty: "10", rejectedQty: "2", unitCost: Money.fromInt(20) }),
       ]);
@@ -241,9 +274,9 @@ describe("GrnService", () => {
       expect(glAccountRepository.findByControlDomain).not.toHaveBeenCalled();
     });
 
-    it("P-18 (item_id set, future-ready once Module 13/Inventory populates it): debits the INVENTORY control account, credits the SAME GRN Accrual account", async () => {
+    it("P-18 (item_id set): debits the INVENTORY control account, credits the SAME GRN Accrual account, and records the stock receipt via StockMovementsService", async () => {
       grnLineRepository.findByGrnId.mockResolvedValue([
-        makeGrnLine({ receivedQty: "10", rejectedQty: "0", unitCost: Money.fromInt(20) }),
+        makeGrnLine({ receivedQty: "10", rejectedQty: "0", unitCost: Money.fromInt(20), storeId: "store-1" }),
       ]);
       poLineRepository.findByIdOrFail.mockResolvedValue(makePoLine({ itemId: "item-1" }));
 
@@ -259,6 +292,25 @@ describe("GrnService", () => {
           ],
         }),
       );
+      expect(stockMovementsService.recordReceipt).toHaveBeenCalledWith(em, {
+        itemId: "item-1",
+        storeId: "store-1",
+        qty: "10.0000",
+        unitCost: "20.0000",
+        refDocType: "proc_grn_line",
+        refDocId: "grnline-1",
+      });
+    });
+
+    it("P-19 (item_id null): does NOT call StockMovementsService.recordReceipt at all", async () => {
+      grnLineRepository.findByGrnId.mockResolvedValue([
+        makeGrnLine({ receivedQty: "10", rejectedQty: "0", unitCost: Money.fromInt(20) }),
+      ]);
+      poLineRepository.findByIdOrFail.mockResolvedValue(makePoLine({ itemId: null }));
+
+      await service.post(em, "grn-1", "poster-1");
+
+      expect(stockMovementsService.recordReceipt).not.toHaveBeenCalled();
     });
 
     it("allocates the real GRN number, sets status=POSTED, and stamps journal_id", async () => {

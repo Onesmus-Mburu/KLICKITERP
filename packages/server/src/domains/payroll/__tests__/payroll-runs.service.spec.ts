@@ -193,6 +193,7 @@ describe("PayrollRunsService", () => {
   let runRepository: Record<string, jest.Mock>;
   let runLineRepository: Record<string, jest.Mock>;
   let runLineComponentRepository: Record<string, jest.Mock>;
+  let runLineLoanRecoveryRepository: Record<string, jest.Mock>;
   let employeeRepository: Record<string, jest.Mock>;
   let assignmentRepository: Record<string, jest.Mock>;
   let structureComponentRepository: Record<string, jest.Mock>;
@@ -226,7 +227,7 @@ describe("PayrollRunsService", () => {
     runRepository = {
       findByIdOrFail: jest.fn(async () => makeRun({})),
       save: jest.fn(async (r) => r),
-      findCommittedMainForPeriod: jest.fn(async () => null),
+      findFinalizedMainForPeriod: jest.fn(async () => null),
       create: jest.fn(async (data) => makeRun(data)),
       list: jest.fn(async () => []),
     };
@@ -240,6 +241,11 @@ describe("PayrollRunsService", () => {
     runLineComponentRepository = {
       create: jest.fn(async (data) => ({ id: "rlc-1", ...data })),
       findByRunLineId: jest.fn(async () => []),
+    };
+    runLineLoanRecoveryRepository = {
+      create: jest.fn(async (data) => ({ id: "rllr-1", ...data })),
+      findByRunLineId: jest.fn(async () => []),
+      findByRunLineAndLoan: jest.fn(async () => null),
     };
     employeeRepository = {
       list: jest.fn(async () => [makeEmployee({})]),
@@ -294,6 +300,7 @@ describe("PayrollRunsService", () => {
       runRepository as never,
       runLineRepository as never,
       runLineComponentRepository as never,
+      runLineLoanRecoveryRepository as never,
       employeeRepository as never,
       assignmentRepository as never,
       structureComponentRepository as never,
@@ -322,6 +329,20 @@ describe("PayrollRunsService", () => {
       await expect(service.createRun(em, { periodKey: "2026-07", runKind: "SUPPLEMENTARY" }, "user-1")).rejects.toBeInstanceOf(
         ValidationException,
       );
+    });
+
+    it("BR-PYRL-02: rejects a second MAIN run for a period that already has one finalized (COMMITTED/PAID/FILED)", async () => {
+      runRepository.findFinalizedMainForPeriod.mockResolvedValue(makeRun({ id: "existing-main-1", periodKey: "2026-07", status: "FILED" }));
+      await expect(service.createRun(em, { periodKey: "2026-07", runKind: "MAIN" }, "user-1")).rejects.toBeInstanceOf(
+        ConflictException,
+      );
+      expect(runRepository.create).not.toHaveBeenCalled();
+    });
+
+    it("BR-PYRL-02: a SUPPLEMENTARY run is allowed even when a period already has a finalized MAIN run", async () => {
+      runRepository.findFinalizedMainForPeriod.mockResolvedValue(makeRun({ id: "existing-main-1", periodKey: "2026-07", status: "FILED" }));
+      const run = await service.createRun(em, { periodKey: "2026-07", runKind: "SUPPLEMENTARY", supplementsRunId: "existing-main-1" }, "user-1");
+      expect(run.status).toBe("DRAFT");
     });
   });
 
@@ -436,6 +457,104 @@ describe("PayrollRunsService", () => {
       expect(loansService.recordRecovery).not.toHaveBeenCalled();
       const totals = run.totals as unknown as { totalLoanRecovered: string };
       expect(totals.totalLoanRecovered).toBe("13333.3400");
+      // Option B — the per-loan breakdown row exists even for a single loan.
+      expect(runLineLoanRecoveryRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          loanId: "loan-1",
+          scheduledAmount: Money.fromDecimalString("15000.0000"),
+          carryover: Money.ZERO,
+          recoveredAmount: Money.fromDecimalString("13333.3400"),
+          deferredAmount: Money.fromDecimalString("1666.6600"),
+        }),
+        em,
+      );
+    });
+
+    it("multi-loan (Option B): two active loans share ONE headroom pool, oldest-first, each independently tracked", async () => {
+      runRepository.findByIdOrFail.mockResolvedValue(makeRun({ status: "DRAFT", periodKey: "2026-07" }));
+      employeeRepository.list.mockResolvedValue([makeEmployee({})]);
+      assignmentRepository.findActiveFor.mockResolvedValue(makeAssignment({ basicPay: Money.fromInt(20000) }));
+      structureComponentRepository.findByStructureId.mockResolvedValue([]); // gross = basic only = 20000
+      // findActiveForEmployee's own real order is oldest-created-first — loan-1 (older) then loan-2.
+      loanRepository.findActiveForEmployee.mockResolvedValue([
+        makeLoan({ id: "loan-1", createdAt: new Date("2026-01-01") }),
+        makeLoan({ id: "loan-2", createdAt: new Date("2026-02-01") }),
+      ]);
+      loanScheduleRepository.findByLoanId.mockImplementation(async (loanId: string) =>
+        loanId === "loan-1"
+          ? [makeLoanSchedule({ loanId: "loan-1", duePeriod: "2026-07", principalDue: Money.fromInt(6000), interestDue: Money.fromInt(2000), recoveredAmount: Money.ZERO })]
+          : [makeLoanSchedule({ loanId: "loan-2", duePeriod: "2026-07", principalDue: Money.fromInt(4000), interestDue: Money.fromInt(1000), recoveredAmount: Money.ZERO })],
+      );
+      settingsService.getTyped.mockImplementation(async (key: string, def: unknown) =>
+        key === "payroll.protected_net_floor_ratio" ? "0.333333" : def,
+      );
+
+      const run = await service.compute(em, "run-1");
+
+      // netBeforeLoan = 20000. protectedFloor = 6666.66. available = 13333.34 (shared pool).
+      // loan-1 (oldest, first): attempt = 6000+2000 = 8000 <= available(13333.34) => recovered IN FULL, available shrinks to 5333.34.
+      // loan-2: attempt = 4000+1000 = 5000 <= remaining available(5333.34) => ALSO recovered in full, available shrinks to 333.34.
+      // aggregate loanRecovered = 8000 + 5000 = 13000, deferredRecovery = 0.
+      expect(runLineRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({ loanRecovered: Money.fromInt(13000), deferredRecovery: Money.ZERO }),
+        em,
+      );
+      expect(runLineLoanRecoveryRepository.create).toHaveBeenCalledTimes(2);
+      expect(runLineLoanRecoveryRepository.create).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ loanId: "loan-1", recoveredAmount: Money.fromInt(8000), deferredAmount: Money.ZERO }),
+        em,
+      );
+      expect(runLineLoanRecoveryRepository.create).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ loanId: "loan-2", recoveredAmount: Money.fromInt(5000), deferredAmount: Money.ZERO }),
+        em,
+      );
+      const totals = run.totals as unknown as { totalLoanRecovered: string };
+      expect(totals.totalLoanRecovered).toBe("13000.0000");
+    });
+
+    it("multi-loan (Option B): headroom exhausted by the first loan leaves the second loan's own recovery at zero, fully deferred", async () => {
+      runRepository.findByIdOrFail.mockResolvedValue(makeRun({ status: "DRAFT", periodKey: "2026-07" }));
+      employeeRepository.list.mockResolvedValue([makeEmployee({})]);
+      assignmentRepository.findActiveFor.mockResolvedValue(makeAssignment({ basicPay: Money.fromInt(20000) }));
+      structureComponentRepository.findByStructureId.mockResolvedValue([]);
+      loanRepository.findActiveForEmployee.mockResolvedValue([
+        makeLoan({ id: "loan-1", createdAt: new Date("2026-01-01") }),
+        makeLoan({ id: "loan-2", createdAt: new Date("2026-02-01") }),
+      ]);
+      loanScheduleRepository.findByLoanId.mockImplementation(async (loanId: string) =>
+        loanId === "loan-1"
+          ? [makeLoanSchedule({ loanId: "loan-1", duePeriod: "2026-07", principalDue: Money.fromInt(10000), interestDue: Money.fromInt(5000), recoveredAmount: Money.ZERO })]
+          : [makeLoanSchedule({ loanId: "loan-2", duePeriod: "2026-07", principalDue: Money.fromInt(4000), interestDue: Money.fromInt(1000), recoveredAmount: Money.ZERO })],
+      );
+      settingsService.getTyped.mockImplementation(async (key: string, def: unknown) =>
+        key === "payroll.protected_net_floor_ratio" ? "0.333333" : def,
+      );
+
+      await service.compute(em, "run-1");
+
+      // available = 13333.34. loan-1 attempt = 15000 > available => loan-1 gets ALL available (13333.34), 1666.66 deferred, available -> 0.
+      // loan-2 attempt = 5000, available is now 0 => loan-2 gets ZERO, fully deferred (5000).
+      expect(runLineLoanRecoveryRepository.create).toHaveBeenCalledTimes(2);
+      expect(runLineLoanRecoveryRepository.create).toHaveBeenNthCalledWith(
+        1,
+        expect.objectContaining({ loanId: "loan-1", recoveredAmount: Money.fromDecimalString("13333.3400"), deferredAmount: Money.fromDecimalString("1666.6600") }),
+        em,
+      );
+      expect(runLineLoanRecoveryRepository.create).toHaveBeenNthCalledWith(
+        2,
+        expect.objectContaining({ loanId: "loan-2", recoveredAmount: Money.ZERO, deferredAmount: Money.fromInt(5000) }),
+        em,
+      );
+      // aggregate: recovered = 13333.34 + 0 = 13333.34; deferred = 1666.66 + 5000 = 6666.66.
+      expect(runLineRepository.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          loanRecovered: Money.fromDecimalString("13333.3400"),
+          deferredRecovery: Money.fromDecimalString("6666.6600"),
+        }),
+        em,
+      );
     });
 
     it("BR-PYRL-03: adds the prior period's deferred_recovery as carryover into this period's attempt", async () => {
@@ -447,15 +566,22 @@ describe("PayrollRunsService", () => {
       loanScheduleRepository.findByLoanId.mockResolvedValue([
         makeLoanSchedule({ duePeriod: "2026-07", principalDue: Money.fromInt(10000), interestDue: Money.fromInt(5000), recoveredAmount: Money.ZERO }),
       ]);
-      runRepository.findCommittedMainForPeriod.mockImplementation(async (periodKey: string) =>
+      runRepository.findFinalizedMainForPeriod.mockImplementation(async (periodKey: string) =>
         periodKey === "2026-06" ? makeRun({ id: "prior-run-1", periodKey: "2026-06", status: "COMMITTED" }) : null,
       );
-      runLineRepository.findByRunAndEmployee.mockResolvedValue(makeRunLine({ deferredRecovery: Money.fromInt(1000) }));
+      runLineRepository.findByRunAndEmployee.mockResolvedValue(makeRunLine({ id: "prior-line-1", deferredRecovery: Money.fromInt(1000) }));
+      runLineLoanRecoveryRepository.findByRunLineAndLoan.mockResolvedValue({
+        id: "rllr-prior",
+        runLineId: "prior-line-1",
+        loanId: "loan-1",
+        deferredAmount: Money.fromInt(1000),
+      });
 
       await service.compute(em, "run-1");
 
-      expect(runRepository.findCommittedMainForPeriod).toHaveBeenCalledWith("2026-06", em);
+      expect(runRepository.findFinalizedMainForPeriod).toHaveBeenCalledWith("2026-06", em);
       expect(runLineRepository.findByRunAndEmployee).toHaveBeenCalledWith("prior-run-1", "emp-1", em);
+      expect(runLineLoanRecoveryRepository.findByRunLineAndLoan).toHaveBeenCalledWith("prior-line-1", "loan-1", em);
       // attempt = scheduledAmount(15000) + carryover(1000) = 16000; floor/available unchanged (13333.34)
       // => loanRecovered still capped at 13333.34 (available), deferred = 16000 - 13333.34 = 2666.66
       expect(runLineRepository.create).toHaveBeenCalledWith(
@@ -488,7 +614,7 @@ describe("PayrollRunsService", () => {
           makeRunLine({ employeeId: "emp-3", gross: Money.fromInt(5000), netPay: Money.fromInt(4500) }),
         ];
       });
-      runRepository.findCommittedMainForPeriod.mockImplementation(async (periodKey: string) =>
+      runRepository.findFinalizedMainForPeriod.mockImplementation(async (periodKey: string) =>
         periodKey === "2026-06" ? makeRun({ id: "prior-run-1", periodKey: "2026-06", status: "COMMITTED" }) : null,
       );
 
@@ -598,8 +724,13 @@ describe("PayrollRunsService", () => {
       employeeRepository.findByIdOrFail.mockImplementation(async (id: string) =>
         makeEmployee({ id, costCenterId: id === "emp-1" ? "cc-1" : "cc-2" }),
       );
-      loanRepository.findActiveForEmployee.mockImplementation(async (employeeId: string) =>
-        employeeId === "emp-1" ? [makeLoan({ id: "loan-1", employeeId: "emp-1" })] : [],
+      // Option B — commit() now reads the per-loan breakdown compute() already
+      // wrote, never re-derives "active loans" itself; only line-1 (emp-1) has
+      // a positive loanRecovered, so only its own findByRunLineId is exercised.
+      runLineLoanRecoveryRepository.findByRunLineId.mockImplementation(async (runLineId: string) =>
+        runLineId === "line-1"
+          ? [{ id: "rllr-1", runLineId: "line-1", loanId: "loan-1", recoveredAmount: Money.fromInt(2000), deferredAmount: Money.ZERO }]
+          : [],
       );
     }
 

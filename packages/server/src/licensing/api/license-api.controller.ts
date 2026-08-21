@@ -1,6 +1,8 @@
 import { Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import { ApiOperation, ApiTags } from "@nestjs/swagger";
 import { AuthenticationException } from "../../shared/exceptions/authentication.exception";
+import { Public } from "../../shared/rbac/public.decorator";
+import { ExemptFromLicenseGuard } from "../../shared/rbac/exempt-from-license-guard.decorator";
 import { ApiCallLoggerService } from "../application/api-call-logger.service";
 import {
   ActivateInput,
@@ -26,10 +28,22 @@ import { LicenseMutualAuthRequest } from "./request-context";
  * result, matching §2.6's "portal verifies the instance's signature"
  * requirement literally. Every call is logged both directions per BR-LIC-04
  * via `ApiCallLoggerService.wrap()`.
+ *
+ * **Fixed 2026-08-21 — was completely unreachable before this class-level
+ * `@Public()` + `@ExemptFromLicenseGuard()` pair**: the global `JwtAuthGuard`
+ * (an `APP_GUARD`, runs before this class's own `@UseGuards()`) rejected
+ * every call for lacking a session bearer token — this caller is an
+ * external Super Admin portal authenticating via JWS mutual-auth, not a
+ * logged-in staff session, so it never had one. `@ExemptFromLicenseGuard()`
+ * is needed too: a `SUSPENDED`/`GRACE`/`DEACTIVATED` instance is exactly
+ * when the portal most needs to call `activate`/`renew`/`suspend` — see
+ * `shared/rbac/license-state.guard.ts`.
  */
 @ApiTags("license-api")
 @Controller("license/v1")
 @UseGuards(LicenseMutualAuthGuard)
+@Public()
+@ExemptFromLicenseGuard()
 export class LicenseApiController {
   constructor(
     private readonly licenseApiService: LicenseApiService,

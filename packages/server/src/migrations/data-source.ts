@@ -134,6 +134,7 @@ import { PyrlLoanScheduleEntity } from "../domains/payroll/domain/pyrl-loan-sche
 import { PyrlRunEntity } from "../domains/payroll/domain/pyrl-run.entity";
 import { PyrlRunLineEntity } from "../domains/payroll/domain/pyrl-run-line.entity";
 import { PyrlRunLineComponentEntity } from "../domains/payroll/domain/pyrl-run-line-component.entity";
+import { PyrlRunLineLoanRecoveryEntity } from "../domains/payroll/domain/pyrl-run-line-loan-recovery.entity";
 import { PyrlOneoffEntity } from "../domains/payroll/domain/pyrl-oneoff.entity";
 import { BankAccountEntity } from "../domains/banking/domain/bank-account.entity";
 import { BankTransferEntity } from "../domains/banking/domain/bank-transfer.entity";
@@ -333,6 +334,7 @@ export const AppDataSource = new DataSource({
     PyrlRunEntity,
     PyrlRunLineEntity,
     PyrlRunLineComponentEntity,
+    PyrlRunLineLoanRecoveryEntity,
     PyrlOneoffEntity,
     BankAccountEntity,
     BankTransferEntity,

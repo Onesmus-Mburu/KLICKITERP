@@ -68,11 +68,17 @@ describe("payroll module — trigger integration (real DataSource)", () => {
       `PYRL Cost Center ${suffix}`,
     ]);
     const employeeId = generateUuidV7();
+    // Migration 0240 — national_id/kra_pin are now jsonb (encrypted at the
+    // application layer; this fixture doesn't go through EmployeesService,
+    // so it just needs a NOT-NULL-satisfying valid jsonb value, not a real
+    // ciphertext — to_jsonb($::text) wraps the plain fixture string as a
+    // valid JSON string value, same as migration 0240's own up() does for
+    // the pre-existing plaintext it re-encrypts).
     await source.query(
       `INSERT INTO app.pyrl_employee
          (id, staff_no, full_name, national_id, kra_pin, employment_type, department_id, job_title,
           hire_date, cost_center_id)
-       VALUES ($1, $2, $3, $4, $5, 'PERMANENT', $6, 'Teacher', '2024-01-01', $7)`,
+       VALUES ($1, $2, $3, to_jsonb($4::text), to_jsonb($5::text), 'PERMANENT', $6, 'Teacher', '2024-01-01', $7)`,
       [employeeId, `EMP-${suffix}`, `Employee ${suffix}`, `ID${suffix}`, `A${suffix}`, departmentId, costCenterId],
     );
     return { employeeId, departmentId, costCenterId };
